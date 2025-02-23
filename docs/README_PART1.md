@@ -172,3 +172,7 @@ Django version 5.1.6, using settings 'apptest_rest.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
+
+Open the browser and navigate to the following URL: http://localhost:8000
+
+![./manage.py runserver](/docs/images/part1_1.png)

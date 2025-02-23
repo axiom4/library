@@ -32,4 +32,4 @@ This demo project guides you through the process of creating a full-stack applic
 
 ### Next Steps
 
-1. [Init a new Django project](/README_PART1.md)
+1. [Init a new Django project](/docs/README_PART1.md)
