@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 1)
+# A full test application using Django and Angular (Part 1) - Django Project
 
 Create a container directory and install a Python3 Virtual Environment
 

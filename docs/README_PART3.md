@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 3)
+# A full test application using Django and Angular (Part 3) - MySQL container
 
 Now we will start creating the middleware on which our application will run. We will use Docker Desktop as a base to create a MySQL container.
 
