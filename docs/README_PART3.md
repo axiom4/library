@@ -99,7 +99,7 @@ db:
     - backend
 ```
 
-Adesso lanceremo il comando per creare il nostro container MySQL:
+Now we will run the command to create our MySQL container:
 
 ```bash
 docker-compose up -d
