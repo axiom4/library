@@ -1,0 +1,24 @@
+version: "3.1"
+name: testapp
+services:
+  db:
+    image: mysql
+    container_name: mysql
+
+    restart: always
+    env_file:
+      - path: ./environments/mysql.env
+        required: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - backend
+
+volumes:
+  db_data: {}
+
+networks:
+  backend:
+    driver: bridge
