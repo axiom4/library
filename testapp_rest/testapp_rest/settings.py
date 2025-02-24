@@ -17,20 +17,22 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+django_env = environ.Env()
+django_env.read_env(os.path.join(BASE_DIR, '../environments/django.env'))
 
 mysql_env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '../environments/mysql.env'))
+mysql_env.read_env(os.path.join(BASE_DIR, '../environments/mysql.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-44d8!gdcy4e-q&lp4urpe^n$ed5p)pg_yu5o1qlp@vv(ke0++8'
+SECRET_KEY = django_env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = django_env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = django_env.list('ALLOWED_HOSTS', default=[])
 
 
 # Application definition

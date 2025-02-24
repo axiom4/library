@@ -159,6 +159,47 @@ Password (again):
 Superuser created successfully.
 ```
 
+Open **testapp_rest/testapp_rest/settings.py** and update configuration parameters.
+
+First, let's import the environment file **"environments/mysql.env"** that is already shared with the container.
+
+After line:
+
+> \# Build paths inside the project like this: BASE_DIR / 'subdir'.
+> BASE_DIR = Path(**file**).resolve().parent.parent
+
+Add this:
+
+```python
+import environ
+import os
+
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '../environments/django.env'))
+```
+
+So update SECRET_KEY, DEBUG and ALLOWED_HOSTS line:
+
+```python
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env('SECRET_KEY')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env.bool('DEBUG', default=False)
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+```
+
+and create **environments/django.env** file:
+
+```python
+SECRET_KEY='(#6%1j67g+9&$2s(rje#)1@$%zsjjwz6*ba74y#&&c+8an+p4a'
+DEBUG=True
+ALLOWED_HOSTS=[]
+```
+
+The `SECRET_KEY` can be easily generated using the following website: [https://djecrety.ir](https://djecrety.ir)
+
 Start the Django development server
 
 ```bash

@@ -136,17 +136,16 @@ First, let's import the environment file **"environments/mysql.env"** that is al
 
 After line:
 
-> \# Build paths inside the project like this: BASE_DIR / 'subdir'.
-> BASE_DIR = Path(**file**).resolve().parent.parent
+```
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '../environments/django.env'))
+```
 
 Add this:
 
 ```python
-import environ
-import os
-
 mysql_env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '../environments/mysql.env'))
+mysql_env.read_env(os.path.join(BASE_DIR, '../environments/mysql.env'))
 ```
 
 Find the DATABASE section (you can comment the code using #)
