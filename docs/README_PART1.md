@@ -167,7 +167,7 @@ Performing system checks...
 
 System check identified no issues (0 silenced).
 February 23, 2025 - 19:46:00
-Django version 5.1.6, using settings 'apptest_rest.settings'
+Django version 5.1.6, using settings 'testapp_rest.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
