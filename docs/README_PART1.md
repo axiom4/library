@@ -117,9 +117,8 @@ pip freeze > requirements.txt
 Init Django Project
 
 ```bash
-django-admin startproject apptest_rest
-cd apptest_rest
-./manage.py startapp book
+django-admin startproject testapp_rest
+cd testapp_rest
 ```
 
 Init Django Database
