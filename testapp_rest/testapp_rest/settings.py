@@ -18,10 +18,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 django_env = environ.Env()
-django_env.read_env(os.path.join(BASE_DIR, '../environments/django.env'))
+django_env.read_env(os.path.join(
+    BASE_DIR, '../environments/django.env'), overwrite=True)
 
 mysql_env = environ.Env()
-mysql_env.read_env(os.path.join(BASE_DIR, '../environments/mysql.env'))
+mysql_env.read_env(os.path.join(
+    BASE_DIR, '../environments/mysql.env'), overwrite=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
