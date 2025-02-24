@@ -2,3 +2,5 @@ venv
 __pycahce__
 db.sqlite3
 .vscode
+*.pyc
+dump_all.json

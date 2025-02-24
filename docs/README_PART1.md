@@ -27,6 +27,7 @@ echo venv > .gitignore
 echo "__pycahce__" >> .gitignore
 echo "*.pyc" >> .gitignore
 echo "db.sqlite3" >> .gitignore
+echo "dump_all.json" >> .gitignore
 ```
 
 On GitHub, create a **repository** named TestApp and initialize the app to push the code remotely.
