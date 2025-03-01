@@ -152,15 +152,6 @@ Running migrations:
   Applying sessions.0001_initial... OK
 ```
 
-Create Django superuser
-
-```bash
-./manage.py createsuperuser --username admin --email admin@example.com
-Password:
-Password (again):
-Superuser created successfully.
-```
-
 Open **testapp_rest/testapp_rest/settings.py** and update configuration parameters.
 
 First, let's import the environment file **"environments/mysql.env"** that is already shared with the container.
@@ -219,3 +210,20 @@ Quit the server with CONTROL-C.
 Open the browser and navigate to the following URL: http://localhost:8000
 
 ![./manage.py runserver](/docs/images/part1_1.png)
+
+Create Django superuser
+
+```bash
+./manage.py createsuperuser --username admin --email admin@example.com
+Password:
+Password (again):
+Superuser created successfully.
+```
+
+Go to admin page URL: http://localhost:8000/admin and login with admin user
+
+![Django Admin login](/docs/images/part1_2.png)
+
+now you can manage your newly created Django schema
+
+![Django Admin login](/docs/images/part1_3.png)
