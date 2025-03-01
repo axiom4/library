@@ -139,3 +139,96 @@ urlpatterns = [
 With these changes, only requests originating from the specified IP addresses will be able to access the OpenAPI schema.
 
 ![Access List schema protection](/docs/images/part5_2.png)
+
+## Angular OpenAPI integrations
+
+To integrate the OpenAPI schema into your Angular project, you can use tools like `@openapitools/openapi-generator-cli` to generate an Angular service from the schema.
+
+First, install the `@openapitools/openapi-generator-cli` package:
+
+```bash
+npm install @openapitools/openapi-generator-cli --save-dev
+
+added 81 packages, and audited 1018 packages in 9s
+
+162 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+```
+
+This command adds `@openapitools/openapi-generator-cli` to your `package.json` file as a dev dependency.
+
+```json
+  "devDependencies": {
+    ...
+    "@openapitools/openapi-generator-cli": "^2.17.0",
+    ...
+  },
+```
+
+Then, generate the Angular service update `package.json` with this script:
+
+```json
+  "scripts": {
+    ...
+    "generate:api": "openapi-generator-cli generate  -p supportsES6=true,withInterfaces=true,useSingleRequestParameter=true -i http://127.0.0.1:8000/?format=openapi -g typescript-angular -o src/app/modules/core/api/v1"
+  },
+```
+
+Finaly we generate api angular typescript models, interfaces and services by running the command `npm run generate:api`:
+
+```bash
+npm run generate:api
+
+> testapp-web@0.0.0 generate:api
+> openapi-generator-cli generate  -p supportsES6=true,withInterfaces=true,useSingleRequestParameter=true -i http://127.0.0.1:8000/?format=openapi -g typescript-angular -o src/app/modules/core/api/v1
+
+Download 7.12.0 ...
+Downloaded 7.12.0
+Did set selected version to 7.12.0
+[main] INFO  o.o.codegen.DefaultGenerator - Generating with dryRun=false
+[main] INFO  o.o.c.ignore.CodegenIgnoreProcessor - Output directory (/Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1) does not exist, or is inaccessible. No file (.openapi-generator-ignore) will be evaluated.
+[main] INFO  o.o.codegen.DefaultGenerator - OpenAPI Generator: typescript-angular (client)
+[main] INFO  o.o.codegen.DefaultGenerator - Generator 'typescript-angular' is considered stable.
+[main] INFO  o.o.c.l.AbstractTypeScriptClientCodegen - Warning: Environment variable 'TS_POST_PROCESS_FILE' is set but file post-processing is not enabled. To enable file post-processing, 'enablePostProcessFile' must be set to `true` (--enable-post-process-file for CLI).
+[main] INFO  o.o.c.l.TypeScriptAngularClientCodegen - generating code for Angular 19.0.0 ...
+[main] INFO  o.o.c.l.TypeScriptAngularClientCodegen -   (you can select the angular version by setting the additionalProperties (--additional-properties in CLI) ngVersion)
+[main] INFO  o.o.codegen.utils.URLPathUtils - 'host' (OAS 2.0) or 'servers' (OAS 3.0) not defined in the spec. Default to [http://localhost] for server URL [http://localhost/]
+[main] INFO  o.o.codegen.utils.URLPathUtils - 'host' (OAS 2.0) or 'servers' (OAS 3.0) not defined in the spec. Default to [http://localhost] for server URL [http://localhost/]
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/model/./book.ts
+[main] INFO  o.o.codegen.utils.URLPathUtils - 'host' (OAS 2.0) or 'servers' (OAS 3.0) not defined in the spec. Default to [http://localhost] for server URL [http://localhost/]
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/api/library.service.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/api/library.serviceInterface.ts
+[main] INFO  o.o.codegen.utils.URLPathUtils - 'host' (OAS 2.0) or 'servers' (OAS 3.0) not defined in the spec. Default to [http://localhost] for server URL [http://localhost/]
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/model/models.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/api/api.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/index.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/api.module.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/configuration.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/api.base.service.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/variables.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/encoder.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/param.ts
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/.gitignore
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/git_push.sh
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/README.md
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/.openapi-generator-ignore
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/.openapi-generator/VERSION
+[main] INFO  o.o.codegen.TemplateManager - writing file /Users/rgiannetto/Developer/TestApp/testapp_web/src/app/modules/core/api/v1/.openapi-generator/FILES
+################################################################################
+# Thanks for using OpenAPI Generator.                                          #
+# Please consider donation to help us maintain this project 🙏                 #
+# https://opencollective.com/openapi_generator/donate                          #
+################################################################################
+```
+
+This command GET to django server url `http://localhost:8000/?format=openapi`:
+
+```python
+[01/Mar/2025 22:04:58] "GET /?format=openapi HTTP/1.1" 200 5105
+```
+
+This command created the Angular modules in the `src/app/modules/core/api/v1` directory.
+
+![Angular Services](/docs/images/part5_3.png)
