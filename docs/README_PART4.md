@@ -55,8 +55,8 @@ To enable **django-cors-headers** we need update **MIDDLEWARE** section adding *
 ```python
 MIDDLEWARE = [
     ...,
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     ...,
 ]
 ```
@@ -68,5 +68,6 @@ CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
   'http://localhost:8000',
+  'http://localhost:4200',
 )
 ```
