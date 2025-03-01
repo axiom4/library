@@ -144,6 +144,8 @@ class BookAdmin(admin.ModelAdmin):
 
 To finish, use the commands `./manage.py makemigrations` and `./manage.py migrate` to synchronize the MySQL database schema and create the new `books` table.
 
+### makemigrations
+
 ```bash
 ./manage.py makemigrations
 
@@ -151,6 +153,8 @@ Migrations for 'library':
   library/migrations/0001_initial.py
     + Create model Book
 ```
+
+### migrate
 
 ```bash
 ./manage.py migrate
