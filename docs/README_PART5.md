@@ -176,6 +176,20 @@ Then, generate the Angular service update `package.json` with this script:
   },
 ```
 
+These parameters configure the code generation with option `-p`:
+
+- `supportsES6=true`: This option ensures that the generated code uses ES6 syntax (e.g., `class`, `let`, `const`, arrow functions). This is generally desirable for modern Angular projects.
+- `withInterfaces=true`: This setting tells the generator to create TypeScript interfaces for the data models defined in your OpenAPI schema. Using interfaces improves type safety and makes your Angular code more maintainable.
+- `useSingleRequestParameter=true`: This option bundles all the parameters for a given API endpoint into a single request parameter object. This can simplify the method signatures in your generated service and make it easier to add new parameters in the future without breaking existing code.
+
+Here's an explanation of the other parameters used in the `openapi-generator-cli generate` command:
+
+- `-i http://127.0.0.1:8000/?format=openapi`: This specifies the input OpenAPI schema. In this case, it's fetching the schema from your Django backend at `http://127.0.0.1:8000/?format=openapi`. The `?format=openapi` part ensures that the schema is returned in the OpenAPI format.
+- `-g typescript-angular`: This specifies the generator to use. `typescript-angular` tells the generator to create an Angular client in TypeScript.
+- `-o src/app/modules/core/api/v1`: This specifies the output directory where the generated Angular service will be placed. In this case, the generated code will be located in `src/app/modules/core/api/v1` within your Angular project.
+
+## Generate Angular rest client
+
 Finaly we generate api angular typescript models, interfaces and services by running the command `npm run generate:api`:
 
 ```bash
