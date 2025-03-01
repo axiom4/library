@@ -232,3 +232,5 @@ This command GET to django server url `http://localhost:8000/?format=openapi`:
 This command created the Angular modules in the `src/app/modules/core/api/v1` directory.
 
 ![Angular Services](/docs/images/part5_3.png)
+
+Now, whenever the Django REST services change, you can simply update the Angular services by running the command `npm run generate:api`.
