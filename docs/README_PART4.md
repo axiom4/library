@@ -270,3 +270,5 @@ urlpatterns = [
 This includes the URL patterns defined in `library/urls.py` under the `/api/` path. It also includes the default login and logout views for use with the browsable API.
 
 Now, you can run your Django development server and access the API endpoints for the Book model. For example, you can go to `http://localhost:8000/api/books/` to see a list of all books in JSON format, or use the browsable API to interact with the endpoints.
+
+![Books admin](/docs/images/part4_3.png)
