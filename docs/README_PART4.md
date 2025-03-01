@@ -116,3 +116,47 @@ class Book(models.Model):
             models.Index(fields=['title', 'author']),
         ]
 ```
+
+We will manage the Book model data through the BookAdmin class, let's create it.
+
+```python
+from django.contrib import admin
+
+from django.contrib import admin
+from .models import Book
+
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    """
+    BookAdmin is a custom admin class for the Book model in the Django admin interface.
+
+    Attributes:
+        list_display (tuple): Specifies the fields to be displayed in the list view of the admin interface.
+        search_fields (tuple): Specifies the fields to be searched in the admin interface.
+        list_filter (tuple): Specifies the fields to be used for filtering in the admin interface.
+    """
+    list_display = ('title', 'author', 'publication_date',
+                    'created_at', 'updated_at')
+    search_fields = ('title', 'author')
+    list_filter = ('author',)
+```
+
+To finish, use the commands `./manage.py makemigrations` and `./manage.py migrate` to synchronize the MySQL database schema and create the new `books` table.
+
+```bash
+./manage.py makemigrations
+
+Migrations for 'library':
+  library/migrations/0001_initial.py
+    + Create model Book
+```
+
+```bash
+./manage.py migrate
+
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, library, sessions
+Running migrations:
+  Applying library.0001_initial... OK
+```
