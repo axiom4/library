@@ -164,3 +164,7 @@ Operations to perform:
 Running migrations:
   Applying library.0001_initial... OK
 ```
+
+Let's connect to our Django admin page and manage the new table.
+
+![Books admin](/docs/images/part4_1.png)
