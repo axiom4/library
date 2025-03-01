@@ -180,3 +180,5 @@ We will add the following books:
 | Pinocchio                            | Carlo Collodi             | 1883-01-01       |
 | Crime and Punishment                 | Fyodor Dostoevsky         | 1866-01-01       |
 | The Idiot                            | Fyodor Dostoevsky         | 1868-01-01       |
+
+![Books admin](/docs/images/part4_2.png)
