@@ -210,3 +210,63 @@ class BookSerializer(serializers.ModelSerializer):
 ```
 
 This code defines a `BookSerializer` class that inherits from `serializers.ModelSerializer`. The `Meta` class specifies the model to be serialized (`Book`) and the fields to include in the serialized output. It includes `id` field and all fields defined in the Book model.
+
+Now that you have the serializer, you need to create a ViewSet to handle the API endpoints for the Book model. A ViewSet provides a set of actions (e.g., list, create, retrieve, update, destroy) for a model.
+
+Create a `views.py` file inside the `library` app directory (if it doesn't already exist) and add the following code:
+
+```python
+from rest_framework import viewsets
+from .models import Book
+from .serializers import BookSerializer
+
+
+class BookViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing book instances.
+
+    This viewset provides `list`, `create`, `retrieve`, `update` and `destroy` actions for the Book model.
+
+    Attributes:
+      queryset (QuerySet): The set of Book instances to be retrieved.
+      serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+```
+
+This code defines a `BookViewSet` class that inherits from `viewsets.ModelViewSet`. It specifies the queryset (all Book objects ordered by title) and the serializer class (`BookSerializer`).
+
+Next, you need to configure the URL patterns for the API endpoints. Create a `urls.py` file inside the `library` app directory and add the following code:
+
+```python
+from django.urls import path, include
+from rest_framework import routers
+from . import views
+
+router = routers.DefaultRouter()
+router.register(r'books', views.BookViewSet)
+
+urlpatterns = [
+  path('', include(router.urls)),
+]
+```
+
+This code uses a `DefaultRouter` to automatically generate the URL patterns for the ViewSet. It registers the `BookViewSet` with the router, which will create URLs like `/books/` (for listing and creating books) and `/books/{pk}/` (for retrieving, updating, and deleting a specific book).
+
+Finally, include the `library` app's URLs in the main `urls.py` file of your Django project. Edit the main `urls.py` (e.g., `TestApp/urls.py`) to include the library URLs:
+
+```python
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+  path('admin/', admin.site.urls),
+  path('api/', include('library.urls')),
+  path('api-auth/', include('rest_framework.urls'))
+]
+```
+
+This includes the URL patterns defined in `library/urls.py` under the `/api/` path. It also includes the default login and logout views for use with the browsable API.
+
+Now, you can run your Django development server and access the API endpoints for the Book model. For example, you can go to `http://localhost:8000/api/books/` to see a list of all books in JSON format, or use the browsable API to interact with the endpoints.
