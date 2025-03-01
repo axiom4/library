@@ -20,7 +20,7 @@ Installing collected packages: pip
 Successfully installed pip-25.0.1
 ```
 
-Create a **.gitignore** file to exclude the **venv** directory.
+Create a `.gitignore` file to exclude the `venv` directory.
 
 ```bash
 echo venv > .gitignore
@@ -30,7 +30,7 @@ echo "db.sqlite3" >> .gitignore
 echo "dump_all.json" >> .gitignore
 ```
 
-On GitHub, create a **repository** named TestApp and initialize the app to push the code remotely.
+On GitHub, create a `repository` named TestApp and initialize the app to push the code remotely.
 
 ```bash
 git init
@@ -111,7 +111,7 @@ Installing collected packages: pip
 Successfully installed pip-25.0.1
 ```
 
-Generate **requirements.txt**
+Generate `requirements.txt`
 
 ```bash
 pip freeze > requirements.txt
@@ -152,14 +152,14 @@ Running migrations:
   Applying sessions.0001_initial... OK
 ```
 
-Open **testapp_rest/testapp_rest/settings.py** and update configuration parameters.
+Open `testapp_rest/testapp_rest/settings.py` and update configuration parameters.
 
-First, let's import the environment file **"environments/mysql.env"** that is already shared with the container.
+First, let's import the environment file `"environments/mysql.env"` that is already shared with the container.
 
 After line:
 
 > \# Build paths inside the project like this: BASE_DIR / 'subdir'.
-> BASE_DIR = Path(**file**).resolve().parent.parent
+> BASE_DIR = Path(`file`).resolve().parent.parent
 
 Add this:
 
@@ -183,7 +183,7 @@ DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 ```
 
-and create **environments/django.env** file:
+and create `environments/django.env` file:
 
 ```python
 SECRET_KEY='(#6%1j67g+9&$2s(rje#)1@$%zsjjwz6*ba74y#&&c+8an+p4a'

@@ -11,7 +11,7 @@ mkdir environments
 vi environments/mysql.env
 ```
 
-The content of the **mysql.env** file will be as follows:
+The content of the `mysql.env` file will be as follows:
 
 ```bash
 MYSQL_ROOT_HOST=%
@@ -23,7 +23,7 @@ MYSQL_HOST=127.0.0.1
 MYSQL_PORT=3306
 ```
 
-Finally, let's create a **docker-compose.yaml** file where we will currently only insert the definitions to create the container to manage the MySQL database.
+Finally, let's create a `docker-compose.yaml` file where we will currently only insert the definitions to create the container to manage the MySQL database.
 
 The content of the file will be as follows:
 
@@ -124,7 +124,7 @@ Installing collected packages: mysqlclient
 Successfully installed mysqlclient-2.2.7
 ```
 
-Generate **requirements.txt**
+Generate `requirements.txt`
 
 ```bash
 pip freeze > requirements.txt
@@ -136,9 +136,9 @@ Dump sqlite3 database contents:
 ./manage.py dumpdata > dump_all.json
 ```
 
-Open **testapp_rest/testapp_rest/settings.py** and update configuration parameters.
+Open `testapp_rest/testapp_rest/settings.py` and update configuration parameters.
 
-First, let's import the environment file **"environments/mysql.env"** that is already shared with the container.
+First, let's import the environment file `"environments/mysql.env"` that is already shared with the container.
 
 After line:
 
@@ -200,7 +200,7 @@ ContentType.objects.all().delete()
 quit()
 ```
 
-Finally, import the **dump_all.json** file:
+Finally, import the `dump_all.json` file:
 
 ```bash
 python manage.py loaddata dump_all.json

@@ -32,13 +32,13 @@ Installing collected packages: uritemplate, PyYAML, markdown, djangorestframewor
 Successfully installed PyYAML-6.0.2 django-cors-headers-4.7.0 django-filter-25.1 djangorestframework-3.15.2 markdown-3.7 uritemplate-4.1.1
 ```
 
-Let's create our test application "**library**"
+Let's create our test application "`library`"
 
 ```bash
 ./manage.py startapp library
 ```
 
-Modify django **settings.py** to enable **library**. We need update **INSTALLED_APPS** adding all dependencies:
+Modify django `settings.py` to enable `library`. We need update `INSTALLED_APPS` adding all dependencies:
 
 ```python
 INSTALLED_APPS = [
@@ -52,7 +52,7 @@ INSTALLED_APPS = [
 ]
 ```
 
-To enable **django-cors-headers** we need update **MIDDLEWARE** section adding **"corsheaders.middleware.CorsMiddleware"** before **"django.middleware.common.CommonMiddleware"**:
+To enable `django-cors-headers` we need update `MIDDLEWARE` section adding `"corsheaders.middleware.CorsMiddleware"` before `"django.middleware.common.CommonMiddleware"`:
 
 ```python
 MIDDLEWARE = [
@@ -76,7 +76,7 @@ CORS_ORIGIN_WHITELIST = (
 
 ## Create a new book model
 
-To create new model we need edting **library/models.py** to add new class "**Book**"
+To create new model we need edting `library/models.py` to add new class "`Book`"
 
 ```python
 from django.db import models
