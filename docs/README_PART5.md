@@ -1,8 +1,8 @@
-# A full test application using Django and Angular (Part 4) - Djago Rest framework
+# A full test application using Django and Angular (Part 5) - OpenAPI integration
 
-Now, let's create a new model for the book. We will create a new app called `library` and create a new model called `Book`.
+Now, let's configure OpenAPI schema to integrate apps.
 
-Installing Django Rest Framework
+First, install the necessary packages:
 
 ```bash
 pip install PyYAML uritemplate inflection markdown
