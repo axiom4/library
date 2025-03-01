@@ -124,6 +124,12 @@ Installing collected packages: mysqlclient
 Successfully installed mysqlclient-2.2.7
 ```
 
+Generate **requirements.txt**
+
+```bash
+pip freeze > requirements.txt
+```
+
 Dump sqlite3 database contents:
 
 ```bash
