@@ -1,6 +1,6 @@
 # A full test application using Django and Angular (Part 4) - Djago Rest framework
 
-### Installiamo django rest framework
+Installing Django Rest Framework
 
 ```bash
 pip install djangorestframework markdown django-filter django-cors-headers PyYAML uritemplate
@@ -28,4 +28,45 @@ Using cached PyYAML-6.0.2-cp313-cp313-macosx_11_0_arm64.whl (171 kB)
 Using cached uritemplate-4.1.1-py2.py3-none-any.whl (10 kB)
 Installing collected packages: uritemplate, PyYAML, markdown, djangorestframework, django-filter, django-cors-headers
 Successfully installed PyYAML-6.0.2 django-cors-headers-4.7.0 django-filter-25.1 djangorestframework-3.15.2 markdown-3.7 uritemplate-4.1.1
+```
+
+Let's create our test application "**library**"
+
+```bash
+./manage.py startapp library
+```
+
+Modify django **settings.py** to enable **library**. We need update **INSTALLED_APPS** adding all dependencies:
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    ...
+    'djangorestframework',
+    'django_filters',
+    'corsheaders',
+    'library'
+]
+```
+
+To enable **django-cors-headers** we need update **MIDDLEWARE** section adding **"corsheaders.middleware.CorsMiddleware"** before **"django.middleware.common.CommonMiddleware"**:
+
+```python
+MIDDLEWARE = [
+    ...,
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    ...,
+]
+```
+
+and add the following lines at the end of the file
+
+```python
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:8000',
+)
 ```
