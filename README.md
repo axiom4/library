@@ -35,3 +35,4 @@ This demo project guides you through the process of creating a full-stack applic
 1. [Init a new Django project](/docs/README_PART1.md)
 2. [Init a new Angular app](/docs/README_PART2.md)
 3. [Init MySQL Docker container](/docs/README_PART3.md)
+4. [Rest services](/docs/README_PART4.md)
