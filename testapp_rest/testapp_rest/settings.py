@@ -87,13 +87,6 @@ WSGI_APPLICATION = 'testapp_rest.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -152,3 +145,5 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
     'http://localhost:4200',
 )
+
+ACCESS_LIST = ['127.0.0.1', '::1']
