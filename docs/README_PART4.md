@@ -182,3 +182,31 @@ We will add the following books:
 | The Idiot                            | Fyodor Dostoevsky         | 1868-01-01       |
 
 ![Books admin](/docs/images/part4_2.png)
+
+To create a serializer for the Book model, you'll need to create a `serializers.py` file inside the `library` app directory. This file will define the serializer class that handles the conversion of Book model instances to JSON format and vice versa.
+
+First, create a `serializers.py` file in the `library` directory, then, add the following code:
+
+```python
+from rest_framework import serializers
+from .models import Book
+
+
+class BookSerializer(serializers.ModelSerializer):
+    """
+        Serializer for the Book model.
+
+        Serializes Book objects into JSON and deserializes JSON into Book objects.
+
+        Attributes:
+            Meta (class): A nested class that configures the serializer.
+                model (Book): The Book model to serialize.
+                fields (list): The fields of the Book model to include in the serialized representation.
+    """
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'author',
+                  'publication_date', 'created_at', 'updated_at']
+```
+
+This code defines a `BookSerializer` class that inherits from `serializers.ModelSerializer`. The `Meta` class specifies the model to be serialized (`Book`) and the fields to include in the serialized output. It includes `id` field and all fields defined in the Book model.
