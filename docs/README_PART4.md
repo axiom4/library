@@ -272,3 +272,14 @@ This includes the URL patterns defined in `library/urls.py` under the `/api/` pa
 Now, you can run your Django development server and access the API endpoints for the Book model. For example, you can go to `http://localhost:8000/api/books/` to see a list of all books in JSON format, or use the browsable API to interact with the endpoints.
 
 ![Books admin](/docs/images/part4_3.png)
+
+### Api authetication
+
+The `path('api-auth/', include('rest_framework.urls'))` line includes the default login and logout views for use with the browsable API provided by Django REST Framework. This is particularly useful during development as it allows you to easily authenticate and test your API endpoints directly from the browser.
+
+By including `rest_framework.urls`, you automatically get the following URLs:
+
+- `login/`: A login view that allows users to authenticate via the browsable API.
+- `logout/`: A logout view that allows users to end their session via the browsable API.
+
+These views use Django's authentication system, so you'll need to have users created in your Django project (e.g., via the admin interface) to be able to log in.
