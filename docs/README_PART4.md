@@ -168,3 +168,15 @@ Running migrations:
 Let's connect to our Django admin page and manage the new table.
 
 ![Books admin](/docs/images/part4_1.png)
+
+We will add the following books:
+
+| title                                | author                    | publication_date |
+| ------------------------------------ | ------------------------- | ---------------- |
+| Foundation                           | Isaac Asimov              | 1951-01-01       |
+| The Lord of the Rings                | John Ronald Reuel Tolkien | 1954-07-29       |
+| The Hitchhiker's Guide to the Galaxy | Douglas Adams             | 1979-10-12       |
+| The Hobbit                           | John Ronald Reuel Tolkien | 1937-09-21       |
+| Pinocchio                            | Carlo Collodi             | 1883-01-01       |
+| Crime and Punishment                 | Fyodor Dostoevsky         | 1866-01-01       |
+| The Idiot                            | Fyodor Dostoevsky         | 1868-01-01       |
