@@ -1,1 +1,1 @@
-# A full test application using Django and Angular (Part 5) - Angular OpenAPI services
+# A full test application using Django and Angular (Part 6) - Angular OpenAPI services
