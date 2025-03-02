@@ -77,3 +77,120 @@ In this snippet:
 - We also instantiate the `HttpClient` using `provideHttpClient(withFetch())`. This is necessary for the OpenAPI client to make HTTP requests.
 
 Now, the OpenAPI client is configured with the `api_url`, and you can inject the generated services in your components.
+
+Now, let's modify the `app.component.ts` to load books using the OpenAPI client. First, inject the `BooksService` into the `AppComponent` constructor. Then, call the `booksList` method to retrieve the list of books and display them in the template.
+
+```typescript
+// src/app/app.component.ts
+import { Component, OnInit } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { Book, LibraryService } from "./modules/core/api/v1";
+
+@Component({
+  selector: "app-root",
+  imports: [RouterOutlet],
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.scss",
+})
+export class AppComponent implements OnInit {
+  title = "Library";
+  books: Book[] = [];
+
+  constructor(private readonly libraryService: LibraryService) {}
+
+  ngOnInit(): void {
+    this.libraryService.listBooks().subscribe({
+      next: (books) => {
+        this.books = books;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+}
+```
+
+In this snippet:
+
+- We import `LibraryService` and `Book` from `./modules/core/api/v1`. Adjust the paths according to your project structure.
+- We inject `LibraryService` in the constructor.
+- In the `ngOnInit` lifecycle hook, we call `this.libraryService.listBooks()` to retrieve the list of books.
+- We subscribe to the observable returned by `listBooks()` and update the `books` array with the retrieved data.
+- We handle any errors that may occur during the API call.
+
+Finally, update the `app.component.html` file to display the list of books.
+
+```html
+<!-- src/app/app.component.html -->
+<h1>{{ title }}</h1>
+
+<h2>Books</h2>
+<ul>
+  <li *ngFor="let book of books">{{ book.title }} by {{ book.author }}</li>
+</ul>
+
+<router-outlet></router-outlet>
+```
+
+In this snippet:
+
+- We use the `*ngFor` directive to iterate over the `books` array and display each book's title and author in a list item.
+
+Now, when you run your Angular application, it should retrieve the list of books from your Django backend using the OpenAPI generated client and display them in the `AppComponent`.
+
+Now add a simplem stylesheet in `style.scss`
+
+```css
+body {
+  background-color: #f0f0f0;
+  font-family: sans-serif;
+  margin: 0;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+}
+```
+
+Finally, run the Angular application using the `ng serve` command:
+
+```bash
+ng serve
+Component HMR has been enabled.
+If you encounter application reload issues, you can manually reload the page to bypass HMR and/or disable this feature with the `--no-hmr` command line option.
+Please consider reporting any issues you encounter here: https://github.com/angular/angular-cli/issues
+
+Initial chunk files | Names         |  Raw size
+polyfills.js        | polyfills     |  90.20 kB |
+main.js             | main          |  23.78 kB |
+styles.css          | styles        | 219 bytes |
+
+                    | Initial total | 114.20 kB
+
+Application bundle generation complete. [1.272 seconds]
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
+  ➜  press h + enter to show help
+```
+
+This command starts the Angular development server, compiles the application, and makes it available at `http://localhost:4200/` (or another port if 4200 is already in use).
+
+Open your browser and go to the indicated address to view the running application. You should see the title "Library" and the list of books retrieved from your Django backend.
+
+> ### Explanation
+>
+> 1.  `ng serve` is an Angular CLI command that starts a local development server.
+> 2.  The development server watches for changes to the project files and automatically recompiles the application, updating the browser in real time.
+> 3.  This allows you to develop and test the application interactively and quickly.
+> 4.  The `ng serve` command accepts several options to customize the behavior of the development server, such as the port, host, and build type.
+> 5.  For example, you can use the command `ng serve --port 4300` to start the server on port 4300 instead of 4200.
+
+Open your browser and connect to your Angular page `http://localhost:4200`.
+
+![Angular App](/docs/images/part6_1.png)
+
+You can see from the browser's developer console that a GET call is made to the URL `http://localhost:8000/library/books`, and the entire list of books loaded on our Django application is returned.
