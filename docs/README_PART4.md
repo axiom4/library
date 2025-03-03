@@ -253,7 +253,7 @@ Setting `trailing_slash=False` removes this trailing slash, resulting in cleaner
 
 ### Publish the books service
 
-Finally, include the `library` app's URLs in the main `urls.py` file of your Django project. Edit the main `urls.py` (e.g., `TestApp/urls.py`) to include the library URLs:
+Finally, include the `library` app's URLs in the main `urls.py` file of your Django project. Edit the main `urls.py` (e.g., `library/urls.py`) to include the library URLs:
 
 ```python
 from django.contrib import admin
