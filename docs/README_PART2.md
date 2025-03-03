@@ -13,13 +13,13 @@ added 275 packages in 6s
   run `npm fund` for details
 ```
 
-After installing @angular/cli, you can initialize a new application called "testapp_web".
+After installing @angular/cli, you can initialize a new application called "library_web".
 
 ```bash
 ng new library_web
 ? Which stylesheet format would you like to use? Sass (SCSS)     [ https://sass-lang.com/documentation/syntax#scss                ]
 ? Do you want to enable Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering)? no
-CREATE testapp_web/README.md (1071 bytes)
+CREATE library_web/README.md (1071 bytes)
 CREATE library_web/.editorconfig (274 bytes)
 CREATE library_web/.gitignore (587 bytes)
 CREATE library_web/angular.json (2784 bytes)

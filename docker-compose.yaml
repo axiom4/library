@@ -1,4 +1,4 @@
-name: testapp
+name: library
 services:
   db:
     image: mysql
