@@ -3,7 +3,8 @@
 Create a container directory and install a Python3 Virtual Environment
 
 ```bash
-mkdir TestApp
+mkdir library
+cd library
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
@@ -35,7 +36,7 @@ On GitHub, create a `repository` named TestApp and initialize the app to push th
 ```bash
 git init
 
-Initialized empty Git repository in /Users/rgiannetto/Developer/TestApp/.git/
+Initialized empty Git repository in library/.git/
 ```
 
 ```bash
@@ -53,7 +54,7 @@ git commit -m "first commit"
 
 ```bash
 git branch -M main
-git remote add origin https://github.com/axiom4/TestApp.git
+git remote add origin https://github.com/axiom4/library.git
 ```
 
 ```bash
@@ -94,23 +95,6 @@ Successfully installed asgiref-3.8.1 django-5.1.6 django-environ-0.12.0 sqlparse
 [notice] To update, run: pip install --upgrade pip
 ```
 
-In my installation, it is recommended to also update the pypi package.
-
-```bash
-pip install --upgrade pip
-
-Requirement already satisfied: pip in ./venv/lib/python3.13/site-packages (24.3.1)
-Collecting pip
-  Using cached pip-25.0.1-py3-none-any.whl.metadata (3.7 kB)
-Using cached pip-25.0.1-py3-none-any.whl (1.8 MB)
-Installing collected packages: pip
-  Attempting uninstall: pip
-    Found existing installation: pip 24.3.1
-    Uninstalling pip-24.3.1:
-      Successfully uninstalled pip-24.3.1
-Successfully installed pip-25.0.1
-```
-
 Generate `requirements.txt`
 
 ```bash
@@ -120,8 +104,8 @@ pip freeze > requirements.txt
 Init Django Project
 
 ```bash
-django-admin startproject testapp_rest
-cd testapp_rest
+django-admin startproject library_rest
+cd library_rest
 ```
 
 Init Django Database
@@ -152,7 +136,7 @@ Running migrations:
   Applying sessions.0001_initial... OK
 ```
 
-Open `testapp_rest/testapp_rest/settings.py` and update configuration parameters.
+Open `library_rest/library_rest/settings.py` and update configuration parameters.
 
 First, let's import the environment file `"environments/mysql.env"` that is already shared with the container.
 
