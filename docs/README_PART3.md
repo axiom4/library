@@ -16,9 +16,9 @@ The content of the `mysql.env` file will be as follows:
 ```bash
 MYSQL_ROOT_HOST=%
 MYSQL_ROOT_PASSWORD=testpassword
-MYSQL_DATABASE=testapp_db
-MYSQL_USER=testapp_user
-MYSQL_PASSWORD=testapp_password
+MYSQL_DATABASE=library_db
+MYSQL_USER=library_user
+MYSQL_PASSWORD=library_password
 MYSQL_HOST=127.0.0.1
 MYSQL_PORT=3306
 ```
@@ -28,7 +28,7 @@ Finally, let's create a `docker-compose.yaml` file where we will currently only 
 The content of the file will be as follows:
 
 ```yaml
-name: testapp
+name: library
 services:
   db:
     image: mysql
@@ -57,7 +57,7 @@ The docker file is composed of the following sections:
 
 ```yaml
 # Application Name
-name: testapp
+name: library
 
 # Services deployed
 services:
@@ -136,7 +136,7 @@ Dump sqlite3 database contents:
 ./manage.py dumpdata > dump_all.json
 ```
 
-Open `testapp_rest/testapp_rest/settings.py` and update configuration parameters.
+Open `library_rest/library_rest/settings.py` and update configuration parameters.
 
 First, let's import the environment file `"environments/mysql.env"` that is already shared with the container.
 
@@ -219,7 +219,7 @@ Performing system checks...
 
 System check identified no issues (0 silenced).
 February 24, 2025 - 15:14:31
-Django version 5.1.6, using settings 'testapp_rest.settings'
+Django version 5.1.6, using settings 'library_rest.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
