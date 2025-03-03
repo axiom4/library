@@ -31,7 +31,7 @@ echo "db.sqlite3" >> .gitignore
 echo "dump_all.json" >> .gitignore
 ```
 
-On GitHub, create a `repository` named TestApp and initialize the app to push the code remotely.
+On GitHub, create a `repository` named library and initialize the app to push the code remotely.
 
 ```bash
 git init
@@ -66,7 +66,7 @@ Delta compression using up to 10 threads
 Compressing objects: 100% (3/3), done.
 Writing objects: 100% (4/4), 576 bytes | 576.00 KiB/s, done.
 Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
-To https://github.com/axiom4/TestApp.git
+To https://github.com/axiom4/library.git
  * [new branch]      main -> main
 branch 'main' set up to track 'origin/main'.
 ```
@@ -186,7 +186,7 @@ Performing system checks...
 
 System check identified no issues (0 silenced).
 February 23, 2025 - 19:46:00
-Django version 5.1.6, using settings 'testapp_rest.settings'
+Django version 5.1.6, using settings 'library_rest.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
