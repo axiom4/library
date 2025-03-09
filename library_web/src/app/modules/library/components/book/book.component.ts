@@ -18,6 +18,7 @@ export class BookComponent implements OnInit, OnDestroy {
   bookId: number | undefined;
   private routeSubscription: Subscription | undefined;
   book: Book | undefined;
+  visible = false;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -43,15 +44,17 @@ export class BookComponent implements OnInit, OnDestroy {
     };
 
     if (this.bookId) {
+      this.visible = false;
       this.libraryService.retrieveBook(book_params).subscribe({
         next: (book) => {
           this.book = book;
-
           console.log(this.book);
+          this.visible = true;
         },
         error: (err) => {
           console.error(err);
           this.book = undefined;
+          this.visible = true;
         },
       });
     }
