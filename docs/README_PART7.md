@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 7) - Generate Angular Modules
+# A full test application using Django and Angular (Part 7) - Angular Routes
 
 To create a new Angular module named "Library", you can use the following command:
 
