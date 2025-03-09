@@ -43,7 +43,7 @@ The `routerLink` directive is an Angular directive that enables navigation to di
 
 `RouterOutlet` is a directive that marks the location in the template where the router should display the view for that route.
 
-> **What are Directives?**
+> ### What are Directives?
 >
 > Directives are classes that add behavior to existing elements in the DOM.
 > They can modify the appearance, behavior, and layout of DOM elements.
@@ -185,3 +185,70 @@ Now, let's open our app, select first book and see what happens:
 Let's select another book:
 
 ![Angular App](/docs/images/part7_2.png)
+
+The book object is not updated when the route changes because the `ActivatedRoute` snapshot is used to retrieve the `bookId` in the `ngOnInit` lifecycle hook. The snapshot only provides the initial value of the route parameters when the component is first created. It does not reflect subsequent changes to the route parameters.
+
+To update the `BookComponent` when the route changes, you need to subscribe to the `params` observable of the `ActivatedRoute`. This allows you to listen for changes to the route parameters and update the `bookId` accordingly.
+
+Here's how you can modify the `BookComponent` to subscribe to the `params` observable:
+
+```typescript
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { Subscription } from "rxjs";
+
+@Component({
+  selector: "app-book",
+  imports: [],
+  templateUrl: "./book.component.html",
+  styleUrl: "./book.component.scss",
+})
+export class BookComponent implements OnInit, OnDestroy {
+  bookId: number | undefined;
+  private routeSubscription: Subscription | undefined;
+
+  constructor(private readonly route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.routeSubscription = this.route.params.subscribe((params) => {
+      this.bookId = params["id"];
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
+  }
+}
+```
+
+> ### Key changes:
+>
+> - **Import `Subscription`:** Import the `Subscription` class from the `rxjs` library.
+>
+> - **`routeSubscription` property:** A `routeSubscription` property is added to store the subscription to the `params` observable.
+>
+> - **`ngOnInit` method:** Inside the `ngOnInit` method, the `route.params.subscribe` method is used to subscribe to the `params` observable. The callback function is executed whenever the route parameters change. Inside the callback function, the `bookId` property is updated with the new value of the `id` parameter.
+>
+> - **`ngOnDestroy` method:** The `ngOnDestroy` lifecycle hook is implemented to unsubscribe from the `params` observable when the component is destroyed. This prevents memory leaks.
+
+By subscribing to the `params` observable, the `BookComponent` will now be updated whenever the route changes, ensuring that the correct book ID is displayed.
+
+> ### RxJS Subscription Explained
+>
+> In the provided code, `Subscription` from RxJS is used to manage the asynchronous stream of route parameter changes. Let's break down how it works:
+>
+> - **What is RxJS?** RxJS (Reactive Extensions for JavaScript) is a library for reactive programming using Observables, making it easier to compose asynchronous or callback-based code.
+>
+> - **Observables:** An Observable represents a stream of data that can be observed over time. In this case, `this.route.params` is an Observable that emits new values whenever the route parameters change.
+>
+> - **`subscribe()`:** The `subscribe()` method is used to listen to the values emitted by an Observable. It takes a callback function as an argument, which is executed every time the Observable emits a new value.
+>
+> - **`Subscription`:** When you call `subscribe()`, it returns a `Subscription` object. This object represents the ongoing subscription to the Observable.
+>
+> - **Why is `Subscription` important?** Observables can emit values indefinitely. If you don't unsubscribe from an Observable when you no longer need to listen to it, it can lead to memory leaks. The `Subscription` object allows you to unsubscribe from the Observable, stopping the flow of data and preventing memory leaks.
+>
+> - **`unsubscribe()`:** The `unsubscribe()` method is called on the `Subscription` object to stop listening to the Observable. In the `ngOnDestroy` lifecycle hook, `this.routeSubscription.unsubscribe()` is called to unsubscribe from the `route.params` Observable when the `BookComponent` is destroyed.
+>
+> In summary, `Subscription` is a crucial part of RxJS that allows you to manage the lifecycle of Observables and prevent memory leaks by unsubscribing when you no longer need to listen to a stream of data.

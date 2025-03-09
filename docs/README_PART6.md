@@ -145,7 +145,7 @@ Now add a simplem stylesheet in `style.scss`
 body {
   background-color: #f0f0f0;
   font-family: sans-serif;
-  margin: 0;
+  margin: 10px;
 }
 
 h1 {
