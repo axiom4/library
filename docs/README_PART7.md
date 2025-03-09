@@ -120,7 +120,7 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { BookComponent } from "./components/book/book.component";
 
-const routes: Routes = [{ path: "books/:id", component: BookComponent, pathMatch: "full" }];
+const routes: Routes = [{ path: "books/:id", component: BookComponent }];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
@@ -133,4 +133,49 @@ In the route configuration `path: "books/:id"`, the `:id` is a route parameter. 
 
 ## The Book Component
 
-Let's open our app and see what happens:
+Let's update `book.component.ts`:
+
+```typescript
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+
+@Component({
+  selector: "app-book",
+  imports: [],
+  templateUrl: "./book.component.html",
+  styleUrl: "./book.component.scss",
+})
+export class BookComponent implements OnInit {
+  bookId: number | undefined;
+
+  constructor(private readonly route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.bookId = this.route.snapshot.params["id"];
+  }
+}
+```
+
+Inside the `BookComponent`, the `ActivatedRoute` service is used to access information about the current route, including route parameters.
+
+Here's a breakdown:
+
+- **`ActivatedRoute`:** This service provides access to information about the current route, such as the URL, parameters, and data associated with the route.
+
+- **`constructor(private readonly route: ActivatedRoute) {}`:** This injects the `ActivatedRoute` service into the component. The `private readonly` syntax is a shorthand for declaring a private, read-only property and assigning the injected service to it.
+
+- **`ngOnInit(): void { this.bookId = this.route.snapshot.params["id"]; }`:** This is the `ngOnInit` lifecycle hook, which is called once the component is initialized. Inside this hook, the `bookId` property is assigned the value of the `id` parameter from the route.
+
+  - **`this.route.snapshot`:** This provides a snapshot of the route at the time the component was created. It's a simple way to access the route parameters without subscribing to changes.
+
+  - **`.params["id"]`:** This accesses the value of the `id` parameter from the route. The `params` property is an object that contains all the route parameters.
+
+In summary, the `BookComponent` retrieves the `id` parameter from the current route using the `ActivatedRoute` service and assigns it to the `bookId` property. This allows the component to dynamically display information about the book with the specified ID.
+
+Let's update the `book.component.html` template as follows:
+
+```html
+<p>Book ID: {{ bookId }}</p>
+```
+
+Now, let's open our app and see what happens:
