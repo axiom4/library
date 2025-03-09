@@ -67,6 +67,8 @@ Let's update the `app.component.html` template by adding an `<a routerLink="/lib
 <router-outlet></router-outlet>
 ```
 
+The `<router-outlet>` directive is a placeholder where the router displays the routed views. The router-outlet is a component that acts as a placeholder in the template. The router displays the templates of the active route in the outlet. It is a fundamental part of Angular routing.
+
 ## Module Lazy Loading
 
 Lazy Loading is a design pattern that defers the initialization of an object until the point at which it is needed.
