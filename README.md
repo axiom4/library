@@ -37,4 +37,5 @@ This demo project guides you through the process of creating a full-stack applic
 3. [Init MySQL Docker container](/docs/README_PART3.md)
 4. [Rest services](/docs/README_PART4.md)
 5. [OpenAPI Integrations](/docs/README_PART5.md)
-6. [Angular OpenAPI services](/docs/README_PART6.md)
+6. [Angular OpenAPI service integration](/docs/README_PART6.md)
+7. [Generate Angular Modules](/docs/README_PART7.md)

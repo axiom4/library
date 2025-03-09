@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 6) - Angular OpenAPI services
+# A full test application using Django and Angular (Part 6) - Angular OpenAPI service integration
 
 Let's start by creating the environment files that will allow us to customize our Angular application.
 
