@@ -110,3 +110,27 @@ Now, when the user navigates to the `/library` route, Angular will load the `Lib
 > - after the initial application has loaded. This can improve the perceived performance of your application.
 > - **Routing configuration:** Make sure that your routing configuration is correct and that the paths to your lazy-loaded modules are accurate.
 > - **Module dependencies:** Ensure that all dependencies required by the lazy-loaded module are also included in the module's bundle.
+
+Now, let's create the route for the `Book` component within the Library module's routing.
+
+This is content of our `library-routing.module.ts`:
+
+```typescript
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { BookComponent } from "./components/book/book.component";
+
+const routes: Routes = [{ path: "books/:id", component: BookComponent, pathMatch: "full" }];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
+})
+export class LibraryRoutingModule {}
+```
+
+In the route configuration `path: "books/:id"`, the `:id` is a route parameter. It's a placeholder that allows you to capture a dynamic value from the URL. When a user navigates to a URL like `/library/books/123`, the value `123` will be associated with the `id` parameter. You can then access this value within the `BookComponent` to, for example, fetch the details of the book with ID 123.
+
+## The Book Component
+
+Let's open our app and see what happens:
