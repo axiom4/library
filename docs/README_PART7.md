@@ -441,3 +441,25 @@ Now we can view our application:
 let's try to insert an incorrect id:
 
 ![Angular App](/docs/images/part7_4.png)
+
+#### A Little Fix
+
+If we access the URL: `http://localhost:4200/library/books` or any other non-existent URL, we will see the following error in the browser's debug console:
+
+> `ERROR Error: NG04002: Cannot match any routes. URL Segment: 'library/books'`
+
+To fix this, we can insert the following route into `app.routes.ts`: `{ path: "**", redirectTo: "", pathMatch: "full" }`:
+
+```typescript
+import { Routes } from "@angular/router";
+
+export const routes: Routes = [
+  {
+    path: "library",
+    loadChildren: () => import("./modules/library/library.module").then((m) => m.LibraryModule),
+  },
+  { path: "**", redirectTo: "", pathMatch: "full" },
+];
+```
+
+Now the application works correctly.

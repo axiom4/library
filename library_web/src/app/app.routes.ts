@@ -6,4 +6,5 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./modules/library/library.module').then((m) => m.LibraryModule),
   },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
