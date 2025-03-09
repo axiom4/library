@@ -1,1 +1,9 @@
-<p>Book ID: {{ bookId }}</p>
+<div *ngIf="book; else elseBlock" class="book">
+  <h2>{{ book.title }}</h2>
+  <p><b>Book ID:</b> {{ bookId }}</p>
+  <p><b>Author:</b> {{ book.author }}</p>
+  <p><b>Published:</b> {{ book.publication_date }}</p>
+</div>
+<ng-template #elseBlock>
+  <div class="book not_found">BookId {{ bookId }} not found</div>
+</ng-template>

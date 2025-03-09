@@ -252,3 +252,192 @@ By subscribing to the `params` observable, the `BookComponent` will now be updat
 > - **`unsubscribe()`:** The `unsubscribe()` method is called on the `Subscription` object to stop listening to the Observable. In the `ngOnDestroy` lifecycle hook, `this.routeSubscription.unsubscribe()` is called to unsubscribe from the `route.params` Observable when the `BookComponent` is destroyed.
 >
 > In summary, `Subscription` is a crucial part of RxJS that allows you to manage the lifecycle of Observables and prevent memory leaks by unsubscribing when you no longer need to listen to a stream of data.
+
+### Retrieve book data
+
+Now, we will use `OpenAPI LibraryService` to retrieve book data.
+
+Let's go!
+
+Instatiate `LibraryService` in `constructor()`:
+
+```typescript
+import { LibraryService } from '../../../core/api/v1';
+...
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly libraryService: LibraryService
+  ) {}
+```
+
+Add `book: Book | undefined;` properties to the `BookComponent` object.
+
+```typescript
+import { Book, LibraryService } from '../../../core/api/v1';
+...
+
+@Component({
+  selector: 'app-book',
+  imports: [],
+  templateUrl: './book.component.html',
+  styleUrl: './book.component.scss',
+})
+export class BookComponent implements OnInit, OnDestroy {
+  bookId: number | undefined;
+  private routeSubscription: Subscription | undefined;
+  book: Book | undefined;
+
+  ...
+}
+```
+
+Let's create a `getBook(id: number)`method:
+
+```typescript
+  getBook(id: number): void {
+    const book_params: RetrieveBookRequestParams = {
+      id: String(this.bookId),
+    };
+
+    if (this.bookId) {
+      this.libraryService.retrieveBook(book_params).subscribe({
+        next: (book) => {
+          this.book = book;
+
+          console.log(this.book);
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+    }
+  }
+```
+
+Update `routeSubscription` to load `Book` data:
+
+```typescript
+  ngOnInit(): void {
+    this.routeSubscription = this.route.params.subscribe((params) => {
+      this.bookId = params['id'];
+      if (this.bookId) this.getBook(this.bookId);
+    });
+  }
+```
+
+This is the entire class:
+
+```typescript
+iimport { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import {
+  Book,
+  LibraryService,
+  RetrieveBookRequestParams,
+} from '../../../core/api/v1';
+
+@Component({
+  selector: 'app-book',
+  imports: [],
+  templateUrl: './book.component.html',
+  styleUrl: './book.component.scss',
+})
+export class BookComponent implements OnInit, OnDestroy {
+  bookId: number | undefined;
+  private routeSubscription: Subscription | undefined;
+  book: Book | undefined;
+
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly libraryService: LibraryService
+  ) {}
+
+  ngOnInit(): void {
+    this.routeSubscription = this.route.params.subscribe((params) => {
+      this.bookId = params['id'];
+      if (this.bookId) this.getBook(this.bookId);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
+  }
+
+  getBook(id: number): void {
+    const book_params: RetrieveBookRequestParams = {
+      id: String(this.bookId),
+    };
+
+    if (this.bookId) {
+      this.libraryService.retrieveBook(book_params).subscribe({
+        next: (book) => {
+          this.book = book;
+
+          console.log(this.book);
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+    }
+  }
+}
+```
+
+Now let's modify our Book template:
+
+```html
+<div *ngIf="book; else elseBlock" class="book">
+  <h2>{{ book.title }}</h2>
+  <p><b>Book ID:</b> {{ bookId }}</p>
+  <p><b>Author:</b> {{ book.author }}</p>
+  <p><b>Published:</b> {{ book.publication_date }}</p>
+</div>
+<ng-template #elseBlock>
+  <div class="book not_found">BookId {{ bookId }} not found</div>
+</ng-template>
+```
+
+This code is an HTML template for displaying book information.
+
+It uses Angular's `*ngIf` directive to conditionally render content based on whether the `book` property is defined.
+
+- If `book` is truthy (i.e., it has a value), the content within the first `div` element is displayed. This includes the book's title, ID, author, and publication date.
+- If `book` is falsy (e.g., `null` or `undefined`), the content within the `ng-template` with the `#elseBlock` reference is displayed. This shows a "BookId not found" message.
+
+The `book` and `not_found` classes are used for styling the elements, let's add them to our `style.scss`:
+
+```css
+.book {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  padding: 10px;
+}
+
+.not_found {
+  color: #fff;
+  background-color: rgba(255, 0, 0, 0.65);
+  font-style: italic;
+  text-align: center;
+}
+```
+
+This code defines the styles for the book component.
+
+`.book`: This CSS class defines the general styling for a book container. It sets the background color to white, adds a border, rounds the corners, adds a subtle shadow, and provides some padding and margin.
+
+`.not_found`: This CSS class is used when a book is not found. It sets the text color to white, the background color to a semi-transparent red, applies italic font style, and centers the text.
+
+Now we can view our application:
+
+![Angular App](/docs/images/part7_3.png)
+
+let's try to insert an incorrect id:
+
+![Angular App](/docs/images/part7_4.png)
