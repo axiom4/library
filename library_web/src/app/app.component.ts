@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { Book, LibraryService } from './modules/core/api/v1';
 import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NgFor],
+  imports: [RouterOutlet, NgFor, RouterLink],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
