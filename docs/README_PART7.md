@@ -178,4 +178,10 @@ Let's update the `book.component.html` template as follows:
 <p>Book ID: {{ bookId }}</p>
 ```
 
-Now, let's open our app and see what happens:
+Now, let's open our app, select first book and see what happens:
+
+![Angular App](/docs/images/part7_1.png)
+
+Let's select another book:
+
+![Angular App](/docs/images/part7_2.png)
