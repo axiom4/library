@@ -9,6 +9,7 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/author.ts
 model/book.ts
 model/models.ts
 param.ts

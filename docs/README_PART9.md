@@ -125,3 +125,15 @@ Author:
     - first_name
     - last_name
 ```
+
+Now, we can regenerate angular OpenAPI rest client and can verify the presence of the interface `Author`and the update of the `library.service`.
+
+```typescript
+export interface Author {
+  readonly id?: number;
+  first_name: string;
+  last_name: string;
+  date_of_birth?: string | null;
+  date_of_death?: string | null;
+}
+```

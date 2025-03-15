@@ -11,18 +11,32 @@ import { HttpHeaders }                                       from '@angular/comm
 
 import { Observable }                                        from 'rxjs';
 
+import { Author } from '../model/models';
 import { Book } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
 
 
+export interface CreateAuthorRequestParams {
+    author?: Author;
+}
+
 export interface CreateBookRequestParams {
     book?: Book;
 }
 
+export interface DestroyAuthorRequestParams {
+    id: string;
+}
+
 export interface DestroyBookRequestParams {
     id: string;
+}
+
+export interface PartialUpdateAuthorRequestParams {
+    id: string;
+    author?: Author;
 }
 
 export interface PartialUpdateBookRequestParams {
@@ -30,8 +44,17 @@ export interface PartialUpdateBookRequestParams {
     book?: Book;
 }
 
+export interface RetrieveAuthorRequestParams {
+    id: string;
+}
+
 export interface RetrieveBookRequestParams {
     id: string;
+}
+
+export interface UpdateAuthorRequestParams {
+    id: string;
+    author?: Author;
 }
 
 export interface UpdateBookRequestParams {
@@ -46,10 +69,24 @@ export interface LibraryServiceInterface {
 
     /**
      * 
+     * 
+* @param requestParameters
+     */
+    createAuthor(requestParameters: CreateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
+
+    /**
+     * 
      * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
 * @param requestParameters
      */
     createBook(requestParameters: CreateBookRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+
+    /**
+     * 
+     * 
+* @param requestParameters
+     */
+    destroyAuthor(requestParameters: DestroyAuthorRequestParams, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 
@@ -60,9 +97,22 @@ export interface LibraryServiceInterface {
 
     /**
      * 
+     * 
+*/
+    listAuthors(extraHttpRequestParams?: any): Observable<Array<Author>>;
+
+    /**
+     * 
      * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
 */
     listBooks(extraHttpRequestParams?: any): Observable<Array<Book>>;
+
+    /**
+     * 
+     * 
+* @param requestParameters
+     */
+    partialUpdateAuthor(requestParameters: PartialUpdateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
 
     /**
      * 
@@ -73,10 +123,24 @@ export interface LibraryServiceInterface {
 
     /**
      * 
+     * 
+* @param requestParameters
+     */
+    retrieveAuthor(requestParameters: RetrieveAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
+
+    /**
+     * 
      * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
 * @param requestParameters
      */
     retrieveBook(requestParameters: RetrieveBookRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+
+    /**
+     * 
+     * 
+* @param requestParameters
+     */
+    updateAuthor(requestParameters: UpdateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
 
     /**
      * 
