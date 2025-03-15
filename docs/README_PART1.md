@@ -3,11 +3,11 @@
 Create a container directory and install a Python3 Virtual Environment
 
 ```bash
-mkdir library
-cd library
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
+# mkdir library
+# cd library
+# python3 -m venv venv
+# source venv/bin/activate
+# pip install --upgrade pip
 
 Requirement already satisfied: pip in ./venv/lib/python3.13/site-packages (24.3.1)
 Collecting pip
@@ -24,27 +24,27 @@ Successfully installed pip-25.0.1
 Create a `.gitignore` file to exclude the `venv` directory.
 
 ```bash
-echo venv > .gitignore
-echo "__pycahce__" >> .gitignore
-echo "*.pyc" >> .gitignore
-echo "db.sqlite3" >> .gitignore
-echo "dump_all.json" >> .gitignore
+# echo venv > .gitignore
+# echo "__pycahce__" >> .gitignore
+# echo "*.pyc" >> .gitignore
+# echo "db.sqlite3" >> .gitignore
+# echo "dump_all.json" >> .gitignore
 ```
 
 On GitHub, create a `repository` named library and initialize the app to push the code remotely.
 
 ```bash
-git init
+# git init
 
 Initialized empty Git repository in library/.git/
 ```
 
 ```bash
-git add .
+# git add .
 ```
 
 ```bash
-git commit -m "first commit"
+# git commit -m "first commit"
 
 [main (root-commit) 419631f] first commit
  2 files changed, 26 insertions(+)
@@ -53,12 +53,12 @@ git commit -m "first commit"
 ```
 
 ```bash
-git branch -M main
-git remote add origin https://github.com/axiom4/library.git
+# git branch -M main
+g# it remote add origin https://github.com/axiom4/library.git
 ```
 
 ```bash
-git push -u origin main
+# git push -u origin main
 
 Enumerating objects: 4, done.
 Counting objects: 100% (4/4), done.
@@ -74,7 +74,7 @@ branch 'main' set up to track 'origin/main'.
 Install Django python modules
 
 ```bash
-pip install django django-environ
+# pip install django django-environ
 
 Collecting django
   Using cached Django-5.1.6-py3-none-any.whl.metadata (4.2 kB)
@@ -98,20 +98,20 @@ Successfully installed asgiref-3.8.1 django-5.1.6 django-environ-0.12.0 sqlparse
 Generate `requirements.txt`
 
 ```bash
-pip freeze > requirements.txt
+# pip freeze > requirements.txt
 ```
 
 Init Django Project
 
 ```bash
-django-admin startproject library_rest
-cd library_rest
+# django-admin startproject library_rest
+# cd library_rest
 ```
 
 Init Django Database
 
 ```bash
-./manage.py migrate
+# ./manage.py migrate
 
 Operations to perform:
   Apply all migrations: admin, auth, contenttypes, sessions
@@ -180,7 +180,7 @@ The `SECRET_KEY` can be easily generated using the following website: [https://d
 Start the Django development server
 
 ```bash
-./manage.py runserver
+# ./manage.py runserver
 Watching for file changes with StatReloader
 Performing system checks...
 
@@ -198,7 +198,7 @@ Open the browser and navigate to the following URL: http://localhost:8000
 Create Django superuser
 
 ```bash
-./manage.py createsuperuser --username admin --email admin@example.com
+# ./manage.py createsuperuser --username admin --email admin@example.com
 Password:
 Password (again):
 Superuser created successfully.

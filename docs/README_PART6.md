@@ -7,7 +7,7 @@ Angular environments allow you to configure your application for different deplo
 To add environments using the Angular CLI:
 
 ```bash
-ng generate environments
+# ng generate environments
 
 CREATE src/environments/environment.ts (31 bytes)
 CREATE src/environments/environment.development.ts (31 bytes)
@@ -157,7 +157,7 @@ h1 {
 Finally, run the Angular application using the `ng serve` command:
 
 ```bash
-ng serve
+# ng serve
 Component HMR has been enabled.
 If you encounter application reload issues, you can manually reload the page to bypass HMR and/or disable this feature with the `--no-hmr` command line option.
 Please consider reporting any issues you encounter here: https://github.com/angular/angular-cli/issues

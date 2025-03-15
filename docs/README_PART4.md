@@ -5,7 +5,7 @@ Now, let's create a new model for the book. We will create a new app called `lib
 Installing Django Rest Framework
 
 ```bash
-pip install djangorestframework django-filter django-cors-headers
+# pip install djangorestframework django-filter django-cors-headers
 
 Collecting djangorestframework
   Using cached djangorestframework-3.15.2-py3-none-any.whl.metadata (10 kB)
@@ -26,7 +26,7 @@ Successfully installed django-cors-headers-4.7.0 django-filter-25.1 djangorestfr
 Let's create our test application "`library`"
 
 ```bash
-./manage.py startapp library
+# ./manage.py startapp library
 ```
 
 Modify django `settings.py` to enable `library`. We need update `INSTALLED_APPS` adding all dependencies:
@@ -138,7 +138,7 @@ To finish, use the commands `./manage.py makemigrations` and `./manage.py migrat
 ### makemigrations
 
 ```bash
-./manage.py makemigrations
+# ./manage.py makemigrations
 
 Migrations for 'library':
   library/migrations/0001_initial.py
@@ -148,7 +148,7 @@ Migrations for 'library':
 ### migrate
 
 ```bash
-./manage.py migrate
+# ./manage.py migrate
 
 Operations to perform:
   Apply all migrations: admin, auth, contenttypes, library, sessions

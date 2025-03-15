@@ -3,7 +3,7 @@
 To create a new Angular module named "Library", you can use the following command:
 
 ````bash
-ng generate module modules/Library --routing
+# ng generate module modules/Library --routing
 
 CREATE src/app/modules/library/library-routing.module.ts (250 bytes)
 CREATE src/app/modules/library/library.module.ts (284 bytes)```
@@ -14,7 +14,7 @@ This command generates a new Angular module named "Library" inside the `src/app/
 Now, we will create a new component named "Book" inside the Library module, you can use the following command:
 
 ```bash
-ng generate component modules/Library/components/Book --module modules/Library
+# ng generate component modules/Library/components/Book --module modules/Library
 CREATE src/app/modules/Library/components/book/book.component.scss (0 bytes)
 CREATE src/app/modules/Library/components/book/book.component.html (19 bytes)
 CREATE src/app/modules/Library/components/book/book.component.spec.ts (578 bytes)

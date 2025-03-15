@@ -7,8 +7,8 @@ If you have never installed Docker, you can follow the instructions on the follo
 Let's create a file containing the environment variables for our MySQL.
 
 ```bash
-mkdir environments
-vi environments/mysql.env
+# mkdir environments
+# vi environments/mysql.env
 ```
 
 The content of the `mysql.env` file will be as follows:
@@ -102,7 +102,7 @@ db:
 Now we will run the command to create our MySQL container:
 
 ```bash
-docker-compose up -d
+# docker-compose up -d
 ```
 
 ![./manage.py runserver](/docs/images/part3_1.png)
@@ -116,7 +116,7 @@ Now, we will change the configuration to allow our Django application to use the
 Install mysqlclient python module:
 
 ```bash
-pip install mysqlclient
+# pip install mysqlclient
 
 Collecting mysqlclient
   Using cached mysqlclient-2.2.7-cp313-cp313-macosx_15_0_arm64.whl
@@ -127,13 +127,13 @@ Successfully installed mysqlclient-2.2.7
 Generate `requirements.txt`
 
 ```bash
-pip freeze > requirements.txt
+# pip freeze > requirements.txt
 ```
 
 Dump sqlite3 database contents:
 
 ```bash
-./manage.py dumpdata > dump_all.json
+# ./manage.py dumpdata > dump_all.json
 ```
 
 Open `library_rest/library_rest/settings.py` and update configuration parameters.
@@ -183,13 +183,13 @@ DATABASES = {
 Now we'll create Django Schema on MySQL
 
 ```bash
-./manage.py migrate --run-syncdb
+# ./manage.py migrate --run-syncdb
 ```
 
 and run django shell with command:
 
 ```bash
-python manage.py shell
+# python manage.py shell
 ```
 
 and run:
@@ -203,7 +203,7 @@ quit()
 Finally, import the `dump_all.json` file:
 
 ```bash
-python manage.py loaddata dump_all.json
+# python manage.py loaddata dump_all.json
 
 Installed 31 object(s) from 1 fixture(s)
 ```
@@ -213,7 +213,7 @@ This procedure can be used whenever it is necessary to export and re-import the 
 Now you can run python server
 
 ```bash
-./manage.py runserver
+# ./manage.py runserver
 Watching for file changes with StatReloader
 Performing system checks...
 

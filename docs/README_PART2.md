@@ -5,7 +5,7 @@ First of all, you need to install Node.js ([https://nodejs.org/](https://nodejs.
 Once Node.js is installed, you will need to install the @angular/cli package [https://angular.dev/tools/cli](https://angular.dev/tools/cli). Angular CLI is the tool that allows you to create, manage, and maintain Angular applications directly from the command line.
 
 ```bash
-npm install -g @angular/cli
+# npm install -g @angular/cli
 
 added 275 packages in 6s
 
@@ -16,7 +16,7 @@ added 275 packages in 6s
 After installing @angular/cli, you can initialize a new application called "library_web".
 
 ```bash
-ng new library_web
+# ng new library_web
 ? Which stylesheet format would you like to use? Sass (SCSS)     [ https://sass-lang.com/documentation/syntax#scss                ]
 ? Do you want to enable Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering)? no
 CREATE library_web/README.md (1071 bytes)
@@ -47,7 +47,7 @@ CREATE library_web/public/favicon.ico (15086 bytes)
 Finally, you can start your test web server directly from Angular CLI.
 
 ```bash
-ng serve
+# ng serve
 Initial chunk files | Names         |  Raw size
 polyfills.js        | polyfills     |  90.20 kB |
 main.js             | main          |  22.64 kB |

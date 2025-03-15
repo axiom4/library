@@ -5,7 +5,7 @@ Now, let's configure OpenAPI schema to integrate apps.
 First, install the necessary packages:
 
 ```bash
-pip install PyYAML uritemplate inflection markdown
+# pip install PyYAML uritemplate inflection markdown
 
 Collecting PyYAML
   Using cached PyYAML-6.0.2-cp313-cp313-macosx_11_0_arm64.whl.metadata (2.1 kB)
@@ -60,8 +60,8 @@ Now, you can access the OpenAPI schema at the root of your API. This schema desc
 To export the schema in OpenAPI format, you can use the following command:
 
 ```bash
-curl http://localhost:8000/?format=openapi > openapi.yaml
-````
+# curl http://localhost:8000/?format=openapi > openapi.yaml
+```
 
 This command fetches the schema from the root URL (`/`) and saves it to a file named `openapi.yaml`. You can then use this file with tools like Swagger UI or Postman to explore and test your API.
 
@@ -147,7 +147,7 @@ To integrate the OpenAPI schema into your Angular project, you can use tools lik
 First, install the `@openapitools/openapi-generator-cli` package:
 
 ```bash
-npm install @openapitools/openapi-generator-cli --save-dev
+# npm install @openapitools/openapi-generator-cli --save-dev
 
 added 81 packages, and audited 1018 packages in 9s
 
@@ -193,7 +193,7 @@ Here's an explanation of the other parameters used in the `openapi-generator-cli
 Finaly we generate api angular typescript models, interfaces and services by running the command `npm run generate:api`:
 
 ```bash
-npm run generate:api
+# npm run generate:api
 
 > library-web@0.0.0 generate:api
 > openapi-generator-cli generate  -p supportsES6=true,withInterfaces=true,useSingleRequestParameter=true -i http://127.0.0.1:8000/?format=openapi -g typescript-angular -o src/app/modules/core/api/v1
@@ -248,3 +248,4 @@ This command created the Angular modules in the `src/app/modules/core/api/v1` di
 ![Angular Services](/docs/images/part5_3.png)
 
 Now, whenever the Django REST services change, you can simply update the Angular services by running the command `npm run generate:api`.
+````
