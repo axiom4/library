@@ -193,7 +193,7 @@ from .book_view_set import BookViewSet
 
 This is the final result:
 
-```text
+```bash
 library
     __init__.py
 
