@@ -471,3 +471,94 @@ Create Table: CREATE TABLE `books` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 1 row in set (0.00 sec)
 ```
+
+Now, we can create `AuthorAdmin` class. Create new file `admin/author_admin.py`and add this:
+
+```python
+# admin/author_admin.py
+
+from django.contrib import admin
+from library.models.book import Author
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    """
+    AuthorAdmin is a custom admin class for the Author model in the Django admin interface.
+
+    Attributes:
+        list_display (tuple): Specifies the fields to be displayed in the list view of the admin interface.
+        search_fields (tuple): Specifies the fields to be searched in the admin interface.
+        list_filter (tuple): Specifies the fields to be used for filtering in the admin interface.
+    """
+    list_display = (
+        'first_name',
+        'last_name',
+        'citizenship',
+        'date_of_birth',
+        'date_of_death'
+    )
+    search_fields = ('first_name', 'last_name')
+    list_filter = ('citizenship',)
+```
+
+Import `AuthorAdmin`in `__init__.py`:
+
+```python
+from .author_admin import AuthorAdmin
+from .book_admin import BookAdmin
+```
+
+Now you can managing `authors` table from Django Admin console. We add these data:
+
+| First name        | Last Name  | Citizenship   | Date of birth | Date of death |
+| ----------------- | ---------- | ------------- | ------------- | ------------- |
+| Isaac             | Asimov     | United States | 1920-01-02    | 1992-04-04    |
+| John Ronald Reuel | Tolkien    | England       | 1892-01-03    | 1973-09-02    |
+| Douglas           | Adams      | England       | 1952-03-11    | 2001-05-11    |
+| Carlo             | Collodi    | Italy         | 1826-11-24    | 1890-10-26    |
+| Fyodor            | Dostoevsky | Russian       | 1821-11-11    | 1881-02-09    |
+
+On our Django administration console, we will have:
+
+![Authors list](/docs/images/part8_2.png)
+
+Now we need to update `books` and assign the respective `author`, so we update all books:
+
+![Update Authors](/docs/images/part8_3.png)
+
+Now our data has been organized into two separate tables:
+
+- `authors`
+
+```mysql
+mysql> SELECT * FROM authors;
++----+-------------------+------------+---------------+---------------+---------------+
+| id | first_name        | last_name  | citizenship   | date_of_birth | date_of_death |
++----+-------------------+------------+---------------+---------------+---------------+
+|  1 | Isaac             | Asimov     | United States | 1920-01-02    | 1992-04-04    |
+|  2 | John Ronald Reuel | Tolkien    | England       | 1892-01-03    | 1973-09-02    |
+|  3 | Douglas           | Adams      | England       | 1952-03-11    | 2001-05-11    |
+|  4 | Carlo             | Collodi    | taly          | 1826-11-24    | 1890-10-26    |
+|  5 | Fyodor            | Dostoevsky | Russian       | 1821-11-11    | 1881-02-09    |
++----+-------------------+------------+---------------+---------------+---------------+
+5 rows in set (0.01 sec)
+```
+
+- `books`
+
+```mysql
+mysql> SELECT * FROM books;
++----+--------------------------------------+-----------+------------------+----------------------------+----------------------------+
+| id | title                                | author_id | publication_date | created_at                 | updated_at                 |
++----+--------------------------------------+-----------+------------------+----------------------------+----------------------------+
+|  1 | Foundation                           |         1 | 1951-01-01       | 2025-03-15 09:24:49.097703 | 2025-03-15 11:38:44.326959 |
+|  2 | The Lord of the Rings                |         2 | 1954-07-29       | 2025-03-15 09:25:06.376733 | 2025-03-15 11:38:36.518855 |
+|  3 | The Hitchhiker's Guide to the Galaxy |         3 | 1979-10-12       | 2025-03-15 09:25:25.753995 | 2025-03-15 11:38:32.085605 |
+|  4 | The Hobbit                           |         2 | 1937-09-21       | 2025-03-15 09:25:44.388349 | 2025-03-15 11:38:06.462337 |
+|  5 | Pinocchio                            |         4 | 1883-01-01       | 2025-03-15 09:26:03.339856 | 2025-03-15 11:37:53.039569 |
+|  6 | Crime and Punishment                 |         5 | 1866-01-01       | 2025-03-15 09:26:22.503294 | 2025-03-15 11:37:47.145996 |
+|  7 | The Idiot                            |         5 | 1868-01-01       | 2025-03-15 09:26:37.457036 | 2025-03-15 11:37:41.599992 |
++----+--------------------------------------+-----------+------------------+----------------------------+----------------------------+
+7 rows in set (0.01 sec)
+```
