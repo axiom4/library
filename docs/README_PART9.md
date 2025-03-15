@@ -97,3 +97,31 @@ Now we have the new `authors`rest service:
 We can display `authors` json data navigating into url: `http://localhost:8000/library/authors`:
 
 ![authors data](/docs/images/part9_2.png)
+
+We can also see the new `Author` object inside the OpenAPI `yaml` schema:
+
+```yaml
+Author:
+  type: object
+  properties:
+    id:
+      type: integer
+      readOnly: true
+    first_name:
+      type: string
+      maxLength: 100
+    last_name:
+      type: string
+      maxLength: 100
+    date_of_birth:
+      type: string
+      format: date
+      nullable: true
+    date_of_death:
+      type: string
+      format: date
+      nullable: true
+  required:
+    - first_name
+    - last_name
+```
