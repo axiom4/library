@@ -19,17 +19,17 @@ For each directory, we move the reference python module; `admin.py` will be plac
 ```bash
 library
 
-  admin
-    admin.py
+    admin
+        admin.py
 
-  models
-    models.py
+    models
+        models.py
 
-  serializers
-    serializers.py
+    serializers
+        serializers.py
 
-  views
-    views.py
+    views
+        views.py
 ```
 
 Now, we will rename the modules and update the code to manage the correct directory structure.
@@ -189,6 +189,38 @@ Create `views/__init__.py`:
 # views/__init__.py
 
 from .book_view_set import BookViewSet
+```
+
+This is the final result:
+
+```text
+library
+    __init__.py
+
+    admin
+        __init__.py
+        book_admin.py
+
+    apps.py
+
+    migrations
+        0001_initial.py
+        __init__.py
+
+    models
+        __init__.py
+        book.py
+
+    serializers
+        __init__.py
+        book_serializer.py
+
+    tests.py
+    urls.py
+
+    views
+        __init__.py
+        book_view_set.py
 ```
 
 Let's test our rest service:
