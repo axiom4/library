@@ -3,22 +3,25 @@ from django.db import models
 
 class Author(models.Model):
     """
-    Represents an author in the library.
+    Model representing an author.
 
     Attributes:
-        first_name (str): The first name of the author.
-        last_name (str): The last name of the author.
-        citizenship (str): The author's country of citizenship.
-        date_of_birth (date): The author's date of birth (optional).
-        date_of_death (date): The author's date of death (optional).
+        first_name (CharField): The first name of the author.
+        last_name (CharField): The last name of the author.
+        citizenship (CharField): The citizenship of the author.
+        date_of_birth (DateField): The birth date of the author. Can be null or blank.
+        date_of_death (DateField): The death date of the author. Can be null or blank.
 
     Methods:
-        __str__(): Returns a string representation of the author in the format 'Last Name, First Name'.
+        __str__(): Returns a string representation of the author in the format 'last_name, first_name'.
 
     Meta:
-        db_table: Specifies the table name in the database as 'authors'.
-        indexes: Defines an index on the 'last_name' and 'first_name' fields for faster lookups.
+        db_table (str): The name of the database table.
+        indexes (list): A list of database indexes for the model.
+        ordering (list): The default ordering for the model.
+        verbose_name_plural (str): The plural name for the model.
     """
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     citizenship = models.CharField(max_length=100)
@@ -33,3 +36,5 @@ class Author(models.Model):
         indexes = [
             models.Index(fields=['last_name', 'first_name']),
         ]
+        ordering = ['last_name', 'first_name']
+        verbose_name_plural = 'Authors'

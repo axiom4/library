@@ -562,3 +562,72 @@ mysql> SELECT * FROM books;
 +----+--------------------------------------+-----------+------------------+----------------------------+----------------------------+
 7 rows in set (0.01 sec)
 ```
+
+## Django Admin Optimizations
+
+Now, let's add the `autocomplete_fields` property to the `BookAdmin` class. This configuration specifies that the `author` field should have autocompletion enabled in the Django admin interface or forms.
+
+```python
+    autocomplete_fields = ['author']
+```
+
+When a user is entering data for the `author`field, the system will suggest possible values based on existing data.
+
+Finally, we add add the `sortable_by` property. This is the configuration for Django related to sorting functionality.
+
+```python
+    sortable_by = ['title', 'author', 'publication_date']
+```
+
+In this case, it allows sorting by 'title', 'author', and 'publication_date'.
+
+As a final optimization we add sorting on the `last_name` and `first_name` fields of the `author` model. This is the complete class.
+
+```python
+# models/author.py
+class Author:
+from django.db import models
+
+
+class Author(models.Model):
+    """
+    Model representing an author.
+
+    Attributes:
+        first_name (CharField): The first name of the author.
+        last_name (CharField): The last name of the author.
+        citizenship (CharField): The citizenship of the author.
+        date_of_birth (DateField): The birth date of the author. Can be null or blank.
+        date_of_death (DateField): The death date of the author. Can be null or blank.
+
+    Methods:
+        __str__(): Returns a string representation of the author in the format 'last_name, first_name'.
+
+    Meta:
+        db_table (str): The name of the database table.
+        indexes (list): A list of database indexes for the model.
+        ordering (list): The default ordering for the model.
+        verbose_name_plural (str): The plural name for the model.
+    """
+
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    citizenship = models.CharField(max_length=100)
+    date_of_birth = models.DateField(null=True, blank=True)
+    date_of_death = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.last_name}, {self.first_name}'
+
+    class Meta:
+        db_table = 'authors'
+        indexes = [
+            models.Index(fields=['last_name', 'first_name']),
+        ]
+        ordering = ['last_name', 'first_name']
+        verbose_name_plural = 'Authors'
+```
+
+The result:
+
+![Admin Author Autocomplete](/docs/images/part8_4.png)

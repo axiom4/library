@@ -16,3 +16,5 @@ class BookAdmin(admin.ModelAdmin):
                     'created_at', 'updated_at')
     search_fields = ('title', 'author')
     list_filter = ('author',)
+    autocomplete_fields = ['author']
+    sortable_by = ['title', 'author', 'publication_date']
