@@ -311,3 +311,5 @@ mysql> desc authors;
 +---------------+--------------+------+-----+---------+----------------+
 6 rows in set (0.01 sec)
 ```
+
+Now that we have created our `Author` model, we can modify the `Book` class and create a relationship between the two objects.

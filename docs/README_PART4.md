@@ -92,8 +92,8 @@ class Book(models.Model):
         indexes (list): A list of database indexes to create for this model, indexing the 'title' and 'author' fields.
     """
 
-    title = models.CharField(max_length=100, )
-    author = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    author = models.CharField(max_length=100, null=True)
     publication_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
