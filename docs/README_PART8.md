@@ -313,3 +313,161 @@ mysql> desc authors;
 ```
 
 Now that we have created our `Author` model, we can modify the `Book` class and create a relationship between the two objects.
+
+First, we need to set NULL CharField author column, this is necessary to correctly migrate data. We need enter on database, using `library_db` running the command `use library_db` and excetuting query `UPDATE books SET author=NULL;`
+
+```mysql
+mysql> UPDATE books SET author=NULL;
+Query OK, 7 rows affected (0.01 sec)
+Rows matched: 7  Changed: 7  Warnings: 0
+
+mysql> SELECT * FROM books;
++----+--------------------------------------+--------+------------------+----------------------------+----------------------------+
+| id | title                                | author | publication_date | created_at                 | updated_at                 |
++----+--------------------------------------+--------+------------------+----------------------------+----------------------------+
+|  1 | Foundation                           | NULL   | 1951-01-01       | 2025-03-15 09:24:49.097703 | 2025-03-15 09:24:49.097731 |
+|  2 | The Lord of the Rings                | NULL   | 1954-07-29       | 2025-03-15 09:25:06.376733 | 2025-03-15 09:25:06.376754 |
+|  3 | The Hitchhiker's Guide to the Galaxy | NULL   | 1979-10-12       | 2025-03-15 09:25:25.753995 | 2025-03-15 09:25:25.754015 |
+|  4 | The Hobbit                           | NULL   | 1937-09-21       | 2025-03-15 09:25:44.388349 | 2025-03-15 09:25:44.388371 |
+|  5 | Pinocchio                            | NULL   | 1883-01-01       | 2025-03-15 09:26:03.339856 | 2025-03-15 09:26:03.339880 |
+|  6 | Crime and Punishment                 | NULL   | 1866-01-01       | 2025-03-15 09:26:22.503294 | 2025-03-15 09:26:22.503318 |
+|  7 | The Idiot                            | NULL   | 1868-01-01       | 2025-03-15 09:26:37.457036 | 2025-03-15 09:26:37.457047 |
++----+--------------------------------------+--------+------------------+----------------------------+----------------------------+
+7 rows in set (0.00 sec)
+```
+
+Now, let's update `Book`model:
+
+```python
+# models/book.py
+
+from django.db import models
+
+from library.models.author import Author
+
+
+class Book(models.Model):
+    """
+    Represents a book in the library.
+
+    Attributes:
+        title (str): The title of the book.
+        author (Author): The author of the book.
+        publication_date (date): The date the book was published.
+        created_at (datetime): The date and time the book was created.
+        updated_at (datetime): The date and time the book was last updated.
+
+    Meta:
+        db_table (str): The name of the database table for books.
+        indexes (list): A list of indexes for the table, including one for the title field.
+    """
+
+    title = models.CharField(max_length=100)
+    author = models.ForeignKey(
+        Author,
+        on_delete=models.CASCADE,
+        related_name='books',
+        null=True
+    )
+    publication_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        db_table = 'books'
+        indexes = [
+            models.Index(fields=['title']),
+        ]
+```
+
+> ### Django ForeignKey
+>
+> A ForeignKey is a type of field in Django models that represents a one-to-many relationship.
+> It stores a reference to another model, allowing you to link instances of one model to instances of another.
+>
+> For example, if you have an 'Author' model and a 'Book' model, and each book has one author, you would use a ForeignKey in the 'Book' model to point to the 'Author' model.
+>
+> Key attributes and behaviors:
+>
+> - It creates a database column that holds the ID of the related model instance.
+> - It automatically creates a database index for the foreign key column, improving query performance.
+> - It supports cascading deletes, meaning that when a related object is deleted, the objects that have a foreign key pointing to it can also be deleted automatically.
+> - It can be used to create relationships between models in the same app or in different apps.
+> - The 'on_delete' argument specifies the behavior when the referenced object is deleted. Common options include:
+>   -CASCADE: Delete the objects containing the foreign key.
+>   - PROTECT: Prevent deletion of the referenced object by raising a ProtectedError exception.
+>   - SET_NULL: Set the foreign key to NULL (requires null=True).
+>   - SET_DEFAULT: Set the foreign key to the default value (requires default=...).
+>   - SET(): Set the foreign key to a specified value or the result of a callable.
+>   - DO_NOTHING: Take no action. This is generally discouraged as it can lead to data integrity issues.
+
+So, we have update our model updating `author` property:
+
+```python
+    author = models.ForeignKey(
+        Author,
+        on_delete=models.CASCADE,
+        related_name='books',
+        null=True
+    )
+```
+
+and, since references to other tables are always indexed, we removed the respective `author`index by updating `Meta` class:
+
+```python
+    class Meta:
+        db_table = 'books'
+        indexes = [
+            models.Index(fields=['title']),
+        ]
+```
+
+Now we need execute commands:
+
+- `./manage.py makemigrations`
+
+```bash
+# ./manage.py makemigrations
+Migrations for 'library':
+  library/migrations/0003_remove_book_books_title_e8b1ad_idx_alter_book_author_and_more.py
+    - Remove index books_title_e8b1ad_idx from book
+    ~ Alter field author on book
+    + Create index books_title_7a737c_idx on field(s) title of model book
+```
+
+and:
+
+- `./manage.py migrate`:
+
+```bash
+# ./manage.py makemigrations
+Migrations for 'library':
+  library/migrations/0003_remove_book_books_title_e8b1ad_idx_alter_book_author_and_more.py
+    - Remove index books_title_e8b1ad_idx from book
+    ~ Alter field author on book
+    + Create index books_title_7a737c_idx on field(s) title of model book
+```
+
+Now, if you execute MySQL query: `show create table books\G`, you can see `FOREIGN KEY` contraint to `authos(id)`table.
+
+```mysql
+mysql> show create table books\G
+*************************** 1. row ***************************
+       Table: books
+Create Table: CREATE TABLE `books` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `author_id` bigint DEFAULT NULL,
+  `publication_date` date NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `books_author_id_c90d3b48` (`author_id`),
+  KEY `books_title_7a737c_idx` (`title`),
+  CONSTRAINT `books_author_id_c90d3b48_fk_authors_id` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+1 row in set (0.00 sec)
+```
