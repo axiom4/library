@@ -12,7 +12,7 @@
 export interface Book { 
     readonly id?: number;
     title: string;
-    author: string;
+    author?: number | null;
     publication_date: string;
     readonly created_at?: string;
     readonly updated_at?: string;
