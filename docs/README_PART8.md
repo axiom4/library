@@ -2,6 +2,8 @@
 
 In this section, we will upgrade our Django backend to organize the classes into different directories and create relational models.
 
+## Code Refactoring
+
 First, let's refactor our code by moving each class to a dedicated file. Within the `library` application, let's create the following directories:
 
 ```bash
