@@ -277,3 +277,37 @@ Add import of new model on top of `__init__.py` file:
 from .author import Author
 from .book import Book
 ```
+
+Generate migrations class and update MySQL schema:
+
+```bash
+# ./manage.py makemigrations
+
+Migrations for 'library':
+  library/migrations/0002_author.py
+    + Create model Author
+
+# ./manage.py migrate
+
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, library, sessions
+Running migrations:
+  Applying library.0002_author... OK
+```
+
+Go to MySQL `library_db`database and show `authors` table:
+
+```mysql
+mysql> desc authors;
++---------------+--------------+------+-----+---------+----------------+
+| Field         | Type         | Null | Key | Default | Extra          |
++---------------+--------------+------+-----+---------+----------------+
+| id            | bigint       | NO   | PRI | NULL    | auto_increment |
+| first_name    | varchar(100) | NO   |     | NULL    |                |
+| last_name     | varchar(100) | NO   | MUL | NULL    |                |
+| citizenship   | varchar(100) | NO   |     | NULL    |                |
+| date_of_birth | date         | YES  |     | NULL    |                |
+| date_of_death | date         | YES  |     | NULL    |                |
++---------------+--------------+------+-----+---------+----------------+
+6 rows in set (0.01 sec)
+```
