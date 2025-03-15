@@ -628,6 +628,21 @@ class Author(models.Model):
         verbose_name_plural = 'Authors'
 ```
 
-The result:
+Now update our MySQL schema
+
+```bash
+# ./manage.py makemigrations
+Migrations for 'library':
+  library/migrations/0004_alter_author_options.py
+    ~ Change Meta options on author
+
+# ./manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, library, sessions
+Running migrations:
+  Applying library.0004_alter_author_options... OK
+```
+
+This is the result:
 
 ![Admin Author Autocomplete](/docs/images/part8_4.png)
