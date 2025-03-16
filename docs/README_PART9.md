@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 9) - Angular Forms
+# A full test application using Django and Angular (Part 9) - Advanced Django Serializer
 
 Now, we need to update angular rest client to operate with new django backend. So, we run `npm run generate:api`command.
 
@@ -344,3 +344,36 @@ export interface Book {
 ```
 
 Our `Book` interface now exports the field `readonly author_name?: string`.
+
+Finally, we can update our `app.component.html` and `book.component.html` templates to include `author_name` and `year` fields:
+
+- `app.component.html`:
+
+  ```html
+  <h1>{{ title }}</h1>
+
+  <h2>Books</h2>
+  <ul>
+    <li *ngFor="let book of books"><strong>{{ book.title }}</strong> by {{ book.author_name }} - {{ book.year }} (<a routerLink="/library/books/{{ book.id }}">details</a>)</li>
+  </ul>
+
+  <router-outlet></router-outlet>
+  ```
+
+- `book.component.html`:
+
+  ```html
+  <div *ngIf="book && visible; else elseBlock" class="book">
+    <h2>{{ book.title }}</h2>
+    <p><b>Book ID:</b> {{ bookId }}</p>
+    <p><b>Author:</b> {{ book.author_name }}</p>
+    <p><b>Published:</b> {{ book.publication_date }}</p>
+  </div>
+  <ng-template #elseBlock>
+    <div *ngIf="visible" class="book not_found">BookId {{ bookId }} not found</div>
+  </ng-template>
+  ```
+
+This is the result:
+
+![App Result](/docs/images/part9_4.png)

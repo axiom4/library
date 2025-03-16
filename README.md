@@ -40,4 +40,4 @@ This demo project guides you through the process of creating a full-stack applic
 6. [Angular OpenAPI service integration](/docs/README_PART6.md)
 7. [Angular Routes](/docs/README_PART7.md)
 8. [Upgrade Django Schema](/docs/README_PART8.md)
-9. [Angular Forms](/docs/README_PART9.md)
+9. [Advanced Django Serializer](/docs/README_PART9.md)

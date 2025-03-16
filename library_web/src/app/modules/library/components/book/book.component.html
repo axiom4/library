@@ -1,7 +1,7 @@
 <div *ngIf="book && visible; else elseBlock" class="book">
   <h2>{{ book.title }}</h2>
   <p><b>Book ID:</b> {{ bookId }}</p>
-  <p><b>Author:</b> {{ book.author }}</p>
+  <p><b>Author:</b> {{ book.author_name }}</p>
   <p><b>Published:</b> {{ book.publication_date }}</p>
 </div>
 <ng-template #elseBlock>
