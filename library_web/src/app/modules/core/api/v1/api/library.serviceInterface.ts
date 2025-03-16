@@ -69,7 +69,7 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
 * @param requestParameters
      */
     createAuthor(requestParameters: CreateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
@@ -83,7 +83,7 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
 * @param requestParameters
      */
     destroyAuthor(requestParameters: DestroyAuthorRequestParams, extraHttpRequestParams?: any): Observable<{}>;
@@ -97,7 +97,7 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
 */
     listAuthors(extraHttpRequestParams?: any): Observable<Array<Author>>;
 
@@ -109,7 +109,7 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
 * @param requestParameters
      */
     partialUpdateAuthor(requestParameters: PartialUpdateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
@@ -123,7 +123,7 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
 * @param requestParameters
      */
     retrieveAuthor(requestParameters: RetrieveAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
@@ -137,7 +137,7 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
 * @param requestParameters
      */
     updateAuthor(requestParameters: UpdateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;

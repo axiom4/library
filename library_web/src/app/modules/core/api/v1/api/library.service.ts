@@ -51,7 +51,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -177,7 +177,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -283,7 +283,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -381,7 +381,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -515,7 +515,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -623,7 +623,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * 
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

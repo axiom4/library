@@ -31,10 +31,10 @@ class Book(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.title + '(' + str(self.publication_date.year) + ')'
 
     class Meta:
         db_table = 'books'
         indexes = [
-            models.Index(fields=['title']),
+            models.Index(fields=['title', 'author']),
         ]

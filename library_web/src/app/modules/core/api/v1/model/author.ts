@@ -11,8 +11,10 @@
 
 export interface Author { 
     readonly id?: number;
+    readonly url?: string;
     first_name: string;
     last_name: string;
+    citizenship: string;
     date_of_birth?: string | null;
     date_of_death?: string | null;
 }

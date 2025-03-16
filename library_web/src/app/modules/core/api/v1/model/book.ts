@@ -11,9 +11,13 @@
 
 export interface Book { 
     readonly id?: number;
+    readonly url?: string;
     title: string;
-    author?: number | null;
+    readonly author_name?: string;
+    readonly author_url?: string;
+    author?: number;
     publication_date: string;
+    readonly year?: string;
     readonly created_at?: string;
     readonly updated_at?: string;
 }
