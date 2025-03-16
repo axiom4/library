@@ -10,6 +10,19 @@ h1 {
   text-align: center;
 }
 
+a {
+  color: red;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: red;
+}
+
 .book {
   background-color: #fff;
   border: 1px solid #ddd;

@@ -412,6 +412,19 @@ It uses Angular's `*ngIf` directive to conditionally render content based on whe
 The `book` and `not_found` classes are used for styling the elements, let's add them to our `style.scss`:
 
 ```css
+a {
+  color: red;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: red;
+}
+
 .book {
   background-color: #fff;
   border: 1px solid #ddd;
