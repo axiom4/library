@@ -25,7 +25,7 @@ Successfully installed PyYAML-6.0.2 inflection-0.5.1 markdown-3.7 uritemplate-4.
 
 Then, update `urls.py` in the main app directory (`library_rest`):
 
-````python
+```python
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import permissions
@@ -54,6 +54,7 @@ urlpatterns = [
         name="openapi-schema",
     ),
 ] + schema_url_patterns
+```
 
 Now, you can access the OpenAPI schema at the root of your API. This schema describes all available endpoints and data structures.
 
@@ -248,4 +249,7 @@ This command created the Angular modules in the `src/app/modules/core/api/v1` di
 ![Angular Services](/docs/images/part5_3.png)
 
 Now, whenever the Django REST services change, you can simply update the Angular services by running the command `npm run generate:api`.
-````
+
+```
+
+```
