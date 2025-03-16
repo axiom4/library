@@ -32,12 +32,12 @@ This demo project guides you through the process of creating a full-stack applic
 
 ### Next Steps
 
-1. [Init a new Django project](/docs/README_PART1.md)
-2. [Init a new Angular app](/docs/README_PART2.md)
-3. [Init MySQL Docker container](/docs/README_PART3.md)
-4. [Rest services](/docs/README_PART4.md)
-5. [OpenAPI Integrations](/docs/README_PART5.md)
-6. [Angular OpenAPI service integration](/docs/README_PART6.md)
-7. [Angular Routes](/docs/README_PART7.md)
-8. [Upgrade Django Schema](/docs/README_PART8.md)
-9. [Advanced Django Serializer](/docs/README_PART9.md)
+1. [Init a new Django project](/docs/README_PART01.md)
+2. [Init a new Angular app](/docs/README_PART02.md)
+3. [Init MySQL Docker container](/docs/README_PART03.md)
+4. [Rest services](/docs/README_PART04.md)
+5. [OpenAPI Integrations](/docs/README_PART05.md)
+6. [Angular OpenAPI service integration](/docs/README_PART06.md)
+7. [Angular Routes](/docs/README_PART07.md)
+8. [Upgrade Django Schema](/docs/README_PART08.md)
+9. [Advanced Django Serializer](/docs/README_PART09.md)
