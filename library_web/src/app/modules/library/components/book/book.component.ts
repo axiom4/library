@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import {
   Book,
   LibraryService,
-  RetrieveBookRequestParams,
+  LibraryBooksRetrieveRequestParams,
 } from '../../../core/api/v1';
 import { NgIf } from '@angular/common';
 
@@ -39,13 +39,13 @@ export class BookComponent implements OnInit, OnDestroy {
   }
 
   getBook(id: number): void {
-    const book_params: RetrieveBookRequestParams = {
-      id: String(this.bookId),
+    const book_params: LibraryBooksRetrieveRequestParams = {
+      id: id,
     };
 
     if (this.bookId) {
       this.visible = false;
-      this.libraryService.retrieveBook(book_params).subscribe({
+      this.libraryService.libraryBooksRetrieve(book_params).subscribe({
         next: (book) => {
           this.book = book;
           console.log(this.book);

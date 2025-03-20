@@ -5,22 +5,44 @@ Now, let's configure OpenAPI schema to integrate apps.
 First, install the necessary packages:
 
 ```bash
-# pip install PyYAML uritemplate inflection markdown
+# pip install drf-spectacular
 
-Collecting PyYAML
-  Using cached PyYAML-6.0.2-cp313-cp313-macosx_11_0_arm64.whl.metadata (2.1 kB)
-Collecting uritemplate
+Collecting drf-spectacular
+  Using cached drf_spectacular-0.28.0-py3-none-any.whl.metadata (14 kB)
+Requirement already satisfied: Django>=2.2 in ./venv/lib/python3.12/site-packages (from drf-spectacular) (5.1.7)
+Requirement already satisfied: djangorestframework>=3.10.3 in ./venv/lib/python3.12/site-packages (from drf-spectacular) (3.15.2)
+Collecting uritemplate>=2.0.0 (from drf-spectacular)
   Using cached uritemplate-4.1.1-py2.py3-none-any.whl.metadata (2.9 kB)
-Collecting inflection
+Collecting PyYAML>=5.1 (from drf-spectacular)
+  Using cached PyYAML-6.0.2-cp312-cp312-macosx_11_0_arm64.whl.metadata (2.1 kB)
+Collecting jsonschema>=2.6.0 (from drf-spectacular)
+  Using cached jsonschema-4.23.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting inflection>=0.3.1 (from drf-spectacular)
   Using cached inflection-0.5.1-py2.py3-none-any.whl.metadata (1.7 kB)
-Collecting markdown
-  Using cached Markdown-3.7-py3-none-any.whl.metadata (7.0 kB)
-Using cached PyYAML-6.0.2-cp313-cp313-macosx_11_0_arm64.whl (171 kB)
-Using cached uritemplate-4.1.1-py2.py3-none-any.whl (10 kB)
+Requirement already satisfied: asgiref<4,>=3.8.1 in ./venv/lib/python3.12/site-packages (from Django>=2.2->drf-spectacular) (3.8.1)
+Requirement already satisfied: sqlparse>=0.3.1 in ./venv/lib/python3.12/site-packages (from Django>=2.2->drf-spectacular) (0.5.3)
+Collecting attrs>=22.2.0 (from jsonschema>=2.6.0->drf-spectacular)
+  Using cached attrs-25.3.0-py3-none-any.whl.metadata (10 kB)
+Collecting jsonschema-specifications>=2023.03.6 (from jsonschema>=2.6.0->drf-spectacular)
+  Using cached jsonschema_specifications-2024.10.1-py3-none-any.whl.metadata (3.0 kB)
+Collecting referencing>=0.28.4 (from jsonschema>=2.6.0->drf-spectacular)
+  Using cached referencing-0.36.2-py3-none-any.whl.metadata (2.8 kB)
+Collecting rpds-py>=0.7.1 (from jsonschema>=2.6.0->drf-spectacular)
+  Using cached rpds_py-0.23.1-cp312-cp312-macosx_11_0_arm64.whl.metadata (4.1 kB)
+Collecting typing-extensions>=4.4.0 (from referencing>=0.28.4->jsonschema>=2.6.0->drf-spectacular)
+  Using cached typing_extensions-4.12.2-py3-none-any.whl.metadata (3.0 kB)
+Using cached drf_spectacular-0.28.0-py3-none-any.whl (103 kB)
 Using cached inflection-0.5.1-py2.py3-none-any.whl (9.5 kB)
-Using cached Markdown-3.7-py3-none-any.whl (106 kB)
-Installing collected packages: uritemplate, PyYAML, markdown, inflection
-Successfully installed PyYAML-6.0.2 inflection-0.5.1 markdown-3.7 uritemplate-4.1.1
+Using cached jsonschema-4.23.0-py3-none-any.whl (88 kB)
+Using cached PyYAML-6.0.2-cp312-cp312-macosx_11_0_arm64.whl (173 kB)
+Using cached uritemplate-4.1.1-py2.py3-none-any.whl (10 kB)
+Using cached attrs-25.3.0-py3-none-any.whl (63 kB)
+Using cached jsonschema_specifications-2024.10.1-py3-none-any.whl (18 kB)
+Using cached referencing-0.36.2-py3-none-any.whl (26 kB)
+Using cached rpds_py-0.23.1-cp312-cp312-macosx_11_0_arm64.whl (349 kB)
+Using cached typing_extensions-4.12.2-py3-none-any.whl (37 kB)
+Installing collected packages: uritemplate, typing-extensions, rpds-py, PyYAML, inflection, attrs, referencing, jsonschema-specifications, jsonschema, drf-spectacular
+Successfully installed PyYAML-6.0.2 attrs-25.3.0 drf-spectacular-0.28.0 inflection-0.5.1 jsonschema-4.23.0 jsonschema-specifications-2024.10.1 referencing-0.36.2 rpds-py-0.23.1 typing-extensions-4.12.2 uritemplate-4.1.1
 ```
 
 Then, update `urls.py` in the main app directory (`library_rest`):
@@ -31,29 +53,62 @@ from django.urls import include, path
 from rest_framework import permissions
 from rest_framework.schemas import get_schema_view
 
+from .permissions import AccessListPermission
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
 schema_url_patterns = [
     path('library/', include('library.urls')),
 ]
 
-schema_view = get_schema_view(
-    title="Test App API",
-    description="Test description",
-    version="1.0.0",
-    urlconf='library.urls',
-    patterns=schema_url_patterns,
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path(
-        "",
-        schema_view,
-        name="openapi-schema",
-    ),
+    path('openapi', SpectacularAPIView().as_view(), name='schema'),
+    path('',
+         SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ] + schema_url_patterns
+```
+
+Append on bottom of `settings.py` file:
+
+```python
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Library App API',
+    'DESCRIPTION': 'Library description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_PATCH': False,
+    'SERVE_URLCONF': 'library_rest.urls',
+    'PUBLIC': False,
+    'OAS_VERSION': '3.1.1'
+}
+```
+
+Add `drf_spectacular` on `INSTALLED_APPS` into `settings.py`:
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'django_filters',
+    'corsheaders',
+    'library',
+    'drf_spectacular',
+]
 ```
 
 Now, you can access the OpenAPI schema at the root of your API. This schema describes all available endpoints and data structures.
@@ -61,7 +116,7 @@ Now, you can access the OpenAPI schema at the root of your API. This schema desc
 To export the schema in OpenAPI format, you can use the following command:
 
 ```bash
-# curl http://localhost:8000/?format=openapi > openapi.yaml
+# curl http://localhost:8000/openapi > openapi.yaml
 ```
 
 This command fetches the schema from the root URL (`/`) and saves it to a file named `openapi.yaml`. You can then use this file with tools like Swagger UI or Postman to explore and test your API.
@@ -107,34 +162,20 @@ Then, update your `settings.py` file to include the `ACCESS_LIST` setting:
 ACCESS_LIST = ['127.0.0.1', '::1']  # Add the IP addresses that are allowed to access the schema
 ```
 
-Finally, update `urls.py` to use the new permission class:
+Finally, update `settings.py` to use the new permission class:
 
 ```python
-from django.contrib import admin
-from django.urls import include, path
-from rest_framework import permissions
-from rest_framework.schemas import get_schema_view
-from .permissions import AccessListPermission  # Import the custom permission
-
-schema_url_patterns = [
-  path('library/', include('library.urls')),
-]
-
-schema_view = get_schema_view(
-  title="Test App API",
-  description="Test description",
-  version="1.0.0",
-  urlconf='library.urls',
-  patterns=schema_url_patterns,
-  public=True,
-  permission_classes=(AccessListPermission,),  # Use the custom permission
-)
-
-urlpatterns = [
-  path('admin/', admin.site.urls),
-  path('api-auth/', include('rest_framework.urls')),
-  path("", schema_view, name="openapi-schema"),
-] + schema_url_patterns
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Library App API',
+    'DESCRIPTION': 'Library description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_PATCH': False,
+    'SERVE_URLCONF': 'library_rest.urls',
+    'PUBLIC': False,
+    'OAS_VERSION': '3.1.1',
+    'SERVE_PERMISSIONS': ['library_rest.permissions.AccessListPermission'],
+}
 ```
 
 With these changes, only requests originating from the specified IP addresses will be able to access the OpenAPI schema.
@@ -173,7 +214,7 @@ Then, generate the Angular service update `package.json` with this script:
 ```json
   "scripts": {
     ...
-    "generate:api": "openapi-generator-cli generate  -p supportsES6=true,withInterfaces=true,useSingleRequestParameter=true -i http://127.0.0.1:8000/?format=openapi -g typescript-angular -o src/app/modules/core/api/v1"
+    "generate:api": "openapi-generator-cli generate  -p supportsES6=true,withInterfaces=true,useSingleRequestParameter=true -i http://127.0.0.1:8000/openapi -g typescript-angular -o src/app/modules/core/api/v1"
   },
 ```
 
@@ -249,7 +290,3 @@ This command created the Angular modules in the `src/app/modules/core/api/v1` di
 ![Angular Services](/docs/images/part5_3.png)
 
 Now, whenever the Django REST services change, you can simply update the Angular services by running the command `npm run generate:api`.
-
-```
-
-```

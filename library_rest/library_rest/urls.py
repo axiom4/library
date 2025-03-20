@@ -4,27 +4,16 @@ from rest_framework import permissions
 from rest_framework.schemas import get_schema_view
 
 from .permissions import AccessListPermission
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 schema_url_patterns = [
     path('library/', include('library.urls')),
 ]
 
-schema_view = get_schema_view(
-    title="Test App API",
-    description="Test description",
-    version="1.0.0",
-    urlconf='library.urls',
-    patterns=schema_url_patterns,
-    public=True,
-    permission_classes=(AccessListPermission,),
-)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path(
-        "",
-        schema_view,
-        name="openapi-schema",
-    ),
+    path('schema', SpectacularAPIView().as_view(), name='schema'),
+    path('',
+         SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ] + schema_url_patterns

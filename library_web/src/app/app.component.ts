@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   constructor(private readonly libraryService: LibraryService) {}
 
   ngOnInit(): void {
-    this.libraryService.listBooks().subscribe({
+    this.libraryService.libraryBooksList().subscribe({
       next: (books) => {
         this.books = books;
       },

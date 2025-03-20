@@ -18,48 +18,56 @@ import { Book } from '../model/models';
 import { Configuration }                                     from '../configuration';
 
 
-export interface CreateAuthorRequestParams {
-    author?: Author;
+export interface LibraryAuthorsCreateRequestParams {
+    author: Author;
 }
 
-export interface CreateBookRequestParams {
-    book?: Book;
+export interface LibraryAuthorsDestroyRequestParams {
+    id: number;
 }
 
-export interface DestroyAuthorRequestParams {
-    id: string;
+export interface LibraryAuthorsPartialUpdateRequestParams {
+    id: number;
+    author: Author;
 }
 
-export interface DestroyBookRequestParams {
-    id: string;
+export interface LibraryAuthorsRetrieveRequestParams {
+    id: number;
 }
 
-export interface PartialUpdateAuthorRequestParams {
-    id: string;
-    author?: Author;
+export interface LibraryAuthorsUpdateRequestParams {
+    id: number;
+    author: Author;
 }
 
-export interface PartialUpdateBookRequestParams {
-    id: string;
-    book?: Book;
+export interface LibraryBooksCreateRequestParams {
+    book: Book;
 }
 
-export interface RetrieveAuthorRequestParams {
-    id: string;
+export interface LibraryBooksDestroyRequestParams {
+    id: number;
 }
 
-export interface RetrieveBookRequestParams {
-    id: string;
+export interface LibraryBooksListRequestParams {
+    author?: number;
+    ordering?: string;
+    publicationDate?: string;
+    search?: string;
+    title?: string;
 }
 
-export interface UpdateAuthorRequestParams {
-    id: string;
-    author?: Author;
+export interface LibraryBooksPartialUpdateRequestParams {
+    id: number;
+    book: Book;
 }
 
-export interface UpdateBookRequestParams {
-    id: string;
-    book?: Book;
+export interface LibraryBooksRetrieveRequestParams {
+    id: number;
+}
+
+export interface LibraryBooksUpdateRequestParams {
+    id: number;
+    book: Book;
 }
 
 
@@ -69,84 +77,85 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
 * @param requestParameters
      */
-    createAuthor(requestParameters: CreateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
+    libraryAuthorsCreate(requestParameters: LibraryAuthorsCreateRequestParams, extraHttpRequestParams?: any): Observable<Author>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
 * @param requestParameters
      */
-    createBook(requestParameters: CreateBookRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+    libraryAuthorsDestroy(requestParameters: LibraryAuthorsDestroyRequestParams, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
-* @param requestParameters
-     */
-    destroyAuthor(requestParameters: DestroyAuthorRequestParams, extraHttpRequestParams?: any): Observable<{}>;
-
-    /**
-     * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
-* @param requestParameters
-     */
-    destroyBook(requestParameters: DestroyBookRequestParams, extraHttpRequestParams?: any): Observable<{}>;
-
-    /**
-     * 
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
 */
-    listAuthors(extraHttpRequestParams?: any): Observable<Array<Author>>;
+    libraryAuthorsList(extraHttpRequestParams?: any): Observable<Array<Author>>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
-*/
-    listBooks(extraHttpRequestParams?: any): Observable<Array<Book>>;
-
-    /**
-     * 
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
 * @param requestParameters
      */
-    partialUpdateAuthor(requestParameters: PartialUpdateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
+    libraryAuthorsPartialUpdate(requestParameters: LibraryAuthorsPartialUpdateRequestParams, extraHttpRequestParams?: any): Observable<Author>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
 * @param requestParameters
      */
-    partialUpdateBook(requestParameters: PartialUpdateBookRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+    libraryAuthorsRetrieve(requestParameters: LibraryAuthorsRetrieveRequestParams, extraHttpRequestParams?: any): Observable<Author>;
 
     /**
      * 
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
+     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
 * @param requestParameters
      */
-    retrieveAuthor(requestParameters: RetrieveAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
+    libraryAuthorsUpdate(requestParameters: LibraryAuthorsUpdateRequestParams, extraHttpRequestParams?: any): Observable<Author>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
+     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
 * @param requestParameters
      */
-    retrieveBook(requestParameters: RetrieveBookRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+    libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
 
     /**
      * 
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.
+     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
 * @param requestParameters
      */
-    updateAuthor(requestParameters: UpdateAuthorRequestParams, extraHttpRequestParams?: any): Observable<Author>;
+    libraryBooksDestroy(requestParameters: LibraryBooksDestroyRequestParams, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.
+     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
 * @param requestParameters
      */
-    updateBook(requestParameters: UpdateBookRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+    libraryBooksList(requestParameters: LibraryBooksListRequestParams, extraHttpRequestParams?: any): Observable<Array<Book>>;
+
+    /**
+     * 
+     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+* @param requestParameters
+     */
+    libraryBooksPartialUpdate(requestParameters: LibraryBooksPartialUpdateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+
+    /**
+     * 
+     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+* @param requestParameters
+     */
+    libraryBooksRetrieve(requestParameters: LibraryBooksRetrieveRequestParams, extraHttpRequestParams?: any): Observable<Book>;
+
+    /**
+     * 
+     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+* @param requestParameters
+     */
+    libraryBooksUpdate(requestParameters: LibraryBooksUpdateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
 
 }

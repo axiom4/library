@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'corsheaders',
-    'library'
+    'library',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -146,4 +147,25 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:4200',
 )
 
-ACCESS_LIST = ['127.0.0.1', '::1']
+ACCESS_LIST = ['127.0.0.12', '::1']
+
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Library App API',
+    'DESCRIPTION': 'Library description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_PATCH': False,
+    'SERVE_URLCONF': 'library_rest.urls',
+    'PUBLIC': False,
+    'OAS_VERSION': '3.1.1',
+    'SERVE_PERMISSIONS': ['library_rest.permissions.AccessListPermission'],
+}
