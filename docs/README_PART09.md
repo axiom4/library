@@ -330,16 +330,16 @@ Let's regenerate the REST client by running the command `npm run generate:api`.
 
 ```typescript
 export interface Book {
-  readonly id?: number;
-  readonly url?: string;
+  readonly id: number;
+  readonly url: string;
   title: string;
-  readonly author_name?: string;
-  readonly author_url?: string;
+  readonly author_name: string;
+  readonly author_url: string;
   author?: number;
   publication_date: string;
-  readonly year?: string;
-  readonly created_at?: string;
-  readonly updated_at?: string;
+  readonly year: string;
+  readonly created_at: string;
+  readonly updated_at: string;
 }
 ```
 

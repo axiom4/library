@@ -13,7 +13,7 @@ schema_url_patterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('schema', SpectacularAPIView().as_view(), name='schema'),
+    path('openapi', SpectacularAPIView().as_view(), name='schema'),
     path('',
          SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ] + schema_url_patterns

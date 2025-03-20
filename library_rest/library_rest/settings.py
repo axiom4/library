@@ -147,7 +147,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:4200',
 )
 
-ACCESS_LIST = ['127.0.0.12', '::1']
+ACCESS_LIST = ['127.0.0.1', '::1']
 
 REST_FRAMEWORK = {
     # YOUR SETTINGS
