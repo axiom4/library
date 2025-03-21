@@ -41,3 +41,4 @@ This demo project guides you through the process of creating a full-stack applic
 7. [Angular Routes](/docs/README_PART07.md)
 8. [Upgrade Django Schema](/docs/README_PART08.md)
 9. [Advanced Django Serializer](/docs/README_PART09.md)
+10. [Advanced Django Fiters](/docs/README_PART10.md)
