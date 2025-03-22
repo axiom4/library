@@ -48,6 +48,14 @@ export interface LibraryBooksDestroyRequestParams {
     id: number;
 }
 
+export interface LibraryBooksListRequestParams {
+    author?: number;
+    ordering?: string;
+    publicationDate?: string;
+    search?: string;
+    title?: string;
+}
+
 export interface LibraryBooksPartialUpdateRequestParams {
     id: number;
     book: Book;
@@ -125,8 +133,9 @@ export interface LibraryServiceInterface {
     /**
      * 
      * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
-*/
-    libraryBooksList(extraHttpRequestParams?: any): Observable<Array<Book>>;
+* @param requestParameters
+     */
+    libraryBooksList(requestParameters: LibraryBooksListRequestParams, extraHttpRequestParams?: any): Observable<Array<Book>>;
 
     /**
      * 
