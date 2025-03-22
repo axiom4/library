@@ -381,3 +381,73 @@ To address these issues, it is necessary to implement pagination in the API. Pag
 By implementing a custom pagination class, you can tailor the pagination behavior to meet the specific needs of your application and provide a better experience for your users.
 
 ## ![Pagination Class](/docs/images/part10_3.png)
+
+## Upgrade Frontend
+
+Now we build the Angular Rest Client. After the client generations, we can see creation of the new interface `PaginateBookList`.
+
+```typescript
+// paginatedBookList.ts
+import { Book } from "./book";
+
+export interface PaginatedBookList {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: Array<Book>;
+}
+```
+
+Now, we start angular develop server (`ng serve`) and obatain the error:
+
+```bash
+ng serve
+
+x [ERROR] TS2740: Type 'PaginatedBookList' is missing the following properties from type 'Book[]': length, pop, push, concat, and 29 more. [plugin angular-compiler]
+
+    src/app/app.component.ts:21:8:
+      21 │         this.books = books;
+         ╵         ~~~~~~~~~~
+```
+
+So wee need to update our `app.component.ts` to manage the data pagination.
+
+```typescript
+import { Component, OnInit } from "@angular/core";
+import { RouterLink, RouterOutlet } from "@angular/router";
+import { Book, LibraryService } from "./modules/core/api/v1";
+import { NgFor } from "@angular/common";
+
+@Component({
+  selector: "app-root",
+  imports: [RouterOutlet, NgFor, RouterLink],
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.scss",
+})
+/**
+ * The `AppComponent` serves as the root component of the Library application.
+ * It initializes the application state and interacts with the `LibraryService`
+ * to fetch and display a list of books.
+ *
+ * @implements {OnInit}
+ */
+export class AppComponent implements OnInit {
+  title = "Library";
+  books: Book[] = [];
+
+  constructor(private readonly libraryService: LibraryService) {}
+
+  ngOnInit(): void {
+    this.libraryService.libraryBooksList().subscribe({
+      next: (data) => {
+        this.books = data.results;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+}
+```
+
+This is the final class; in the next chapter, we will manage filters and pagination in our frontend application.

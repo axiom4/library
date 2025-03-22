@@ -12,5 +12,6 @@ index.ts
 model/author.ts
 model/book.ts
 model/models.ts
+model/paginatedBookList.ts
 param.ts
 variables.ts

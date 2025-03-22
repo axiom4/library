@@ -20,6 +20,8 @@ import { Observable }                                        from 'rxjs';
 import { Author } from '../model/author';
 // @ts-ignore
 import { Book } from '../model/book';
+// @ts-ignore
+import { PaginatedBookList } from '../model/paginatedBookList';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -578,12 +580,14 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<Book>>;
-    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<Book>>>;
-    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<Book>>>;
+    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaginatedBookList>;
+    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaginatedBookList>>;
+    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaginatedBookList>>;
     public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const author = requestParameters?.author;
         const ordering = requestParameters?.ordering;
+        const page = requestParameters?.page;
+        const pageSize = requestParameters?.pageSize;
         const publicationDate = requestParameters?.publicationDate;
         const search = requestParameters?.search;
         const title = requestParameters?.title;
@@ -593,6 +597,10 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
           <any>author, 'author');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>ordering, 'ordering');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>page, 'page');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageSize, 'page_size');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>publicationDate, 'publication_date');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
@@ -631,7 +639,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         }
 
         let localVarPath = `/library/books`;
-        return this.httpClient.request<Array<Book>>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PaginatedBookList>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

@@ -9,6 +9,13 @@ import { NgFor } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
+/**
+ * The `AppComponent` serves as the root component of the Library application.
+ * It initializes the application state and interacts with the `LibraryService`
+ * to fetch and display a list of books.
+ *
+ * @implements {OnInit}
+ */
 export class AppComponent implements OnInit {
   title = 'Library';
   books: Book[] = [];
@@ -17,8 +24,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.libraryService.libraryBooksList().subscribe({
-      next: (books) => {
-        this.books = books;
+      next: (data) => {
+        this.books = data.results;
       },
       error: (err) => {
         console.error(err);

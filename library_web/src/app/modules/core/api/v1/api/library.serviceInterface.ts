@@ -13,6 +13,7 @@ import { Observable }                                        from 'rxjs';
 
 import { Author } from '../model/models';
 import { Book } from '../model/models';
+import { PaginatedBookList } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -51,6 +52,8 @@ export interface LibraryBooksDestroyRequestParams {
 export interface LibraryBooksListRequestParams {
     author?: number;
     ordering?: string;
+    page?: number;
+    pageSize?: number;
     publicationDate?: string;
     search?: string;
     title?: string;
@@ -135,7 +138,7 @@ export interface LibraryServiceInterface {
      * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
 * @param requestParameters
      */
-    libraryBooksList(requestParameters: LibraryBooksListRequestParams, extraHttpRequestParams?: any): Observable<Array<Book>>;
+    libraryBooksList(requestParameters: LibraryBooksListRequestParams, extraHttpRequestParams?: any): Observable<PaginatedBookList>;
 
     /**
      * 
