@@ -201,6 +201,8 @@ The `BookViewSet` class is a `ModelViewSet` that provides CRUD operations and ad
 - **`ordering_fields`**: Lists fields available for sorting.
 - **`ordering`**: Sets the default ordering.
 
+![Filter View](/docs/images/part10_1.png)
+
 #### Full Code of `BookViewSet`:
 
 ```python
@@ -241,5 +243,7 @@ class BookViewSet(viewsets.ModelViewSet):
     ordering_fields = ['title', 'author', 'publication_date']
     ordering = ['title']
 ```
+
+![Filter Console](/docs/images/part10_2.png)
 
 ---
