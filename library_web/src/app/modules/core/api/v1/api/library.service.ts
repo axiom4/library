@@ -1,5 +1,5 @@
 /**
- * Test App API
+ * Library App API
  *
  * 
  *
@@ -34,7 +34,6 @@ import {
     LibraryAuthorsUpdateRequestParams,
     LibraryBooksCreateRequestParams,
     LibraryBooksDestroyRequestParams,
-    LibraryBooksListRequestParams,
     LibraryBooksPartialUpdateRequestParams,
     LibraryBooksRetrieveRequestParams,
     LibraryBooksUpdateRequestParams
@@ -444,7 +443,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -515,7 +514,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -573,32 +572,14 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
-     * @param requestParameters
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<Book>>;
-    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<Book>>>;
-    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<Book>>>;
-    public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const author = requestParameters?.author;
-        const ordering = requestParameters?.ordering;
-        const publicationDate = requestParameters?.publicationDate;
-        const search = requestParameters?.search;
-        const title = requestParameters?.title;
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>author, 'author');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>ordering, 'ordering');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>publicationDate, 'publication_date');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>search, 'search');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>title, 'title');
+    public libraryBooksList(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<Book>>;
+    public libraryBooksList(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<Book>>>;
+    public libraryBooksList(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<Book>>>;
+    public libraryBooksList(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -634,7 +615,6 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<Array<Book>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -646,7 +626,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -721,7 +701,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -780,7 +760,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

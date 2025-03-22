@@ -247,3 +247,7 @@ class BookViewSet(viewsets.ModelViewSet):
 ![Filter Console](/docs/images/part10_2.png)
 
 ---
+
+## Recreating OpenAPI client
+
+Now we recreate OpenAPI client using `npm run generate:api`.

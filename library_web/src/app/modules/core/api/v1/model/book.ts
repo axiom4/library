@@ -1,5 +1,5 @@
 /**
- * Test App API
+ * Library App API
  *
  * 
  *

@@ -1,5 +1,5 @@
 /**
- * Test App API
+ * Library App API
  *
  * 
  *
@@ -46,14 +46,6 @@ export interface LibraryBooksCreateRequestParams {
 
 export interface LibraryBooksDestroyRequestParams {
     id: number;
-}
-
-export interface LibraryBooksListRequestParams {
-    author?: number;
-    ordering?: string;
-    publicationDate?: string;
-    search?: string;
-    title?: string;
 }
 
 export interface LibraryBooksPartialUpdateRequestParams {
@@ -118,42 +110,41 @@ export interface LibraryServiceInterface {
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
 * @param requestParameters
      */
     libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
 * @param requestParameters
      */
     libraryBooksDestroy(requestParameters: LibraryBooksDestroyRequestParams, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
-* @param requestParameters
-     */
-    libraryBooksList(requestParameters: LibraryBooksListRequestParams, extraHttpRequestParams?: any): Observable<Array<Book>>;
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
+*/
+    libraryBooksList(extraHttpRequestParams?: any): Observable<Array<Book>>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
 * @param requestParameters
      */
     libraryBooksPartialUpdate(requestParameters: LibraryBooksPartialUpdateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
 * @param requestParameters
      */
     libraryBooksRetrieve(requestParameters: LibraryBooksRetrieveRequestParams, extraHttpRequestParams?: any): Observable<Book>;
 
     /**
      * 
-     * A viewset for viewing and editing book instances.  This viewset provides &#x60;list&#x60;, &#x60;create&#x60;, &#x60;retrieve&#x60;, &#x60;update&#x60; and &#x60;destroy&#x60; actions for the Book model.  Attributes:   queryset (QuerySet): The set of Book instances to be retrieved.   serializer_class (BookSerializer): The serializer class to be used for serializing and deserializing Book instances.
+     * BookViewSet is a viewset for managing Book objects in the library application.  This viewset provides CRUD operations and additional functionalities such as filtering, searching, and ordering.  Attributes:   queryset (QuerySet): A queryset containing all Book objects.   serializer_class (Serializer): The serializer class used for serializing and     deserializing Book objects.   filter_backends (list): A list of filter backends used for filtering, searching,     and ordering the queryset.   filterset_fields (list): A list of fields that can be used for filtering the     queryset.   search_fields (list): A list of fields that can be used for performing search     queries.   ordering_fields (list): A list of fields that can be used for ordering the     queryset.   ordering (list): The default ordering applied to the queryset.
 * @param requestParameters
      */
     libraryBooksUpdate(requestParameters: LibraryBooksUpdateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
