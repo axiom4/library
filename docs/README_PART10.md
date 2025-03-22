@@ -81,6 +81,114 @@ class BookViewSet(ModelViewSet):
 
 ---
 
+## OrderingFilter and SearchFilter
+
+In addition to `django-filters`, Django REST Framework provides two powerful filters: `OrderingFilter` and `SearchFilter`. These filters allow you to add sorting and searching capabilities to your APIs.
+
+### OrderingFilter
+
+`OrderingFilter` enables users to sort querysets based on specific fields.
+
+#### Example:
+
+```python
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet
+from myapp.models import Book
+from myapp.serializers import BookSerializer
+
+class BookViewSet(ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['title', 'published_date']  # Fields available for ordering
+    ordering = ['title']  # Default ordering
+```
+
+- **Usage**:
+  - Users can sort books by title or published date using query parameters like:
+    - `?ordering=title` (ascending order by title)
+    - `?ordering=-published_date` (descending order by published date)
+- **Default Ordering**:
+  - The `ordering` attribute specifies the default sorting if no query parameter is provided.
+
+---
+
+### SearchFilter
+
+`SearchFilter` allows users to perform simple searches across specified fields.
+
+#### Example:
+
+```python
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet
+from myapp.models import Book
+from myapp.serializers import BookSerializer
+
+class BookViewSet(ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['title', 'author__name']  # Fields to search
+```
+
+- **Usage**:
+  - Users can search for books by title or author name using a query parameter like:
+    - `?search=python`
+- **Field Lookups**:
+  - Supports lookups like `icontains` for partial matches.
+
+---
+
+### Combining Filters, Ordering, and Search
+
+You can combine `DjangoFilterBackend`, `OrderingFilter`, and `SearchFilter` to create a comprehensive API with advanced filtering, searching, and sorting capabilities.
+
+#### Example Query:
+
+- `?search=python&ordering=-published_date`:
+  - Filters books with "python" in the title or author name.
+  - Sorts results by publication date in descending order.
+
+---
+
+This document provides a detailed guide to implementing advanced filtering, searching, and ordering in Django applications. By leveraging `django-filters` and Django REST Framework's built-in filters, you can create powerful and flexible APIs tailored to your application's needs.
+
+#### Example:
+
+```python
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet
+from myapp.models import Book
+from myapp.serializers import BookSerializer
+
+class BookViewSet(ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_fields = ['title', 'author', 'publication_date']
+    search_fields = ['title', 'author__name']
+    ordering_fields = ['title', 'author', 'publication_date']
+    ordering = ['title']
+```
+
+- **Comprehensive Functionality**:
+  - Filtering by specific fields (`django-filters`).
+  - Sorting by multiple fields (`OrderingFilter`).
+  - Searching across related fields (`SearchFilter`).
+
+#### Example Query:
+
+- `?search=python&ordering=-published_date`:
+  - Filters books with "python" in the title or author name.
+  - Sorts results by publication date in descending order.
+
+---
+
 ## Explanation of the `BookViewSet` Class
 
 The `BookViewSet` class is a `ModelViewSet` that provides CRUD operations and additional functionalities such as filtering, searching, and ordering. Here's a breakdown of its components:
@@ -135,17 +243,3 @@ class BookViewSet(viewsets.ModelViewSet):
 ```
 
 ---
-
-## Combining Filters, Search, and Ordering
-
-By combining `DjangoFilterBackend`, `SearchFilter`, and `OrderingFilter`, you can create a comprehensive API with advanced filtering, searching, and sorting capabilities.
-
-#### Example Query:
-
-- `?search=python&ordering=-published_date`:
-  - Filters books with "python" in the title or author name.
-  - Sorts results by publication date in descending order.
-
----
-
-This document provides a detailed guide to implementing advanced filtering in Django applications. By leveraging `django-filters` and Django REST Framework's built-in filters, you can create powerful and flexible APIs tailored to your application's needs.
