@@ -4,6 +4,8 @@ from library.serializers.book_serializer import BookSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
+from library.pagination import LibraryPagination
+
 
 class BookViewSet(viewsets.ModelViewSet):
     """
@@ -34,3 +36,4 @@ class BookViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'author__last_name', 'author__first_name']
     ordering_fields = ['title', 'author', 'publication_date']
     ordering = ['title']
+    pagination_class = LibraryPagination

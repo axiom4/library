@@ -248,6 +248,136 @@ class BookViewSet(viewsets.ModelViewSet):
 
 ---
 
-## Recreating OpenAPI client
+### Limitations of the Current Interface
 
 Now we recreate OpenAPI client using `npm run generate:api`.
+
+The OpenAPI generator creates TypeScript interfaces for request parameters and response objects. Below is a part of a generated interface for listing books:
+
+```typescript
+export interface LibraryBooksListRequestParams {
+  author?: number;
+  ordering?: string;
+  publicationDate?: string;
+  search?: string;
+  title?: string;
+}
+```
+
+The current implementation of the `LibraryBooksListRequestParams` interface and the corresponding API does not support pagination. This means that when querying the database, all records matching the filters are returned in a single response. While this may work for small datasets, it can lead to significant performance issues as the number of records in the database grows.
+
+#### Performance Issues:
+
+- **Large Payloads**: Returning all records in a single response can result in large payloads, increasing network latency and memory usage on both the server and client.
+- **Slow Queries**: Fetching all records at once can slow down database queries, especially when combined with complex filters or joins.
+- **Poor User Experience**: Loading a large number of records can cause delays in rendering the data on the frontend, leading to a poor user experience.
+
+---
+
+### Solution: Implementing Pagination
+
+To address these issues, it is necessary to implement pagination in the API. Pagination allows the server to return only a subset of the data (a "page") at a time, reducing the load on the server and improving performance.
+
+#### Steps to Implement Pagination:
+
+1. **Enable Pagination in Django REST Framework**:
+   You can update the Django REST Framework settings to enable pagination. For example, you can use the `PageNumberPagination` class.
+
+   ```python
+   REST_FRAMEWORK = {
+       # ...existing settings...
+       'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+       'PAGE_SIZE': 10,  # Number of records per page
+   }
+   ```
+
+   If the default pagination behavior does not meet your requirements, you can create a custom pagination class. For example, you might want to include additional metadata in the response or customize the page size dynamically.
+
+   ```python
+   from rest_framework.pagination import PageNumberPagination
+   from rest_framework.response import Response
+
+   class LibraryPagination(PageNumberPagination):
+       page_size = 6  # Default page size
+       page_size_query_param = 'page_size'  # Allow clients to set page size
+       max_page_size = 100  # Maximum page size allowed
+
+       def get_paginated_response(self, data):
+           return Response({
+               'total_records': self.page.paginator.count,
+               'total_pages': self.page.paginator.num_pages,
+               'current_page': self.page.number,
+               'next': self.get_next_link(),
+               'previous': self.get_previous_link(),
+               'results': data
+           })
+   ```
+
+2. **Use the Custom Pagination Class**:
+   Update the Django REST Framework settings to use the custom pagination class.
+
+   ```python
+   REST_FRAMEWORK = {
+       # ...existing settings...
+       'DEFAULT_PAGINATION_CLASS': 'library.pagination.LibraryPagination',
+       'PAGE_SIZE': 6,
+   }
+   ```
+
+   Instead of setting `LibraryPagination` globally in the Django REST Framework settings, you can assign it directly to a specific `ViewSet`. This approach provides more granular control over pagination behavior for individual endpoints.
+
+   #### Example:
+
+   ```python
+   # ... your code ...
+   from library.pagination import LibraryPagination
+   # ...
+
+   class BookViewSet(viewsets.ModelViewSet):
+       # ... your code ...
+       pagination_class = LibraryPagination  # Assign the custom pagination class
+       # ...
+   ```
+
+   ***
+
+   ### Benefits of Assigning `LibraryPagination` to a ViewSet
+
+   - **Granular Control**: Allows you to customize pagination behavior for specific endpoints without affecting the entire application.
+   - **Flexibility**: Enables different pagination strategies for different resources.
+   - **Ease of Testing**: Simplifies testing by isolating pagination logic to individual views.
+
+   By assigning `LibraryPagination` directly to a `ViewSet`, you can tailor the pagination behavior to meet the specific needs of that endpoint while maintaining flexibility across your application.
+
+3. **Modify the API Response**:
+   With the custom pagination class, the API response will include additional metadata, such as the total number of pages and the current page.
+
+   ```json
+   {
+     "total_records": 100,
+     "total_pages": 10,
+     "current_page": 1,
+     "next": "http://localhost:8000/api/books/?page=2",
+     "previous": null,
+     "results": [
+       {
+         "id": 1,
+         "title": "Book Title",
+         "author": "Author Name",
+         "publication_date": "2023-01-01"
+         // ...
+       }
+       // ...other records...
+     ]
+   }
+   ```
+
+### Benefits of a Custom Pagination Class
+
+- **Flexibility**: Allows customization of the pagination behavior and response structure.
+- **Improved User Experience**: Provides more detailed information to the client, such as the total number of pages and records.
+- **Scalability**: Handles large datasets efficiently while allowing clients to control the page size.
+
+By implementing a custom pagination class, you can tailor the pagination behavior to meet the specific needs of your application and provide a better experience for your users.
+
+## ![Pagination Class](/docs/images/part10_3.png)
