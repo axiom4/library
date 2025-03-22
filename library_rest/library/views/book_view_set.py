@@ -7,35 +7,30 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 class BookViewSet(viewsets.ModelViewSet):
     """
-    BookViewSet is a viewset for managing Book objects in the library system.
+    BookViewSet is a viewset for managing Book objects in the library application.
 
-    This viewset provides CRUD operations and supports filtering, searching, 
-    and ordering of Book objects.
+    This viewset provides CRUD operations and additional functionalities such as
+    filtering, searching, and ordering.
 
     Attributes:
-      queryset (QuerySet): The base queryset for retrieving all Book objects.
-      serializer_class (Serializer): The serializer class used for serializing 
-        and deserializing Book objects.
-      filter_backends (list): A list of filter backends used for filtering, 
-        searching, and ordering.
-      filterset_fields (list): Fields that can be used for filtering the queryset.
-        - 'title': Filter by the title of the book.
-        - 'author': Filter by the author of the book.
-        - 'publication_date': Filter by the publication date of the book.
-      search_fields (list): Fields that can be used for searching.
-        - 'title': Search by the title of the book.
-        - 'author__name': Search by the name of the author.
-      ordering_fields (list): Fields that can be used for ordering the results.
-        - 'title': Order by the title of the book.
-        - 'author': Order by the author of the book.
-        - 'publication_date': Order by the publication date of the book.
-      ordering (list): Default ordering for the queryset.
-        - 'title': Results are ordered by the title of the book by default.
+      queryset (QuerySet): A queryset containing all Book objects.
+      serializer_class (Serializer): The serializer class used for serializing and
+        deserializing Book objects.
+      filter_backends (list): A list of filter backends used for filtering, searching,
+        and ordering the queryset.
+      filterset_fields (list): A list of fields that can be used for filtering the
+        queryset.
+      search_fields (list): A list of fields that can be used for performing search
+        queries.
+      ordering_fields (list): A list of fields that can be used for ordering the
+        queryset.
+      ordering (list): The default ordering applied to the queryset.
     """
+
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['title', 'author', 'publication_date']
-    search_fields = ['title', 'author__name']
+    search_fields = ['title', 'author__last_name', 'author__first_name']
     ordering_fields = ['title', 'author', 'publication_date']
     ordering = ['title']

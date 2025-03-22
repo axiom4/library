@@ -1,6 +1,10 @@
-# A full test application using Django and Angular (Part 10) - Advanced Django Filters
+# A Full Test Application Using Django and Angular (Part 10) - Advanced Django Filters
 
-`django-filters` is a powerful library for Django that simplifies the process of filtering querysets based on user input. It provides a declarative way to define filters for your models and integrates seamlessly with Django views and forms.
+This document provides a comprehensive guide to using advanced filtering techniques in Django applications with the help of the `django-filters` library. It also explains how to integrate filtering, searching, and ordering functionalities into Django REST Framework views and viewsets.
+
+## Overview of `django-filters`
+
+`django-filters` is a powerful library that simplifies the process of filtering querysets based on user input. It provides a declarative way to define filters for your models and integrates seamlessly with Django views and forms. This makes it an essential tool for building APIs with advanced filtering capabilities.
 
 ### Key Features:
 
@@ -10,7 +14,11 @@
 - **Custom Filters**: Create custom filter types for specific use cases.
 - **Extensibility**: Combine with other Django REST Framework filters like `OrderingFilter` and `SearchFilter` for advanced functionality.
 
-### Example Usage:
+---
+
+## Example Usage of `django-filters`
+
+Below is an example of how to use `django-filters` to filter a queryset of books based on their title and publication date.
 
 ```python
 from django_filters import rest_framework as filters
@@ -41,9 +49,11 @@ class BookListView(ListAPIView):
 
 This setup allows users to filter books by title (case-insensitive) and published date (greater than or equal to a specific date).
 
-### Using `filterset_fields`:
+---
 
-Instead of defining a custom `FilterSet` class, you can use the `filterset_fields` property for simple filtering needs. This property allows you to specify the fields to filter directly in the view.
+## Using `filterset_fields`
+
+For simpler use cases, you can use the `filterset_fields` property directly in your views or viewsets. This eliminates the need to define a custom `FilterSet` class.
 
 #### Example:
 
@@ -62,92 +72,80 @@ class BookViewSet(ModelViewSet):
 
 - **How It Works**:
 
-  - The `filterset_fields` property automatically generates filters for the specified fields.
-  - By default, it uses exact matches for filtering. For example:
-    - `?title=example` filters books with the exact title "example".
-    - `?published_date=2023-01-01` filters books published on January 1, 2023.
+  - Automatically generates filters for the specified fields.
+  - Uses exact matches by default (e.g., `?title=example`).
 
-- **Advanced Lookups**:
-  - To enable advanced lookups (e.g., `icontains`, `gte`), you need to define a custom `FilterSet` class as shown earlier.
+- **When to Use**:
+  - Ideal for simple filtering needs.
+  - For advanced lookups (e.g., `icontains`, `gte`), define a custom `FilterSet` class.
 
-#### When to Use:
+---
 
-- Use `filterset_fields` for simple filtering needs where exact matches are sufficient.
-- Use a custom `FilterSet` class for more complex filtering requirements, such as case-insensitive searches or range filters.
+## Explanation of the `BookViewSet` Class
 
-### Explanation of the `BookViewSet` Class:
+The `BookViewSet` class is a `ModelViewSet` that provides CRUD operations and additional functionalities such as filtering, searching, and ordering. Here's a breakdown of its components:
 
-The `BookViewSet` class is a `ModelViewSet` that provides a complete set of actions (`list`, `create`, `retrieve`, `update`, and `destroy`) for managing `Book` instances. Here's a breakdown of its components:
+- **`queryset`**: Retrieves all `Book` objects from the database.
+- **`serializer_class`**: Specifies the serializer for converting `Book` instances to and from JSON.
+- **`filter_backends`**: Includes backends for filtering (`DjangoFilterBackend`), searching (`SearchFilter`), and ordering (`OrderingFilter`).
+- **`filterset_fields`**: Defines fields available for filtering.
+- **`search_fields`**: Specifies fields for search queries.
+- **`ordering_fields`**: Lists fields available for sorting.
+- **`ordering`**: Sets the default ordering.
 
-- **`queryset`**: Specifies the set of `Book` objects to be retrieved from the database. In this case, it retrieves all books using `Book.objects.all()`.
-
-- **`serializer_class`**: Defines the serializer used to convert `Book` instances to and from JSON. The `BookSerializer` handles the serialization and deserialization logic.
-
-- **`filter_backends`**: Lists the filtering backends applied to the view. Here, it includes:
-
-  - `DjangoFilterBackend` for filtering based on specific fields.
-  - Optionally, `OrderingFilter` for sorting results.
-  - Optionally, `SearchFilter` for searching across fields.
-
-- **`filterset_fields`**: Specifies the fields available for filtering. For example:
-
-  - `?title=example` filters books with the exact title "example".
-  - `?published_date=2023-01-01` filters books published on January 1, 2023.
-
-- **`search_fields`**: Defines the fields that can be searched using the `SearchFilter`. For example:
-
-  - `?search=python` searches for books with "python" in the title or author name.
-
-- **`ordering_fields`**: Lists the fields available for sorting. For example:
-
-  - `?ordering=title` sorts books by title in ascending order.
-  - `?ordering=-published_date` sorts books by published date in descending order.
-
-- **`ordering`**: Specifies the default ordering applied to the queryset if no `ordering` parameter is provided.
-
-#### Full code of `BookViewSet`:
+#### Full Code of `BookViewSet`:
 
 ```python
-from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework import viewsets
+from library.models.book import Book
+from library.serializers.book_serializer import BookSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.viewsets import ModelViewSet
-from myapp.models import Book
-from myapp.serializers import BookSerializer
+from rest_framework.filters import SearchFilter, OrderingFilter
 
-class BookViewSet(ModelViewSet):
+
+class BookViewSet(viewsets.ModelViewSet):
     """
-    BookViewSet is a viewset for managing Book objects in the library system.
+    BookViewSet is a viewset for managing Book objects in the library application.
 
-    This viewset provides CRUD operations and supports filtering, searching,
-    and ordering of Book objects.
+    This viewset provides CRUD operations and additional functionalities such as
+    filtering, searching, and ordering.
 
     Attributes:
-      queryset (QuerySet): The base queryset for retrieving all Book objects.
-      serializer_class (Serializer): The serializer class used for serializing
-        and deserializing Book objects.
-      filter_backends (list): A list of filter backends used for filtering,
-        searching, and ordering.
-      filterset_fields (list): Fields that can be used for filtering the queryset.
-        - 'title': Filter by the title of the book.
-        - 'author': Filter by the author of the book.
-        - 'publication_date': Filter by the publication date of the book.
-      search_fields (list): Fields that can be used for searching.
-        - 'title': Search by the title of the book.
-        - 'author__name': Search by the name of the author.
-      ordering_fields (list): Fields that can be used for ordering the results.
-        - 'title': Order by the title of the book.
-        - 'author': Order by the author of the book.
-        - 'publication_date': Order by the publication date of the book.
-      ordering (list): Default ordering for the queryset.
-        - 'title': Results are ordered by the title of the book by default.
+      queryset (QuerySet): A queryset containing all Book objects.
+      serializer_class (Serializer): The serializer class used for serializing and
+        deserializing Book objects.
+      filter_backends (list): A list of filter backends used for filtering, searching,
+        and ordering the queryset.
+      filterset_fields (list): A list of fields that can be used for filtering the
+        queryset.
+      search_fields (list): A list of fields that can be used for performing search
+        queries.
+      ordering_fields (list): A list of fields that can be used for ordering the
+        queryset.
+      ordering (list): The default ordering applied to the queryset.
     """
+
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['title', 'author', 'publication_date']
-    search_fields = ['title', 'author__name']
+    search_fields = ['title', 'author__last_name', 'author__first_name']
     ordering_fields = ['title', 'author', 'publication_date']
     ordering = ['title']
 ```
 
-This setup provides a robust and flexible API for managing books, with support for filtering, searching, and sorting.
+---
+
+## Combining Filters, Search, and Ordering
+
+By combining `DjangoFilterBackend`, `SearchFilter`, and `OrderingFilter`, you can create a comprehensive API with advanced filtering, searching, and sorting capabilities.
+
+#### Example Query:
+
+- `?search=python&ordering=-published_date`:
+  - Filters books with "python" in the title or author name.
+  - Sorts results by publication date in descending order.
+
+---
+
+This document provides a detailed guide to implementing advanced filtering in Django applications. By leveraging `django-filters` and Django REST Framework's built-in filters, you can create powerful and flexible APIs tailored to your application's needs.
