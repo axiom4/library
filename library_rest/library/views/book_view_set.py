@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from library.models.book import Book
 from library.serializers.book_serializer import BookSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -15,3 +17,8 @@ class BookViewSet(viewsets.ModelViewSet):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_fields = ['title', 'author', 'publication_date']
+    search_fields = ['title']
+    ordering_fields = ['title', 'author', 'publication_date']
+    ordering = ['title']
