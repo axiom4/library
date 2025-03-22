@@ -1,4 +1,4 @@
-# A Full Test Application Using Django and Angular (Part 10) - Advanced Django Filters
+# A Full Test Application Using Django and Angular (Part 10) - Advanced Django Filters and Paginations
 
 This document provides a comprehensive guide to using advanced filtering techniques in Django applications with the help of the `django-filters` library. It also explains how to integrate filtering, searching, and ordering functionalities into Django REST Framework views and viewsets.
 
