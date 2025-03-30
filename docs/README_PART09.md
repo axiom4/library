@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 9) - Advanced Django Serializer
+# A full test application using Django and Angular (Part 09) - Advanced Django Serializer
 
 Now, we need to update angular rest client to operate with new django backend. So, we run `npm run generate:api`command.
 
@@ -92,11 +92,11 @@ urlpatterns = [
 
 Now we have the new `authors`rest service:
 
-![authors service](/docs/images/part9_1.png)
+![authors service](/docs/images/part09_1.png)
 
 We can display `authors` json data navigating into url: `http://localhost:8000/library/authors`:
 
-![authors data](/docs/images/part9_2.png)
+![authors data](/docs/images/part09_2.png)
 
 We can also see the new `Author` object inside the OpenAPI `yaml` schema:
 
@@ -154,7 +154,7 @@ export interface Book {
 
 Now, if we open our application on browser, we can see that the `author` values ​​are set with the `id` of the respective author from the `authors` table.
 
-![Author Error](/docs/images/part9_3.png)
+![Author Error](/docs/images/part09_3.png)
 
 We modify our `Serializers` to handle our `author`'s data.
 
@@ -376,4 +376,4 @@ Finally, we can update our `app.component.html` and `book.component.html` templa
 
 This is the result:
 
-![App Result](/docs/images/part9_4.png)
+![App Result](/docs/images/part09_4.png)

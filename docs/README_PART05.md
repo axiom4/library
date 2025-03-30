@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 5) - OpenAPI integration
+# A full test application using Django and Angular (Part 05) - OpenAPI integration
 
 Now, let's configure OpenAPI schema to integrate apps.
 
@@ -123,7 +123,7 @@ This command fetches the schema from the root URL (`/`) and saves it to a file n
 
 You can also access the OpenAPI schema directly in your browser by navigating to the root URL of your API (e.g., `http://localhost:8000/`). The schema will be displayed in a human-readable format.
 
-![OpenAPI View](/docs/images/part5_1.png)
+![OpenAPI View](/docs/images/part05_1.png)
 
 ## Securing the OpenAPI schema
 
@@ -180,7 +180,7 @@ SPECTACULAR_SETTINGS = {
 
 With these changes, only requests originating from the specified IP addresses will be able to access the OpenAPI schema.
 
-![Access List schema protection](/docs/images/part5_2.png)
+![Access List schema protection](/docs/images/part05_2.png)
 
 ## Angular OpenAPI integrations
 
@@ -287,6 +287,6 @@ This command GET to django server url `http://localhost:8000/?format=openapi`:
 
 This command created the Angular modules in the `src/app/modules/core/api/v1` directory.
 
-![Angular Services](/docs/images/part5_3.png)
+![Angular Services](/docs/images/part05_3.png)
 
 Now, whenever the Django REST services change, you can simply update the Angular services by running the command `npm run generate:api`.

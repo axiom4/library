@@ -42,3 +42,4 @@ This demo project guides you through the process of creating a full-stack applic
 8. [Upgrade Django Schema](/docs/README_PART08.md)
 9. [Advanced Django Serializer](/docs/README_PART09.md)
 10. [Advanced Django Fiters and Paginations](/docs/README_PART10.md)
+11. [Angular Forms](/docs/README_PART11.md)

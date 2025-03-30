@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 8) - Upgrade Django Schema
+# A full test application using Django and Angular (Part 08) - Upgrade Django Schema
 
 In this section, we will upgrade our Django backend to organize the classes into different directories and create relational models.
 
@@ -225,7 +225,7 @@ library
 
 Let's test our rest service:
 
-![Rest service](/docs/images/part8_1.png)
+![Rest service](/docs/images/part08_1.png)
 
 ## Extending Django Model
 
@@ -521,11 +521,11 @@ Now you can managing `authors` table from Django Admin console. We add these dat
 
 On our Django administration console, we will have:
 
-![Authors list](/docs/images/part8_2.png)
+![Authors list](/docs/images/part08_2.png)
 
 Now we need to update `books` and assign the respective `author`, so we update all books:
 
-![Update Authors](/docs/images/part8_3.png)
+![Update Authors](/docs/images/part08_3.png)
 
 Now our data has been organized into two separate tables:
 
@@ -645,4 +645,4 @@ Running migrations:
 
 This is the result:
 
-![Admin Author Autocomplete](/docs/images/part8_4.png)
+![Admin Author Autocomplete](/docs/images/part08_4.png)

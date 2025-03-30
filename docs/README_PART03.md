@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 3) - MySQL container
+# A full test application using Django and Angular (part 03) - MySQL container
 
 Now we will start creating the middleware on which our application will run. We will use Docker Desktop as a base to create a MySQL container.
 
@@ -105,7 +105,7 @@ Now we will run the command to create our MySQL container:
 # docker-compose up -d
 ```
 
-![./manage.py runserver](/docs/images/part3_1.png)
+![./manage.py runserver](/docs/images/part03_1.png)
 
 Further information can be found in the Docker documentation [https://docs.docker.com](https://docs.docker.com).
 

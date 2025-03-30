@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 2) - Angular Frontend
+# A full test application using Django and Angular (part 02) - Angular Frontend
 
 First of all, you need to install Node.js ([https://nodejs.org/](https://nodejs.org/)). You can follow the instructions on this page [https://nodejs.org/en/download](https://nodejs.org/en/download).
 
@@ -65,4 +65,4 @@ NOTE: Raw file sizes do not reflect development server per-request transformatio
 
 Open the browser and navigate to the following URL: http://localhost:4200.
 
-![angular](/docs/images/part2_1.png)
+![angular](/docs/images/part02_1.png)

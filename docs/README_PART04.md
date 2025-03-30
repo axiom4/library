@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 4) - Djago Rest framework
+# A full test application using Django and Angular (Part 04) - Djago Rest framework
 
 Now, let's create a new model for the book. We will create a new app called `library` and create a new model called `Book`.
 
@@ -158,7 +158,7 @@ Running migrations:
 
 Let's connect to our Django admin page and manage the new table.
 
-![Books admin](/docs/images/part4_1.png)
+![Books admin](/docs/images/part04_1.png)
 
 We will add the following books:
 
@@ -172,7 +172,7 @@ We will add the following books:
 | Crime and Punishment                 | Fyodor Dostoevsky         | 1866-01-01       |
 | The Idiot                            | Fyodor Dostoevsky         | 1868-01-01       |
 
-![Books admin](/docs/images/part4_2.png)
+![Books admin](/docs/images/part04_2.png)
 
 To create a serializer for the Book model, you'll need to create a `serializers.py` file inside the `library` app directory. This file will define the serializer class that handles the conversion of Book model instances to JSON format and vice versa.
 
@@ -270,7 +270,7 @@ This includes the URL patterns defined in `library/urls.py` under the `/api/` pa
 
 Now, you can run your Django development server and access the API endpoints for the Book model. For example, you can go to `http://localhost:8000/library/books/` to see a list of all books in JSON format, or use the browsable API to interact with the endpoints.
 
-![Books admin](/docs/images/part4_3.png)
+![Books admin](/docs/images/part04_3.png)
 
 ### Api authetication
 

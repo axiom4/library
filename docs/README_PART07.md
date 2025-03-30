@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 7) - Angular Routes
+# A full test application using Django and Angular (Part 07) - Angular Routes
 
 To create a new Angular module named "Library", you can use the following command:
 
@@ -180,11 +180,11 @@ Let's update the `book.component.html` template as follows:
 
 Now, let's open our app, select first book and see what happens:
 
-![Angular App](/docs/images/part7_1.png)
+![Angular App](/docs/images/part07_1.png)
 
 Let's select another book:
 
-![Angular App](/docs/images/part7_2.png)
+![Angular App](/docs/images/part07_2.png)
 
 The book object is not updated when the route changes because the `ActivatedRoute` snapshot is used to retrieve the `bookId` in the `ngOnInit` lifecycle hook. The snapshot only provides the initial value of the route parameters when the component is first created. It does not reflect subsequent changes to the route parameters.
 
@@ -450,11 +450,11 @@ This code defines the styles for the book component.
 
 Now we can view our application:
 
-![Angular App](/docs/images/part7_3.png)
+![Angular App](/docs/images/part07_3.png)
 
 let's try to insert an incorrect id:
 
-![Angular App](/docs/images/part7_4.png)
+![Angular App](/docs/images/part07_4.png)
 
 #### A Little Fix
 

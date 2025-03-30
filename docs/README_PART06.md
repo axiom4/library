@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 6) - Angular OpenAPI service integration
+# A full test application using Django and Angular (Part 06) - Angular OpenAPI service integration
 
 Let's start by creating the environment files that will allow us to customize our Angular application.
 
@@ -191,6 +191,6 @@ Open your browser and go to the indicated address to view the running applicatio
 
 Open your browser and connect to your Angular page `http://localhost:4200`.
 
-![Angular App](/docs/images/part6_1.png)
+![Angular App](/docs/images/part06_1.png)
 
 You can see from the browser's developer console that a GET call is made to the URL `http://localhost:8000/library/books`, and the entire list of books loaded on our Django application is returned.

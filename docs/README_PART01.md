@@ -1,4 +1,4 @@
-# A full test application using Django and Angular (Part 1) - Django Project
+# A full test application using Django and Angular (part 01) - Django Project
 
 Create a container directory and install a Python3 Virtual Environment
 
@@ -193,7 +193,7 @@ Quit the server with CONTROL-C.
 
 Open the browser and navigate to the following URL: http://localhost:8000
 
-![./manage.py runserver](/docs/images/part1_1.png)
+![./manage.py runserver](/docs/images/part01_1.png)
 
 Create Django superuser
 
@@ -206,8 +206,8 @@ Superuser created successfully.
 
 Go to admin page URL: http://localhost:8000/admin and login with admin user
 
-![Django Admin login](/docs/images/part1_2.png)
+![Django Admin login](/docs/images/part01_2.png)
 
 now you can manage your newly created Django schema
 
-![Django Admin login](/docs/images/part1_3.png)
+![Django Admin login](/docs/images/part01_3.png)
