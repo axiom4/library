@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { Book, LibraryService } from './modules/core/api/v1';
-import { NgFor } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { LibraryComponent } from './modules/library/components/library/library.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NgFor, RouterLink],
+  imports: [RouterOutlet, LibraryComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -17,19 +16,7 @@ import { NgFor } from '@angular/common';
  * @implements {OnInit}
  */
 export class AppComponent implements OnInit {
-  title = 'Library';
-  books: Book[] = [];
+  constructor() {}
 
-  constructor(private readonly libraryService: LibraryService) {}
-
-  ngOnInit(): void {
-    this.libraryService.libraryBooksList().subscribe({
-      next: (data) => {
-        this.books = data.results;
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-  }
+  ngOnInit(): void {}
 }
