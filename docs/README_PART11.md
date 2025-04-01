@@ -166,3 +166,118 @@ import { LibraryComponent } from './modules/library/components/library/library.c
 ```
 
 Now, we can run our app.
+
+## Angular Material
+
+Now we use angular-material ([https://material.angular.io](https://material.angular.io)) to manage the ui of our application.
+
+### What is Angular Material?
+
+Angular Material is a UI component library for Angular that provides a set of pre-built, customizable, and accessible UI components following the Material Design guidelines. It helps developers build consistent and visually appealing user interfaces, enhancing the overall user experience.
+
+### How to Add Angular Material to the `library` Project
+
+Here's a detailed guide on how to add Angular Material to your project:
+
+#### Step 1: Install Angular Material
+
+Run the following command in your project directory:
+
+```bash
+ng add @angular/material
+
+✔ Determining Package Manager
+  › Using package manager: npm
+✔ Searching for compatible package version
+  › Found compatible package version: @angular/material@19.2.7.
+✔ Loading package information from registry
+✔ Confirming installation
+✔ Installing package
+✔ Choose a prebuilt theme name, or "custom" for a custom theme: Azure/Blue
+[Preview: https://material.angular.io?theme=azure-blue]
+✔ Set up global Angular Material typography styles? No
+UPDATE package.json (1374 bytes)
+✔ Packages installed successfully.
+UPDATE angular.json (3071 bytes)
+UPDATE src/index.html (528 bytes)
+UPDATE src/styles.scss (705 bytes)
+```
+
+This command will:
+
+- **Install Angular Material, Angular CDK (Component Dev Kit), and Angular Animations**: These are the core dependencies required for using Angular Material components.
+- **Ask you to choose a pre-built theme or set up a custom theme**: Angular Material comes with several pre-built themes (e.g., Indigo/Pink, Deep Purple/Amber) that you can choose from. You can also create a custom theme to match your application's branding.
+- **Configure your project with the necessary dependencies and settings**: The `ng add` command automatically updates your `package.json`, `angular.json`, and other configuration files to include the required dependencies and settings for Angular Material.
+
+#### Step 2: Import Angular Material Modules
+
+Import the specific Angular Material modules you need in your component or module files. Each Angular Material component belongs to a specific module. For example, to use the `MatButtonModule`, add the following import:
+
+```typescript
+// filepath: src/app/app.module.ts (or relevant module)
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations"; // Import BrowserAnimationsModule
+import { MatButtonModule } from "@angular/material/button"; // Import MatButtonModule
+import { AppComponent } from "./app.component";
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule, // Required for Angular Material animations
+    MatButtonModule, // Import the MatButtonModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+**Note**: Make sure to import the `BrowserAnimationsModule` in your root module (`AppModule`) to enable animations for Angular Material components.
+
+#### Step 3: Use Angular Material Components in Your Templates
+
+Now you can use Angular Material components in your templates. For example, to add a Material button:
+
+```html
+<!-- filepath: src/app/app.component.html (or relevant template) -->
+<button mat-raised-button color="primary">Click me!</button>
+```
+
+Here, `mat-raised-button` is a directive that styles the button according to Material Design, and `color="primary"` applies the primary color from your selected theme.
+
+#### Step 4: Configure a Theme (Optional)
+
+You can customize the look and feel of Angular Material components by configuring a theme in your `styles.scss` (or `styles.css`) file. The `ng add @angular/material` command typically sets up a basic theme for you. To further customize the theme, you can modify the theme variables:
+
+```scss
+// filepath: src/styles.scss
+@import "~@angular/material/theming";
+// Plus imports for other components in your app.
+
+// Define a custom theme
+$custom-primary: mat-palette($mat-indigo);
+$custom-accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$custom-warn: mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$custom-theme: mat-light-theme(
+  (
+    color: (
+      primary: $custom-primary,
+      accent: $custom-accent,
+      warn: $custom-warn,
+    ),
+  )
+);
+
+// Include theme styles for core and each component.
+@include mat-core-theme($custom-theme);
+@include mat-button-theme($custom-theme);
+// Include styles for other components as needed
+```
+
+By following these steps and examples, you can easily integrate Angular Material into your `library` project and start using its powerful and customizable UI components.
