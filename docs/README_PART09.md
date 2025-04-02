@@ -208,7 +208,7 @@ class BookSerializer(serializers.HyperlinkedModelSerializer):
 
     year = serializers.SerializerMethodField(read_only=True)
 
-    def get_year(self, obj):
+    def get_year(self, obj) -> int:
         return obj.publication_date.year
 
     class Meta:

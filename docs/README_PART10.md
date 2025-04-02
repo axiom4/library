@@ -298,56 +298,88 @@ To address these issues, it is necessary to implement pagination in the API. Pag
    from rest_framework.response import Response
 
    class LibraryPagination(PageNumberPagination):
-       page_size = 6  # Default page size
-       page_size_query_param = 'page_size'  # Allow clients to set page size
-       max_page_size = 100  # Maximum page size allowed
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+    page_size = 5
 
-       def get_paginated_response(self, data):
-           return Response({
-               'total_records': self.page.paginator.count,
-               'total_pages': self.page.paginator.num_pages,
-               'current_page': self.page.number,
-               'next': self.get_next_link(),
-               'previous': self.get_previous_link(),
-               'results': data
-           })
+    def get_paginated_response(self, data):
+        return Response({
+            'total_records': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'current_page': self.page.number,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
+
+    def get_paginated_response_schema(self, schema):
+        return {
+            'type': 'object',
+            'properties': {
+                'total_records': {
+                    'type': 'integer',
+                    'example': 123,
+                },
+                'total_pages': {
+                    'type': 'integer',
+                    'example': 123,
+                },
+                'current_page': {
+                    'type': 'integer',
+                    'example': 123,
+                },
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': '...'
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': '...'
+                },
+                'results': schema,
+            },
+        }
    ```
 
 2. **Use the Custom Pagination Class**:
    Update the Django REST Framework settings to use the custom pagination class.
 
-   ```python
-   REST_FRAMEWORK = {
-       # ...existing settings...
-       'DEFAULT_PAGINATION_CLASS': 'library.pagination.LibraryPagination',
-       'PAGE_SIZE': 6,
-   }
-   ```
+```python
+REST_FRAMEWORK = {
+    # ...existing settings...
+    'DEFAULT_PAGINATION_CLASS': 'library.pagination.LibraryPagination',
+    'PAGE_SIZE': 6,
+}
+```
 
-   Instead of setting `LibraryPagination` globally in the Django REST Framework settings, you can assign it directly to a specific `ViewSet`. This approach provides more granular control over pagination behavior for individual endpoints.
+Instead of setting `LibraryPagination` globally in the Django REST Framework settings, you can assign it directly to a specific `ViewSet`. This approach provides more granular control over pagination behavior for individual endpoints.
 
-   #### Example:
+#### Example:
 
-   ```python
-   # ... your code ...
-   from library.pagination import LibraryPagination
-   # ...
+```python
+# ... your code ...
+from library.pagination import LibraryPagination
+# ...
 
-   class BookViewSet(viewsets.ModelViewSet):
-       # ... your code ...
-       pagination_class = LibraryPagination  # Assign the custom pagination class
-       # ...
-   ```
+class BookViewSet(viewsets.ModelViewSet):
+    # ... your code ...
+    pagination_class = LibraryPagination  # Assign the custom pagination class
+    # ...
+```
 
-   ***
+---
 
-   ### Benefits of Assigning `LibraryPagination` to a ViewSet
+### Benefits of Assigning `LibraryPagination` to a ViewSet
 
-   - **Granular Control**: Allows you to customize pagination behavior for specific endpoints without affecting the entire application.
-   - **Flexibility**: Enables different pagination strategies for different resources.
-   - **Ease of Testing**: Simplifies testing by isolating pagination logic to individual views.
+- **Granular Control**: Allows you to customize pagination behavior for specific endpoints without affecting the entire application.
+- **Flexibility**: Enables different pagination strategies for different resources.
+- **Ease of Testing**: Simplifies testing by isolating pagination logic to individual views.
 
-   By assigning `LibraryPagination` directly to a `ViewSet`, you can tailor the pagination behavior to meet the specific needs of that endpoint while maintaining flexibility across your application.
+By assigning `LibraryPagination` directly to a `ViewSet`, you can tailor the pagination behavior to meet the specific needs of that endpoint while maintaining flexibility across your application.
 
 3. **Modify the API Response**:
    With the custom pagination class, the API response will include additional metadata, such as the total number of pages and the current page.
