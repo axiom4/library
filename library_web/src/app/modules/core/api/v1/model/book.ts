@@ -20,7 +20,7 @@ export interface Book {
     readonly author_url: string;
     author?: number;
     publication_date: string;
-    readonly year: string;
+    readonly year: number;
     readonly created_at: string;
     readonly updated_at: string;
 }

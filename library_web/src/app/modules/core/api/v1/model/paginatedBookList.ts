@@ -11,9 +11,11 @@ import { Book } from './book';
 
 
 export interface PaginatedBookList { 
-    count: number;
+    total_records?: number;
+    total_pages?: number;
+    current_page?: number;
     next?: string;
     previous?: string;
-    results: Array<Book>;
+    results?: Array<Book>;
 }
 
