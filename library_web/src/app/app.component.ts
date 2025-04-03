@@ -4,9 +4,9 @@ import { LibraryComponent } from './modules/library/components/library/library.c
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, LibraryComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  imports: [RouterOutlet, LibraryComponent],
 })
 /**
  * The `AppComponent` serves as the root component of the Library application.

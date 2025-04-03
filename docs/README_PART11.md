@@ -179,7 +179,7 @@ Angular Material is a UI component library for Angular that provides a set of pr
 
 Here's a detailed guide on how to add Angular Material to your project:
 
-#### Step 1: Install Angular Material
+#### Install Angular Material
 
 Run the following command in your project directory:
 
@@ -209,34 +209,7 @@ This command will:
 - **Ask you to choose a pre-built theme or set up a custom theme**: Angular Material comes with several pre-built themes (e.g., Indigo/Pink, Deep Purple/Amber) that you can choose from. You can also create a custom theme to match your application's branding.
 - **Configure your project with the necessary dependencies and settings**: The `ng add` command automatically updates your `package.json`, `angular.json`, and other configuration files to include the required dependencies and settings for Angular Material.
 
-#### Step 2: Import Angular Material Modules
-
-Import the specific Angular Material modules you need in your component or module files. Each Angular Material component belongs to a specific module. For example, to use the `MatButtonModule`, add the following import:
-
-```typescript
-// filepath: src/app/app.module.ts (or relevant module)
-import { NgModule } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations"; // Import BrowserAnimationsModule
-import { MatButtonModule } from "@angular/material/button"; // Import MatButtonModule
-import { AppComponent } from "./app.component";
-
-@NgModule({
-  declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule, // Required for Angular Material animations
-    MatButtonModule, // Import the MatButtonModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent],
-})
-export class AppModule {}
-```
-
-**Note**: Make sure to import the `BrowserAnimationsModule` in your root module (`AppModule`) to enable animations for Angular Material components.
-
-#### Step 3: Use Angular Material Components in Your Templates
+#### Use Angular Material Components in Your Templates
 
 Now you can use Angular Material components in your templates. For example, to add a Material button:
 
@@ -247,37 +220,34 @@ Now you can use Angular Material components in your templates. For example, to a
 
 Here, `mat-raised-button` is a directive that styles the button according to Material Design, and `color="primary"` applies the primary color from your selected theme.
 
-#### Step 4: Configure a Theme (Optional)
+**Note:** For standalone components, ensure you import `MatButtonModule` in the component's `imports` array where you are using the `mat-raised-button`.
 
-You can customize the look and feel of Angular Material components by configuring a theme in your `styles.scss` (or `styles.css`) file. The `ng add @angular/material` command typically sets up a basic theme for you. To further customize the theme, you can modify the theme variables:
+To use the `mat-raised-button` in `app.component.ts`, you need to import the `MatButtonModule`:
 
-```scss
-// filepath: src/styles.scss
-@import "~@angular/material/theming";
-// Plus imports for other components in your app.
+```typescript
+// filepath: src/app/app.component.ts
+import { Component, OnInit } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { LibraryComponent } from "./modules/library/components/library/library.component";
+import { MatButtonModule } from "@angular/material/button";
 
-// Define a custom theme
-$custom-primary: mat-palette($mat-indigo);
-$custom-accent: mat-palette($mat-pink, A200, A100, A400);
+@Component({
+  selector: "app-root",
+  imports: [RouterOutlet, LibraryComponent, MatButtonModule],
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.scss",
+})
+export class AppComponent implements OnInit {
+  constructor() {}
 
-// The warn palette is optional (defaults to red).
-$custom-warn: mat-palette($mat-red);
-
-// Create the theme object (a Sass map containing all of the palettes).
-$custom-theme: mat-light-theme(
-  (
-    color: (
-      primary: $custom-primary,
-      accent: $custom-accent,
-      warn: $custom-warn,
-    ),
-  )
-);
-
-// Include theme styles for core and each component.
-@include mat-core-theme($custom-theme);
-@include mat-button-theme($custom-theme);
-// Include styles for other components as needed
+  ngOnInit(): void {}
+}
 ```
 
+#### Configure a Theme (Optional)
+
+// ... existing code ...
+
 By following these steps and examples, you can easily integrate Angular Material into your `library` project and start using its powerful and customizable UI components.
+
+Now we will use `<mat-paginator` angular-material component to interate out pagination in frontend application.
