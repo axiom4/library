@@ -7,3 +7,13 @@
     {{ book.year }} (<a routerLink="/library/books/{{ book.id }}">details</a>)
   </li>
 </ul>
+<mat-paginator
+  #paginator
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  [length]="totalBooks"
+  [pageIndex]="pageIndex"
+  (page)="handlePageEvent($event)"
+  aria-label="Select page"
+>
+</mat-paginator>
