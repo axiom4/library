@@ -21,10 +21,20 @@ export class LibraryComponent implements OnInit {
   totalBooks = 0;
   pageSize = 5;
   pageIndex = 0;
+  pageEvent: PageEvent | undefined;
+  pageSizeOptions = [5, 10, 25];
 
   constructor(private readonly libraryService: LibraryService) {}
 
   ngOnInit(): void {
+    this.getBooks();
+  }
+
+  handlePageEvent(e: PageEvent) {
+    this.pageEvent = e;
+    this.pageSize = e.pageSize;
+    this.pageIndex = e.pageIndex;
+
     this.getBooks();
   }
 
@@ -36,6 +46,7 @@ export class LibraryComponent implements OnInit {
 
     this.libraryService.libraryBooksList(params).subscribe({
       next: (data: PaginatedBookList) => {
+        console.log(data);
         this.books = data.results || [];
         this.totalBooks = data.total_records || 0;
       },

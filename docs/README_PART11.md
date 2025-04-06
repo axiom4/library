@@ -1,4 +1,4 @@
-# A Full Test Application Using Django and Angular (Part 11) - Angular Forms
+# A Full Test Application Using Django and Angular (Part 11) - Angular Material Components
 
 Run the following command to generate a new component called `Library`:
 
@@ -17,7 +17,7 @@ This will create the following files:
 - `library.component.spec.ts` (test file)
 - `library.component.ts` (TypeScript file)
 
-Now, we move contents of `app.component.html` into `library.component.html`, replace the contents of `library.component.html` with the following:
+Now, move the contents of `app.component.html` into `library.component.html`. Replace the contents of `library.component.html` with the following:
 
 ```html
 <!-- filepath: src/app/modules/library/components/library/library.component.html -->
@@ -29,7 +29,7 @@ Now, we move contents of `app.component.html` into `library.component.html`, rep
 </ul>
 ```
 
-Move Contents of `app.component.ts` into `library.component.ts`, replace the contents of `library.component.ts` with the following:
+Move the contents of `app.component.ts` into `library.component.ts`. Replace the contents of `library.component.ts` with the following:
 
 ```typescript
 // filepath: src/app/modules/library/components/library/library.component.ts
@@ -62,7 +62,7 @@ export class LibraryComponent implements OnInit {
 }
 ```
 
-and clean `app.component.ts` code:
+Clean the `app.component.ts` code:
 
 ```typescript
 // filepath: src/app/app.component.ts
@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
 }
 ```
 
-Finally, replace content of `app.component.html` as follow:
+Finally, replace the content of `app.component.html` as follows:
 
 ```html
 <!-- filepath: src/app/app.component.html -->
@@ -133,9 +133,9 @@ We can see some dependency errors caused by the use of `standalone` components.
 >
 > Standalone components are particularly useful for building reusable libraries or simplifying small applications.
 
-To fix code we need imports some classes into our code.
+To fix the code, we need to import some classes into our code.
 
-In library.component.ts we import these classes:
+In `library.component.ts`, import these classes:
 
 ```typescript
 // ... code
@@ -151,7 +151,7 @@ import { RouterLink } from '@angular/router';
 // ... code
 ```
 
-In `app.component.ts` import:
+In `app.component.ts`, import:
 
 ```typescript
 // ... code
@@ -170,7 +170,7 @@ Now, we can run our app.
 
 ## Angular Material
 
-Now we use angular-material ([https://material.angular.io](https://material.angular.io)) to manage the ui of our application.
+Now we use Angular Material ([https://material.angular.io](https://material.angular.io)) to manage the UI of our application.
 
 ### What is Angular Material?
 
@@ -291,9 +291,9 @@ By following these steps and examples, you can easily integrate Angular Material
 
 ## Library Books Pagination
 
-Now we will use `<mat-paginator` (https://material.angular.io/components/paginator/overview) angular-material component to interate out pagination in frontend application.
+Now we will use `<mat-paginator` ([https://material.angular.io/components/paginator/overview](https://material.angular.io/components/paginator/overview)) Angular Material component to iterate our pagination in the frontend application.
 
-Let's we will create a new method `getBooks()`, this method will be called when we need reloading the books list.
+Let's create a new method `getBooks()`. This method will be called when we need to reload the books list.
 
 ```typescript
 import { Component, OnInit } from "@angular/core";
@@ -384,3 +384,137 @@ This code defines an Angular component called `LibraryComponent` that displays a
     - `error`: This function is called if the API request fails. It logs the error to the console.
 
 In summary, this component fetches a paginated list of books from a library API and displays them in a template. It handles pagination by passing `page` and `pageSize` parameters to the API. It also includes error handling to log any API request failures.
+
+Now we are ready to add our `mat-paginator` component. Let's add the following to the end of our `library.component.html`:
+
+```html
+<mat-paginator
+  #paginator
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[5, 10, 25, 100]"
+  [length]="totalBooks"
+  [pageIndex]="pageIndex"
+  (page)="handlePageEvent($event)"
+  aria-label="Select page"
+>
+</mat-paginator>
+```
+
+> ### Code Explain
+>
+> The code snippet represents an Angular Material paginator component. Let's break down its attributes:
+>
+> - `mat-paginator`: This is the main directive that identifies the element as a Material paginator.
+> - `#paginator`: This creates a template reference variable named `paginator`, allowing you to access this paginator instance in your component's TypeScript code or other parts of the template.
+> - `[pageSize]="pageSize"`: This binds the `pageSize` property of the paginator to a component variable called `pageSize`. `pageSize` determines how many items are displayed on each page.
+> - `[pageSizeOptions]="[5, 10, 25, 100]"`: This provides an array of options for the user to select the number of items per page. In this case, the user can choose to display 5, 10, 25, or 100 items per page.
+> - `[length]="totalBooks"`: This binds the `length` property to a component variable called `totalBooks`. `length` represents the total number of items being paginated, which is used to calculate the total number of pages.
+> - `[pageIndex]="pageIndex"`: This binds the `pageIndex` property to a component variable called `pageIndex`. `pageIndex` represents the current page number (starting from 0).
+> - `(page)="handlePageEvent($event)"`: This binds the `page` event of the paginator to a component method called `handlePageEvent`. The `page` event is emitted whenever the user navigates to a different page. The `$event` object contains information about the page event, such as the new page index and page size.
+> - `aria-label="Select page"`: This provides an ARIA label for accessibility, which is read by screen readers to help users understand the purpose of the paginator.
+
+Finally, let's complete our code by adding the class method `handlePageEvent($event)`. This method will be called by `mat-paginator` every time a new action is performed.
+
+```typescipt
+  handlePageEvent(e: PageEvent) {
+    this.pageEvent = e;
+    this.pageSize = e.pageSize;
+    this.pageIndex = e.pageIndex;
+
+    this.getBooks();
+  }
+```
+
+Let's also add the properties necessary for the operation of our component:
+
+```typescript
+pageSize = 5;
+pageIndex = 0;
+pageEvent: PageEvent | undefined;
+pageSizeOptions = [5, 10, 25];
+```
+
+Di seguito il codice completo per il nostro componente `library.component`:
+
+```html
+<!-- file: library.component.html -->
+
+<h1>{{ title }}</h1>
+
+<h2>Books</h2>
+<ul>
+  <li *ngFor="let book of books"><strong>{{ book.title }}</strong> by {{ book.author_name }} - {{ book.year }} (<a routerLink="/library/books/{{ book.id }}">details</a>)</li>
+</ul>
+<mat-paginator
+  #paginator
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  [length]="totalBooks"
+  [pageIndex]="pageIndex"
+  (page)="handlePageEvent($event)"
+  aria-label="Select page"
+>
+</mat-paginator>
+```
+
+```typescript
+// file: library.component.ts
+
+import { Component, OnInit } from "@angular/core";
+import { Book, LibraryService, PaginatedBookList, LibraryBooksListRequestParams } from "../../../core/api/v1";
+import { NgFor } from "@angular/common";
+import { RouterLink } from "@angular/router";
+import { PageEvent, MatPaginatorModule } from "@angular/material/paginator";
+
+@Component({
+  selector: "app-library",
+  imports: [NgFor, RouterLink, MatPaginatorModule],
+  templateUrl: "./library.component.html",
+  styleUrl: "./library.component.scss",
+})
+export class LibraryComponent implements OnInit {
+  title = "Library";
+  books: Book[] = [];
+  totalBooks = 0;
+  pageSize = 5;
+  pageIndex = 0;
+  pageEvent: PageEvent | undefined;
+  pageSizeOptions = [5, 10, 25];
+
+  constructor(private readonly libraryService: LibraryService) {}
+
+  ngOnInit(): void {
+    this.getBooks();
+  }
+
+  handlePageEvent(e: PageEvent) {
+    this.pageEvent = e;
+    this.pageSize = e.pageSize;
+    this.pageIndex = e.pageIndex;
+
+    this.getBooks();
+  }
+
+  getBooks() {
+    const params: LibraryBooksListRequestParams = {
+      page: this.pageIndex + 1,
+      pageSize: this.pageSize,
+    };
+
+    this.libraryService.libraryBooksList(params).subscribe({
+      next: (data: PaginatedBookList) => {
+        console.log(data);
+        this.books = data.results || [];
+        this.totalBooks = data.total_records || 0;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+}
+```
+
+Let's run our application now:
+
+![Application with paginator](/docs/images/part11_1.png)
