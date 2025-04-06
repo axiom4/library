@@ -35,6 +35,7 @@ Move Contents of `app.component.ts` into `library.component.ts`, replace the con
 // filepath: src/app/modules/library/components/library/library.component.ts
 import { Component, OnInit } from "@angular/core";
 import { Book, LibraryService } from "../../../core/api/v1";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-library",
@@ -291,3 +292,95 @@ By following these steps and examples, you can easily integrate Angular Material
 ## Library Books Pagination
 
 Now we will use `<mat-paginator` (https://material.angular.io/components/paginator/overview) angular-material component to interate out pagination in frontend application.
+
+Let's we will create a new method `getBooks()`, this method will be called when we need reloading the books list.
+
+```typescript
+import { Component, OnInit } from "@angular/core";
+import { Book, LibraryService, PaginatedBookList, LibraryBooksListRequestParams } from "../../../core/api/v1";
+import { NgFor } from "@angular/common";
+import { RouterLink } from "@angular/router";
+
+@Component({
+  selector: "app-library",
+  imports: [NgFor, RouterLink],
+  templateUrl: "./library.component.html",
+  styleUrl: "./library.component.scss",
+})
+export class LibraryComponent implements OnInit {
+  books: Book[] = [];
+  totalBooks = 0;
+  pageSize = 5;
+  pageIndex = 0;
+
+  constructor(private readonly libraryService: LibraryService) {}
+
+  ngOnInit(): void {
+    this.getBooks();
+  }
+
+  getBooks() {
+    const params: LibraryBooksListRequestParams = {
+      page: this.pageIndex + 1,
+      pageSize: this.pageSize,
+    };
+
+    this.libraryService.libraryBooksList(params).subscribe({
+      next: (data: PaginatedBookList) => {
+        this.books = data.results || [];
+        this.totalBooks = data.total_records || 0;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+}
+```
+
+This code defines an Angular component called `LibraryComponent` that displays a paginated list of books fetched from a library service.
+
+**Imports:**
+
+- `Component` and `OnInit` from `@angular/core` are used for defining the component and its lifecycle.
+- `Book`, `LibraryService`, `PaginatedBookList`, and `LibraryBooksListRequestParams` from `../../../core/api/v1` are types and services related to the library API. It's assumed that this path points to a file defining these interfaces and the service.
+- `NgFor` from `@angular/common` is used for iterating over the books in the template.
+- `RouterLink` from `@angular/router` is used for creating links to book details (presumably).
+
+**Component Decorator:**
+
+- `@Component` is a decorator that defines the component's metadata:
+  - `selector`: `app-library` is the selector used to include this component in other templates.
+  - `imports`: Specifies the modules/components required by this component. `NgFor` is essential for rendering lists, and `RouterLink` for navigation.
+  - `templateUrl`: `./library.component.html` specifies the HTML template file for this component.
+  - `styleUrl`: `./library.component.scss` specifies the SCSS stylesheet file for this component.
+
+**Component Class:**
+
+- `LibraryComponent` is the main class for the component.
+  - `books`: `Book[]` is an array to store the books fetched from the service. It's initialized as an empty array.
+  - `totalBooks`: `number` stores the total number of books in the library (used for pagination).
+  - `pageSize`: `number` defines the number of books to display per page (default is 5).
+  - `pageIndex`: `number` represents the current page number (starts from 0).
+
+**Constructor:**
+
+- `constructor(private readonly libraryService: LibraryService)` injects the `LibraryService` into the component. `LibraryService` is presumably responsible for making API calls to fetch book data. The `readonly` keyword ensures that the `libraryService` can only be initialized in the constructor.
+
+**`ngOnInit` Lifecycle Hook:**
+
+- `ngOnInit(): void` is a lifecycle hook that is called after the component is initialized. It calls the `getBooks()` method to fetch the initial list of books.
+
+**`getBooks` Method:**
+
+- `getBooks()` is responsible for fetching books from the `LibraryService`.
+  - It creates a `params` object of type `LibraryBooksListRequestParams` to hold the pagination parameters. Note that the `page` parameter is `this.pageIndex + 1` because the API likely expects page numbers to start from 1, while `pageIndex` in the component starts from 0.
+  - It calls the `libraryService.libraryBooksList(params)` method to make the API request.
+  - It subscribes to the Observable returned by `libraryBooksList()` to handle the response.
+    - `next`: This function is called when the API request is successful. It receives the `PaginatedBookList` data.
+      - `console.log(data)`: Logs the entire response data to the console (useful for debugging).
+      - `this.books = data.results || []`: Assigns the `results` array from the response to the `this.books` array. The `|| []` is a safety check to ensure that `this.books` is always an array, even if `data.results` is null or undefined.
+      - `this.totalBooks = data.total_records || 0`: Assigns the `total_records` from the response to the `this.totalBooks` property. The `|| 0` is a safety check to ensure that `this.totalBooks` is always a number, even if `data.total_records` is null or undefined.
+    - `error`: This function is called if the API request fails. It logs the error to the console.
+
+In summary, this component fetches a paginated list of books from a library API and displays them in a template. It handles pagination by passing `page` and `pageSize` parameters to the API. It also includes error handling to log any API request failures.
