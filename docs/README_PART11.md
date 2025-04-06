@@ -246,8 +246,48 @@ export class AppComponent implements OnInit {
 
 #### Configure a Theme (Optional)
 
-// ... existing code ...
+To customize the look and feel of your application, you can configure a theme for Angular Material. If you selected a pre-built theme during the installation process, it is already applied to your project. However, you can create a custom theme by following these steps:
+
+1. **Create a Custom Theme File**:
+   Create a new SCSS file (e.g., `src/styles/custom-theme.scss`) and define your custom theme:
+
+```scss
+@use "@angular/material" as mat;
+
+$primary: mat.define-palette(mat.$indigo-palette);
+$accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$warn: mat.define-palette(mat.$red-palette);
+
+$theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $primary,
+      accent: $accent,
+      warn: $warn,
+    ),
+  )
+);
+
+@include mat.all-component-themes($theme);
+```
+
+2. **Update `angular.json`**:
+   Add the custom theme file to the `styles` array in your `angular.json` file:
+
+```json
+"styles": [
+  "src/styles.scss",
+  "src/styles/custom-theme.scss"
+]
+```
+
+3. **Use the Custom Theme**:
+   The custom theme will now be applied to all Angular Material components in your application.
+
+By configuring a theme, you can ensure that your application aligns with your brand's design guidelines while leveraging the power of Angular Material.
 
 By following these steps and examples, you can easily integrate Angular Material into your `library` project and start using its powerful and customizable UI components.
 
-Now we will use `<mat-paginator` angular-material component to interate out pagination in frontend application.
+## Library Books Pagination
+
+Now we will use `<mat-paginator` (https://material.angular.io/components/paginator/overview) angular-material component to interate out pagination in frontend application.
