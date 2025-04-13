@@ -70,6 +70,8 @@ export class LibraryComponent implements OnInit {
       this.ordering = `${sortActive}`;
     }
 
+    this.pageIndex = 0;
+
     this.getBooks();
   }
 
