@@ -5,8 +5,7 @@ import {
   PaginatedBookList,
   LibraryBooksListRequestParams,
 } from '../../../core/api/v1';
-import { DatePipe, NgFor, NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { DatePipe, NgIf } from '@angular/common';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { Sort, MatSortModule, SortDirection } from '@angular/material/sort';
@@ -17,6 +16,37 @@ import { Sort, MatSortModule, SortDirection } from '@angular/material/sort';
   templateUrl: './library.component.html',
   styleUrl: './library.component.scss',
 })
+/**
+ * The `LibraryComponent` is responsible for displaying a paginated and sortable list of books
+ * in the library. It interacts with the `LibraryService` to fetch data and provides functionality
+ * for handling user interactions such as pagination and sorting.
+ *
+ * @remarks
+ * This component uses Angular Material's table and pagination components to display and manage
+ * the list of books. It maintains the current state of pagination, sorting, and the list of books
+ * retrieved from the API.
+ *
+ * @property {string} title - The title of the component, displayed in the UI.
+ * @property {Book[]} books - The array of books currently displayed in the table.
+ * @property {number} totalBooks - The total number of books available in the library.
+ * @property {number} pageSize - The number of books displayed per page.
+ * @property {number} pageIndex - The current page index (0-based).
+ * @property {PageEvent | undefined} pageEvent - The latest pagination event triggered by the user.
+ * @property {number[]} pageSizeOptions - The available options for the number of books per page.
+ * @property {string} ordering - The current sorting order for the list of books.
+ * @property {string[]} displayedColumns - The columns displayed in the table.
+ *
+ * @method ngOnInit - Lifecycle hook that initializes the component and fetches the initial list of books.
+ * @method handlePageEvent - Handles pagination events and updates the list of books accordingly.
+ * @method handleSortEvent - Handles sorting events and updates the list of books based on the selected criteria.
+ * @method getBooks - Fetches a paginated and sorted list of books from the library service.
+ *
+ * @example
+ * Example usage in a template:
+ * ```html
+ * <app-library></app-library>
+ * ```
+ */
 export class LibraryComponent implements OnInit {
   title = 'Library';
   books: Book[] = [];
@@ -34,6 +64,13 @@ export class LibraryComponent implements OnInit {
     this.getBooks();
   }
 
+  /**
+   * Handles pagination events triggered by the user.
+   * Updates the current page size and index based on the event,
+   * and fetches the updated list of books accordingly.
+   *
+   * @param e - The pagination event containing the new page size and index.
+   */
   handlePageEvent(e: PageEvent) {
     this.pageEvent = e;
     this.pageSize = e.pageSize;
@@ -42,6 +79,14 @@ export class LibraryComponent implements OnInit {
     this.getBooks();
   }
 
+  /**
+   * Handles the sorting event triggered by the user.
+   * Updates the sorting order and resets the page index before fetching the updated list of books.
+   *
+   * @param e - The sorting event containing the active sorting field and direction.
+   * @param e.active - The field by which the data should be sorted (e.g., 'publication_date', 'author_name', 'title').
+   * @param e.direction - The direction of sorting ('asc' for ascending, 'desc' for descending).
+   */
   handleSortEvent(e: Sort) {
     const sortDirection: SortDirection = e.direction;
     let sortActive = e.active;
@@ -64,7 +109,27 @@ export class LibraryComponent implements OnInit {
     this.getBooks();
   }
 
+  /**
+   * Fetches a paginated list of books from the library service based on the current
+   * page index, page size, and ordering criteria. Updates the component's `books`
+   * and `totalBooks` properties with the retrieved data.
+   *
+   * @remarks
+   * This method constructs the request parameters and calls the `libraryBooksList`
+   * method of the `libraryService`. It handles the response by populating the
+   * `books` array with the results and updating the `totalBooks` count. Errors
+   * during the API call are logged to the console.
+   *
+   * @returns void
+   */
   getBooks() {
+    /**
+     * Parameters for requesting a list of library books.
+     *
+     * @property page - The current page index incremented by 1 to match the API's 1-based pagination.
+     * @property pageSize - The number of items to display per page.
+     * @property ordering - The ordering criteria for the list of books.
+     */
     const params: LibraryBooksListRequestParams = {
       page: this.pageIndex + 1,
       pageSize: this.pageSize,
