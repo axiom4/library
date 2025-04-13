@@ -518,3 +518,95 @@ export class LibraryComponent implements OnInit {
 Let's run our application now:
 
 ![Application with paginator](/docs/images/part11_1.png)
+
+### Mat-Table and Mat-Sort
+
+Now, we update our `library.component.html` template as follow:
+
+```html
+<h1>{{ title }}</h1>
+
+<div class="library">
+  <h2>Books</h2>
+
+  <table *ngIf="books" mat-table [dataSource]="books" class="library-table" matSort matSortActive="ordering" matSortDirection="desc" (matSortChange)="handleSortEvent($event)">
+    <!-- Title Column -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+      <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+    </ng-container>
+
+    <!-- Author Column -->
+    <ng-container matColumnDef="author_name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Author</th>
+      <td mat-cell *matCellDef="let row">{{ row.author_name }}</td>
+    </ng-container>
+
+    <!-- Published Column -->
+    <ng-container matColumnDef="publication_date">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Published</th>
+      <td mat-cell *matCellDef="let row">{{ row.publication_date | date }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  <mat-paginator
+    #paginator
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    [length]="totalBooks"
+    [pageIndex]="pageIndex"
+    (page)="handlePageEvent($event)"
+    aria-label="Select page"
+  >
+  </mat-paginator>
+</div>
+```
+
+Here's an explanation of the `mat-table` and `mat-sort` components used in the code:
+
+### `mat-table`
+
+The `mat-table` component from Angular Material is used to display data in a tabular format. It provides features like sorting, pagination, and filtering.
+
+- `[dataSource]="books"`: This binds the table's data source to the `books` array in the component. The `mat-table` will render a row for each object in this array.
+- `class="library-table"`: This applies a CSS class to the table for styling purposes.
+- `*ngIf="books"`: This ensures that the table is rendered only when the `books` array has data.
+
+#### Columns Definition
+
+Each column in the table is defined using `<ng-container matColumnDef="column_name">`.
+
+- `matColumnDef`: Specifies the unique name for the column. This name is used to reference the column in the header and row definitions.
+- `<th mat-header-cell *matHeaderCellDef>`: Defines the header cell for the column.
+- `mat-header-cell`: Marks the element as a header cell.
+- `*matHeaderCellDef`: Provides the content for the header cell.
+- `mat-sort-header`: Enables sorting on this column.
+- `<td mat-cell *matCellDef="let row">`: Defines the data cell for the column.
+- `mat-cell`: Marks the element as a data cell.
+- `*matCellDef="let row"`: Provides the content for the data cell. `row` represents the data for the current row.
+
+#### Rows Definition
+
+- `<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>`: Defines the header row for the table.
+- `mat-header-row`: Marks the element as a header row.
+- `*matHeaderRowDef="displayedColumns"`: Specifies which columns to include in the header row. `displayedColumns` is an array in the component that lists the column names.
+- `<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>`: Defines the data rows for the table.
+- `mat-row`: Marks the element as a data row.
+- `*matRowDef="let row; columns: displayedColumns"`: Specifies which columns to include in the data rows. `row` represents the data for the current row, and `columns` is bound to the `displayedColumns` array.
+
+### `mat-sort`
+
+The `mat-sort` directive is used to add sorting functionality to the table.
+
+- `matSort`: Enables sorting on the table.
+- `matSortActive="ordering"`: Sets the column that should be sorted by default.
+- `matSortDirection="desc"`: Sets the initial sorting direction (ascending or descending).
+- `(matSortChange)="handleSortEvent($event)"`: Binds the `matSortChange` event to the `handleSortEvent` method in the component. This event is emitted when the user clicks on a sortable column header.
+
+#### `matSortHeader`
+
+- `mat-sort-header`: This directive is added to the header cells (`<th>`) to make them sortable. When the user clicks on a header cell with this directive, the `matSortChange` event is emitted.
+
+In summary, `mat-table` is used to display data in a tabular format, and `mat-sort` is used to add sorting capabilities to the table columns. The `displayedColumns` array in the component defines the order and visibility of the columns.
