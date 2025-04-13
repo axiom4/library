@@ -886,3 +886,5 @@ a:visited {
 ```
 
 ![Library Mat-Table](/docs/images/part11_2.png)
+
+Now you are using the Mat-Table, and you can sort the table columns.
