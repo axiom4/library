@@ -26,12 +26,7 @@ export class LibraryComponent implements OnInit {
   pageEvent: PageEvent | undefined;
   pageSizeOptions = [5, 10, 25];
   ordering = 'title';
-  displayedColumns: string[] = [
-    'id',
-    'title',
-    'author_name',
-    'publication_date',
-  ];
+  displayedColumns: string[] = ['title', 'author_name', 'publication_date'];
 
   constructor(private readonly libraryService: LibraryService) {}
 
@@ -57,21 +52,15 @@ export class LibraryComponent implements OnInit {
       sortActive = 'author';
     } else if (sortActive === 'title') {
       sortActive = 'title';
-    } else {
-      sortActive = 'id';
     }
 
-    console.log('sortActive', sortActive);
-    console.log('sortDirection', sortDirection);
-
-    if (sortDirection === 'asc') {
-      this.ordering = `-${sortActive}`;
-    } else {
+    if (sortDirection === 'desc') {
       this.ordering = `${sortActive}`;
+    } else {
+      this.ordering = `-${sortActive}`;
     }
 
     this.pageIndex = 0;
-
     this.getBooks();
   }
 
