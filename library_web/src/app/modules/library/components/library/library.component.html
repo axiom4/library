@@ -3,6 +3,27 @@
 <div class="library">
   <h2>Books</h2>
 
+  <mat-form-field class="search-form-field">
+    <mat-label>Search</mat-label>
+    <input
+      matInput
+      type="text"
+      placeholder="Search for books"
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearchInputChange($event)"
+    />
+    @if (searchText) {
+    <button
+      matSuffix
+      mat-icon-button
+      aria-label="Clear"
+      (click)="clearFilter()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    }
+  </mat-form-field>
+
   <table
     *ngIf="books"
     mat-table

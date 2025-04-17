@@ -9,10 +9,27 @@ import { DatePipe, NgIf } from '@angular/common';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { Sort, MatSortModule, SortDirection } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-library',
-  imports: [NgIf, MatPaginatorModule, MatTableModule, MatSortModule, DatePipe],
+  imports: [
+    NgIf,
+    MatPaginatorModule,
+    MatTableModule,
+    MatSortModule,
+    DatePipe,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './library.component.html',
   styleUrl: './library.component.scss',
 })
@@ -40,6 +57,8 @@ import { Sort, MatSortModule, SortDirection } from '@angular/material/sort';
  * @method handlePageEvent - Handles pagination events and updates the list of books accordingly.
  * @method handleSortEvent - Handles sorting events and updates the list of books based on the selected criteria.
  * @method getBooks - Fetches a paginated and sorted list of books from the library service.
+ * @method onSearchInputChange - Emits the new search text to the searchSubject.
+ * @method performSearch - Executes the search logic based on the current search text.
  *
  * @example
  * Example usage in a template:
@@ -57,11 +76,18 @@ export class LibraryComponent implements OnInit {
   pageSizeOptions = [5, 10, 25];
   ordering = 'title';
   displayedColumns: string[] = ['title', 'author_name', 'publication_date'];
+  searchText = '';
+  private searchSubject = new Subject<string>();
 
   constructor(private readonly libraryService: LibraryService) {}
 
   ngOnInit(): void {
     this.getBooks();
+    this.searchSubject.pipe(debounceTime(300)).subscribe((searchText) => {
+      this.searchText = searchText;
+      this.pageIndex = 0;
+      this.getBooks();
+    });
   }
 
   /**
@@ -130,11 +156,15 @@ export class LibraryComponent implements OnInit {
      * @property pageSize - The number of items to display per page.
      * @property ordering - The ordering criteria for the list of books.
      */
-    const params: LibraryBooksListRequestParams = {
+    let params: LibraryBooksListRequestParams = {
       page: this.pageIndex + 1,
       pageSize: this.pageSize,
       ordering: this.ordering,
     };
+
+    if (this.searchText !== '') {
+      params['search'] = this.searchText;
+    }
 
     this.libraryService.libraryBooksList(params).subscribe({
       next: (data: PaginatedBookList) => {
@@ -146,5 +176,20 @@ export class LibraryComponent implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  /**
+   * Emits the new search text to the searchSubject.
+   *
+   * @param value - The new search text entered by the user.
+   */
+  onSearchInputChange(value: string): void {
+    this.searchSubject.next(value);
+  }
+
+  clearFilter(): void {
+    this.searchText = '';
+    this.pageIndex = 0;
+    this.getBooks();
   }
 }
