@@ -81,6 +81,12 @@ export class LibraryComponent implements OnInit {
 
   constructor(private readonly libraryService: LibraryService) {}
 
+  /**
+   * Lifecycle hook that is called after the component's view has been initialized.
+   * Initializes the component by fetching the list of books and setting up a subscription
+   * to handle search input with a debounce time of 300ms. When a search term is emitted,
+   * it updates the search text, resets the page index, and fetches the filtered list of books.
+   */
   ngOnInit(): void {
     this.getBooks();
     this.searchSubject.pipe(debounceTime(300)).subscribe((searchText) => {
@@ -148,6 +154,19 @@ export class LibraryComponent implements OnInit {
    *
    * @returns void
    */
+  /**
+   * Fetches a paginated list of library books based on the current search and pagination criteria.
+   *
+   * This method constructs the request parameters, including pagination, ordering, and optional search text,
+   * and sends a request to the library service to retrieve the list of books. The results are then assigned
+   * to the component's `books` property, and the total number of books is updated.
+   *
+   * @remarks
+   * - The `page` parameter is adjusted to match the API's 1-based pagination.
+   * - If a search text is provided, it is included in the request parameters.
+   *
+   * @throws Will log an error to the console if the API request fails.
+   */
   getBooks() {
     /**
      * Parameters for requesting a list of library books.
@@ -155,6 +174,7 @@ export class LibraryComponent implements OnInit {
      * @property page - The current page index incremented by 1 to match the API's 1-based pagination.
      * @property pageSize - The number of items to display per page.
      * @property ordering - The ordering criteria for the list of books.
+     * @property search - The search text to filter the list of books (optional).
      */
     let params: LibraryBooksListRequestParams = {
       page: this.pageIndex + 1,
@@ -187,6 +207,10 @@ export class LibraryComponent implements OnInit {
     this.searchSubject.next(value);
   }
 
+  /**
+   * Clears the current search filter by resetting the search text and page index.
+   * After clearing the filter, it fetches the updated list of books.
+   */
   clearFilter(): void {
     this.searchText = '';
     this.pageIndex = 0;
