@@ -491,3 +491,5 @@ Add styles for the search input field in `style.scss`:
 ### Summary
 
 With the search filter in place, users can now search for books dynamically. The `onSearchInputChange` method updates the search query and fetches the filtered results, while the `clearFilter` method resets the search input and displays the full list of books.
+
+![Search Filter](/docs/images/part12_2.png)
