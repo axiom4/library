@@ -369,3 +369,125 @@ a:visited {
 ![Library Mat-Table](/docs/images/part12_1.png)
 
 Now you are using the Mat-Table, and you can sort the table columns.
+
+## Adding a Search Filter
+
+To enhance the user experience, we can add a search filter to allow users to search for books by title, author, or publication date. Here's how to implement it:
+
+### Update `library.component.html`
+
+Add the following search input field above the table:
+
+```html
+<mat-form-field class="search-form-field">
+  <mat-label>Search</mat-label>
+  <input matInput type="text" placeholder="Search for books" [(ngModel)]="searchText" (ngModelChange)="onSearchInputChange($event)" />
+  @if (searchText) {
+  <button matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
+    <mat-icon>close</mat-icon>
+  </button>
+  }
+</mat-form-field>
+```
+
+### Update `library.component.ts`
+
+Add the following properties and methods to handle the search functionality:
+
+```typescript
+  searchText = '';
+  private searchSubject = new Subject<string>();
+
+/**
+ * Emits the new search text to the searchSubject.
+ *
+ * @param value - The new search text entered by the user.
+ */
+onSearchInputChange(value: string): void {
+  this.searchSubject.next(value);
+}
+
+clearFilter(): void {
+  this.searchText = '';
+  this.pageIndex = 0;
+  this.getBooks();
+}
+```
+
+### Update `ngOnInit` Method
+
+```typescript
+ngOnInit(): void {
+  this.getBooks();
+  this.searchSubject.pipe(debounceTime(300)).subscribe((searchText) => {
+    this.searchText = searchText;
+    this.pageIndex = 0;
+    this.getBooks();
+  });
+}
+```
+
+The `ngOnInit` method is an Angular lifecycle hook that is executed once when the component is initialized. In this case, the method is used for:
+
+1. **Loading Initial Data**:
+
+- The call to `this.getBooks()` retrieves the initial list of books from the data source (API) when the component is loaded.
+
+2. **Handling Search with Debounce**:
+
+- The `searchSubject` property is an RxJS `Subject` that emits the values entered by the user in the search field.
+- The `debounceTime(300)` operator introduces a 300ms delay before emitting the value. This prevents making too many API calls while the user is typing quickly.
+- The subscription to `searchSubject` updates the `searchText` property with the current value, resets the page index (`pageIndex`) to 0, and then calls `this.getBooks()` to refresh the search results.
+
+#### Code Flow
+
+1. The user types in the search field.
+2. The value is emitted to the `searchSubject`.
+3. After 300ms of inactivity, the value is processed.
+4. The list of books is updated by calling `this.getBooks()` with the new search text.
+
+#### Benefits
+
+- **Efficiency**: Reduces the number of API calls by using debounce.
+- **Responsiveness**: Dynamically updates the search results without reloading the entire page.
+- **Improved User Experience**: Provides a smooth and responsive interface for searching.
+
+### Update `getBooks` Method
+
+Modify the `getBooks` method to include the `searchText` parameter in the API request:
+
+```typescript
+let params: LibraryBooksListRequestParams = {
+  page: this.pageIndex + 1,
+  pageSize: this.pageSize,
+  ordering: this.ordering,
+};
+
+if (this.searchText !== "") {
+  params["search"] = this.searchText;
+}
+```
+
+We add `params["search"] = this.searchText`.
+
+### Update Styles
+
+Add styles for the search input field in `style.scss`:
+
+```scss
+.library h2 {
+  display: inline-block;
+  text-align: left;
+  color: #333;
+  width: 200px;
+}
+
+.search-form-field {
+  float: right;
+  width: 250px;
+}
+```
+
+### Summary
+
+With the search filter in place, users can now search for books dynamically. The `onSearchInputChange` method updates the search query and fetches the filtered results, while the `clearFilter` method resets the search input and displays the full list of books.
