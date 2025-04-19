@@ -169,3 +169,8 @@ SPECTACULAR_SETTINGS = {
     'OAS_VERSION': '3.1.1',
     'SERVE_PERMISSIONS': ['library_rest.permissions.AccessListPermission'],
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://localhost:4200',
+]

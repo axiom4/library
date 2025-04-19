@@ -5,6 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 from library.pagination import LibraryPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -37,3 +38,4 @@ class BookViewSet(viewsets.ModelViewSet):
     ordering_fields = ['title', 'author', 'publication_date']
     ordering = ['title']
     pagination_class = LibraryPagination
+    permission_classes = [IsAuthenticatedOrReadOnly]

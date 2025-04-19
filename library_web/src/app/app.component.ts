@@ -23,8 +23,4 @@ export class AppComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
-
-  openAddBookDialog() {
-    // Logic to open the dialog for adding a new book
-  }
 }
