@@ -67,7 +67,6 @@ import { debounceTime, Subject } from 'rxjs';
  * ```
  */
 export class LibraryComponent implements OnInit {
-  title = 'Library';
   books: Book[] = [];
   totalBooks = 0;
   pageSize = 5;
