@@ -44,3 +44,4 @@ This demo project guides you through the process of creating a full-stack applic
 10. [Advanced Django Fiters and Paginations](/docs/README_PART10.md)
 11. [Angular Material Components PART1](/docs/README_PART11.md)
 12. [Angular Material Components PART2](/docs/README_PART12.md)
+13. [Forms Security](/docs/README_PART13.md)
