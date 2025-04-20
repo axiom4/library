@@ -25,6 +25,8 @@ import { Book } from '../model/book';
 // @ts-ignore
 import { BookRequest } from '../model/bookRequest';
 // @ts-ignore
+import { PaginatedAuthorList } from '../model/paginatedAuthorList';
+// @ts-ignore
 import { PaginatedBookList } from '../model/paginatedBookList';
 // @ts-ignore
 import { PatchedAuthorRequest } from '../model/patchedAuthorRequest';
@@ -39,6 +41,7 @@ import {
     LibraryServiceInterface,
     LibraryAuthorsCreateRequestParams,
     LibraryAuthorsDestroyRequestParams,
+    LibraryAuthorsListRequestParams,
     LibraryAuthorsPartialUpdateRequestParams,
     LibraryAuthorsRetrieveRequestParams,
     LibraryAuthorsUpdateRequestParams,
@@ -62,7 +65,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
+     * A viewset for viewing and editing Author instances.  This viewset provides the following features: - Lists, retrieves, creates, updates, and deletes Author objects. - Supports filtering by \&#39;first_name\&#39;, \&#39;last_name\&#39;, and \&#39;citizenship\&#39;. - Allows searching by \&#39;first_name\&#39; and \&#39;last_name\&#39;. - Supports ordering by \&#39;first_name\&#39; and \&#39;last_name\&#39;, with default ordering by \&#39;last_name\&#39; then \&#39;first_name\&#39;. - Uses a custom pagination class (LibraryPagination).  Attributes:     queryset (QuerySet): The queryset of Author objects.     serializer_class (Serializer): The serializer class for Author objects.     filter_backends (list): The list of filter backends for filtering, ordering, and searching.     search_fields (list): Fields to enable search functionality.     ordering_fields (list): Fields that can be used for ordering results.     ordering (list): Default ordering for the queryset.     filterset_fields (list): Fields that can be used for filtering results.     pagination_class (Pagination): The pagination class to use for paginating results.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -133,7 +136,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
+     * A viewset for viewing and editing Author instances.  This viewset provides the following features: - Lists, retrieves, creates, updates, and deletes Author objects. - Supports filtering by \&#39;first_name\&#39;, \&#39;last_name\&#39;, and \&#39;citizenship\&#39;. - Allows searching by \&#39;first_name\&#39; and \&#39;last_name\&#39;. - Supports ordering by \&#39;first_name\&#39; and \&#39;last_name\&#39;, with default ordering by \&#39;last_name\&#39; then \&#39;first_name\&#39;. - Uses a custom pagination class (LibraryPagination).  Attributes:     queryset (QuerySet): The queryset of Author objects.     serializer_class (Serializer): The serializer class for Author objects.     filter_backends (list): The list of filter backends for filtering, ordering, and searching.     search_fields (list): Fields to enable search functionality.     ordering_fields (list): Fields that can be used for ordering results.     ordering (list): Default ordering for the queryset.     filterset_fields (list): Fields that can be used for filtering results.     pagination_class (Pagination): The pagination class to use for paginating results.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -191,14 +194,38 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
+     * A viewset for viewing and editing Author instances.  This viewset provides the following features: - Lists, retrieves, creates, updates, and deletes Author objects. - Supports filtering by \&#39;first_name\&#39;, \&#39;last_name\&#39;, and \&#39;citizenship\&#39;. - Allows searching by \&#39;first_name\&#39; and \&#39;last_name\&#39;. - Supports ordering by \&#39;first_name\&#39; and \&#39;last_name\&#39;, with default ordering by \&#39;last_name\&#39; then \&#39;first_name\&#39;. - Uses a custom pagination class (LibraryPagination).  Attributes:     queryset (QuerySet): The queryset of Author objects.     serializer_class (Serializer): The serializer class for Author objects.     filter_backends (list): The list of filter backends for filtering, ordering, and searching.     search_fields (list): Fields to enable search functionality.     ordering_fields (list): Fields that can be used for ordering results.     ordering (list): Default ordering for the queryset.     filterset_fields (list): Fields that can be used for filtering results.     pagination_class (Pagination): The pagination class to use for paginating results.
+     * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public libraryAuthorsList(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<Author>>;
-    public libraryAuthorsList(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<Author>>>;
-    public libraryAuthorsList(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<Author>>>;
-    public libraryAuthorsList(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public libraryAuthorsList(requestParameters?: LibraryAuthorsListRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaginatedAuthorList>;
+    public libraryAuthorsList(requestParameters?: LibraryAuthorsListRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaginatedAuthorList>>;
+    public libraryAuthorsList(requestParameters?: LibraryAuthorsListRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaginatedAuthorList>>;
+    public libraryAuthorsList(requestParameters?: LibraryAuthorsListRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const citizenship = requestParameters?.citizenship;
+        const firstName = requestParameters?.firstName;
+        const lastName = requestParameters?.lastName;
+        const ordering = requestParameters?.ordering;
+        const page = requestParameters?.page;
+        const pageSize = requestParameters?.pageSize;
+        const search = requestParameters?.search;
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>citizenship, 'citizenship');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>firstName, 'first_name');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>lastName, 'last_name');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>ordering, 'ordering');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>page, 'page');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageSize, 'page_size');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>search, 'search');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -231,9 +258,10 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         }
 
         let localVarPath = `/library/authors`;
-        return this.httpClient.request<Array<Author>>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PaginatedAuthorList>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -245,7 +273,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
+     * A viewset for viewing and editing Author instances.  This viewset provides the following features: - Lists, retrieves, creates, updates, and deletes Author objects. - Supports filtering by \&#39;first_name\&#39;, \&#39;last_name\&#39;, and \&#39;citizenship\&#39;. - Allows searching by \&#39;first_name\&#39; and \&#39;last_name\&#39;. - Supports ordering by \&#39;first_name\&#39; and \&#39;last_name\&#39;, with default ordering by \&#39;last_name\&#39; then \&#39;first_name\&#39;. - Uses a custom pagination class (LibraryPagination).  Attributes:     queryset (QuerySet): The queryset of Author objects.     serializer_class (Serializer): The serializer class for Author objects.     filter_backends (list): The list of filter backends for filtering, ordering, and searching.     search_fields (list): Fields to enable search functionality.     ordering_fields (list): Fields that can be used for ordering results.     ordering (list): Default ordering for the queryset.     filterset_fields (list): Fields that can be used for filtering results.     pagination_class (Pagination): The pagination class to use for paginating results.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -317,7 +345,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
+     * A viewset for viewing and editing Author instances.  This viewset provides the following features: - Lists, retrieves, creates, updates, and deletes Author objects. - Supports filtering by \&#39;first_name\&#39;, \&#39;last_name\&#39;, and \&#39;citizenship\&#39;. - Allows searching by \&#39;first_name\&#39; and \&#39;last_name\&#39;. - Supports ordering by \&#39;first_name\&#39; and \&#39;last_name\&#39;, with default ordering by \&#39;last_name\&#39; then \&#39;first_name\&#39;. - Uses a custom pagination class (LibraryPagination).  Attributes:     queryset (QuerySet): The queryset of Author objects.     serializer_class (Serializer): The serializer class for Author objects.     filter_backends (list): The list of filter backends for filtering, ordering, and searching.     search_fields (list): Fields to enable search functionality.     ordering_fields (list): Fields that can be used for ordering results.     ordering (list): Default ordering for the queryset.     filterset_fields (list): Fields that can be used for filtering results.     pagination_class (Pagination): The pagination class to use for paginating results.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -376,7 +404,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     }
 
     /**
-     * AuthorViewSet is a viewset for handling CRUD operations on Author model.  Attributes:     queryset (QuerySet): A queryset containing all Author objects.     serializer_class (Serializer): The serializer class used to serialize and deserialize Author objects.
+     * A viewset for viewing and editing Author instances.  This viewset provides the following features: - Lists, retrieves, creates, updates, and deletes Author objects. - Supports filtering by \&#39;first_name\&#39;, \&#39;last_name\&#39;, and \&#39;citizenship\&#39;. - Allows searching by \&#39;first_name\&#39; and \&#39;last_name\&#39;. - Supports ordering by \&#39;first_name\&#39; and \&#39;last_name\&#39;, with default ordering by \&#39;last_name\&#39; then \&#39;first_name\&#39;. - Uses a custom pagination class (LibraryPagination).  Attributes:     queryset (QuerySet): The queryset of Author objects.     serializer_class (Serializer): The serializer class for Author objects.     filter_backends (list): The list of filter backends for filtering, ordering, and searching.     search_fields (list): Fields to enable search functionality.     ordering_fields (list): Fields that can be used for ordering results.     ordering (list): Default ordering for the queryset.     filterset_fields (list): Fields that can be used for filtering results.     pagination_class (Pagination): The pagination class to use for paginating results.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
