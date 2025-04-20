@@ -38,4 +38,3 @@ class BookViewSet(viewsets.ModelViewSet):
     ordering_fields = ['title', 'author', 'publication_date']
     ordering = ['title']
     pagination_class = LibraryPagination
-    permission_classes = [IsAuthenticatedOrReadOnly]

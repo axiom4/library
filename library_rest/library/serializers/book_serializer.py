@@ -38,7 +38,7 @@ class BookSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     author = serializers.PrimaryKeyRelatedField(
-        write_only=True, queryset=Author.objects.all(), required=False
+        write_only=True, queryset=Author.objects.all()
     )
 
     year = serializers.SerializerMethodField(read_only=True)
