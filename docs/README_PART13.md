@@ -364,3 +364,227 @@ and `style.scss` adding:
 This is the result:
 
 ![App](/docs/images/part13_1.png)
+
+## Adding MatDialog
+
+To handle the addition of new books, we'll use Angular Material's `MatDialog` to open a modal window containing our `AddNewBookComponent`.
+
+First, ensure `MatDialogModule` is imported. If `LibraryComponent` is part of an NgModule, add `MatDialogModule` to the `imports` array of that module. If `LibraryComponent` is standalone, add `MatDialogModule` to its `imports` array.
+
+Next, inject `MatDialog` into the `LibraryComponent`'s constructor and implement the `openAddBookDialog` method.
+
+```typescript
+// src/app/modules/library/components/library/library.component.ts
+import { Component, OnInit } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
+import { BooksListComponent } from "../books-list/books-list.component";
+import { MatDialog } from "@angular/material/dialog"; // Import MatDialog and MatDialogModule
+import { AddNewBookComponent } from "../add-new-book/add-new-book.component"; // Import the component for the dialog
+
+@Component({
+  selector: "app-library",
+  imports: [BooksListComponent, MatButtonModule, MatIconModule, MatDialogModule],
+  templateUrl: "./library.component.html",
+  styleUrl: "./library.component.scss",
+})
+export class LibraryComponent implements OnInit {
+  constructor(public dialog: MatDialog) {}
+
+  ngOnInit(): void {}
+
+  /**
+   * Opens a dialog window containing the AddNewBookComponent.
+   * Configures the dialog's width.
+   */
+  openAddBookDialog(): void {
+    const dialogRef = this.dialog.open(AddNewBookComponent, {
+      width: "700px",
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log("The dialog was closed");
+      if (result) {
+        console.log("Dialog result:", result);
+      }
+    });
+  }
+}
+```
+
+Now, when the "Add New Book" button is clicked, the `openAddBookDialog` method will be called, which uses the `MatDialog` service to open the `AddNewBookComponent` in a modal dialog.
+
+We also need to make sure `AddNewBookComponent` is prepared to be used within a dialog. For now, its default template is sufficient. We will populate its template and logic in the next steps.
+
+## Implementing the Add New Book Form
+
+Let's implement the form within `AddNewBookComponent` to capture the details of a new book and handle the submission.
+
+First, update the component's TypeScript file (`add-new-book.component.ts`) to use Angular's `ReactiveFormsModule` for form handling, inject necessary services like `MatDialogRef` and `LibraryService`, and define the form submission logic.
+
+```typescript
+// src/app/modules/library/components/add-new-book/add-new-book.component.ts
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from "@angular/forms";
+import { MatDialogRef } from "@angular/material/dialog";
+import { BookRequest, LibraryBooksCreateRequestParams, LibraryService } from "../../../core/api/v1"; // Adjust path as needed
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter } from "@angular/material/core";
+import { CommonModule } from "@angular/common";
+import { MatDialogModule, MatDialogTitle, MatDialogContent, MatDialogActions } from "@angular/material/dialog";
+
+@Component({
+  selector: "app-add-new-book",
+  standalone: true, // Assuming standalone component
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatDialogModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+  ],
+  providers: [
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
+  ],
+  templateUrl: "./add-new-book.component.html",
+  styleUrls: ["./add-new-book.component.scss"],
+})
+export class AddNewBookComponent implements OnInit {
+  addBookForm!: FormGroup;
+
+  constructor(private fb: FormBuilder, public dialogRef: MatDialogRef<AddNewBookComponent>, private libraryService: LibraryService) {}
+
+  ngOnInit(): void {
+    this.addBookForm = this.fb.group({
+      title: ["", Validators.required],
+      author: ["", Validators.required],
+      publication_date: ["", Validators.required],
+    });
+  }
+
+  /**
+   * Handles the form submission. If the form is valid, it formats the data,
+   * calls the library service to create the book, and closes the dialog on success.
+   */
+  onSubmit(): void {
+    console.log("Form submitted:", this.addBookForm.value);
+    if (this.addBookForm.valid) {
+      // Ensure date is formatted correctly if needed by the API (e.g., YYYY-MM-DD)
+      const formattedDate = this.formatDate(this.addBookForm.value.publication_date);
+
+      const bookRequest: BookRequest = {
+        title: this.addBookForm.value.title,
+        author: this.addBookForm.value.author,
+        publication_date: formattedDate,
+      };
+
+      const bookData: LibraryBooksCreateRequestParams = {
+        bookRequest: bookRequest,
+      };
+
+      this.libraryService.libraryBooksCreate(bookData).subscribe({
+        next: (response) => {
+          console.log("Book added successfully", response);
+          this.dialogRef.close(true);
+        },
+        error: (error) => {
+          console.error("Error adding book:", error);
+        },
+      });
+    } else {
+      this.addBookForm.markAllAsTouched();
+    }
+  }
+
+  /**
+   * Closes the dialog without submitting the form.
+   */
+  onCancel(): void {
+    this.dialogRef.close(); // Close dialog without passing any data
+  }
+
+  /**
+   * Helper function to format a Date object into 'YYYY-MM-DD' string format.
+   * @param date - The date to format.
+   * @returns The formatted date string.
+   */
+  private formatDate(date: Date): string {
+    const d = new Date(date);
+    let month = "" + (d.getMonth() + 1);
+    let day = "" + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
+  }
+}
+```
+
+Next, update the HTML template (`add-new-book.component.html`) to include the form fields and buttons.
+
+```html
+<!-- src/app/modules/library/components/add-new-book/add-new-book.component.html -->
+<h2 mat-dialog-title>Add New Book</h2>
+<mat-dialog-content>
+  <form [formGroup]="addBookForm" id="addBookForm">
+    <!-- Title Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter book title" required />
+      <mat-error *ngIf="addBookForm.get('title')?.hasError('required')"> Title is required </mat-error>
+    </mat-form-field>
+
+    <!-- Author Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Author</mat-label>
+      <input matInput formControlName="author" placeholder="Enter author name" required />
+      <mat-error *ngIf="addBookForm.get('author')?.hasError('required')"> Author is required </mat-error>
+    </mat-form-field>
+
+    <!-- Publication Date Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Publication Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="publication_date" placeholder="Choose a date" required />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="addBookForm.get('publication_date')?.hasError('required')"> Publication Date is required </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <!-- Bind the form submission to the form element's submit event -->
+  <button mat-raised-button color="primary" type="submit" form="addBookForm" [disabled]="!addBookForm.valid" (click)="onSubmit()">Add Book</button>
+</mat-dialog-actions>
+```
+
+Add some basic styling for the form fields:
+
+```scss
+// src/app/modules/library/components/add-new-book/add-new-book.component.scss
+.full-width {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Ensure mat-dialog-content has enough space */
+mat-dialog-content {
+  padding-top: 20px;
+}
+```
+
+This is the result.
+
+![Add New Book Form](/docs/images/part13_2.png)

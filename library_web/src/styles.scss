@@ -70,3 +70,13 @@ a:visited {
   width: 100%;
   text-align: right;
 }
+
+.full-width {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Ensure mat-dialog-content has enough space */
+mat-dialog-content {
+  padding-top: 20px;
+}

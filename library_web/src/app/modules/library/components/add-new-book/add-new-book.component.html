@@ -1,1 +1,65 @@
-<p>add-new-book works!</p>
+<h2 mat-dialog-title>Add New Book</h2>
+<mat-dialog-content>
+  <form [formGroup]="addBookForm" id="addBookForm">
+    <!-- Title Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input
+        matInput
+        formControlName="title"
+        placeholder="Enter book title"
+        required
+      />
+      <mat-error *ngIf="addBookForm.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Author Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Author</mat-label>
+      <input
+        matInput
+        formControlName="author"
+        placeholder="Enter author name"
+        required
+      />
+      <mat-error *ngIf="addBookForm.get('author')?.hasError('required')">
+        Author is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Publication Date Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Publication Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="publication_date"
+        placeholder="Choose a date"
+        required
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error
+        *ngIf="addBookForm.get('publication_date')?.hasError('required')"
+      >
+        Publication Date is required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <!-- Bind the form submission to the form element's submit event -->
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    form="addBookForm"
+    [disabled]="!addBookForm.valid"
+    (click)="onSubmit()"
+  >
+    Add Book
+  </button>
+</mat-dialog-actions>
