@@ -588,3 +588,11 @@ mat-dialog-content {
 This is the result.
 
 ![Add New Book Form](/docs/images/part13_2.png)
+
+Now, we can add a new book. We will use "The Restaurant at the End of the Universe" by "Adams, Douglas" published on "1 October 1980".
+
+![Add New Book Form Issue](/docs/images/part13_3.png)
+
+When we try to insert the book, we notice that something is wrong, so we open our browser's debugger and check what is happening.
+
+![Add New Book Request Debug](/docs/images/part13_4.png)
