@@ -19,9 +19,17 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { Author } from '../model/author';
 // @ts-ignore
+import { AuthorRequest } from '../model/authorRequest';
+// @ts-ignore
 import { Book } from '../model/book';
 // @ts-ignore
+import { BookRequest } from '../model/bookRequest';
+// @ts-ignore
 import { PaginatedBookList } from '../model/paginatedBookList';
+// @ts-ignore
+import { PatchedAuthorRequest } from '../model/patchedAuthorRequest';
+// @ts-ignore
+import { PatchedBookRequest } from '../model/patchedBookRequest';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -63,9 +71,9 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     public libraryAuthorsCreate(requestParameters: LibraryAuthorsCreateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Author>>;
     public libraryAuthorsCreate(requestParameters: LibraryAuthorsCreateRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Author>>;
     public libraryAuthorsCreate(requestParameters: LibraryAuthorsCreateRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const author = requestParameters?.author;
-        if (author === null || author === undefined) {
-            throw new Error('Required parameter author was null or undefined when calling libraryAuthorsCreate.');
+        const authorRequest = requestParameters?.authorRequest;
+        if (authorRequest === null || authorRequest === undefined) {
+            throw new Error('Required parameter authorRequest was null or undefined when calling libraryAuthorsCreate.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -113,7 +121,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<Author>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: author,
+                body: authorRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -250,10 +258,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling libraryAuthorsPartialUpdate.');
         }
-        const author = requestParameters?.author;
-        if (author === null || author === undefined) {
-            throw new Error('Required parameter author was null or undefined when calling libraryAuthorsPartialUpdate.');
-        }
+        const patchedAuthorRequest = requestParameters?.patchedAuthorRequest;
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -300,7 +305,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<Author>('patch', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: author,
+                body: patchedAuthorRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -384,9 +389,9 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling libraryAuthorsUpdate.');
         }
-        const author = requestParameters?.author;
-        if (author === null || author === undefined) {
-            throw new Error('Required parameter author was null or undefined when calling libraryAuthorsUpdate.');
+        const authorRequest = requestParameters?.authorRequest;
+        if (authorRequest === null || authorRequest === undefined) {
+            throw new Error('Required parameter authorRequest was null or undefined when calling libraryAuthorsUpdate.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -434,7 +439,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<Author>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: author,
+                body: authorRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -455,9 +460,9 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
     public libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Book>>;
     public libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Book>>;
     public libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const book = requestParameters?.book;
-        if (book === null || book === undefined) {
-            throw new Error('Required parameter book was null or undefined when calling libraryBooksCreate.');
+        const bookRequest = requestParameters?.bookRequest;
+        if (bookRequest === null || bookRequest === undefined) {
+            throw new Error('Required parameter bookRequest was null or undefined when calling libraryBooksCreate.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -505,7 +510,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<Book>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: book,
+                body: bookRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -667,10 +672,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling libraryBooksPartialUpdate.');
         }
-        const book = requestParameters?.book;
-        if (book === null || book === undefined) {
-            throw new Error('Required parameter book was null or undefined when calling libraryBooksPartialUpdate.');
-        }
+        const patchedBookRequest = requestParameters?.patchedBookRequest;
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -717,7 +719,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<Book>('patch', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: book,
+                body: patchedBookRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -801,9 +803,9 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling libraryBooksUpdate.');
         }
-        const book = requestParameters?.book;
-        if (book === null || book === undefined) {
-            throw new Error('Required parameter book was null or undefined when calling libraryBooksUpdate.');
+        const bookRequest = requestParameters?.bookRequest;
+        if (bookRequest === null || bookRequest === undefined) {
+            throw new Error('Required parameter bookRequest was null or undefined when calling libraryBooksUpdate.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -851,7 +853,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<Book>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: book,
+                body: bookRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

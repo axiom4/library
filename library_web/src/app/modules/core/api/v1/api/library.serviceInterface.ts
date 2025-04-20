@@ -12,15 +12,19 @@ import { HttpHeaders }                                       from '@angular/comm
 import { Observable }                                        from 'rxjs';
 
 import { Author } from '../model/models';
+import { AuthorRequest } from '../model/models';
 import { Book } from '../model/models';
+import { BookRequest } from '../model/models';
 import { PaginatedBookList } from '../model/models';
+import { PatchedAuthorRequest } from '../model/models';
+import { PatchedBookRequest } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
 
 
 export interface LibraryAuthorsCreateRequestParams {
-    author: Author;
+    authorRequest: AuthorRequest;
 }
 
 export interface LibraryAuthorsDestroyRequestParams {
@@ -29,7 +33,7 @@ export interface LibraryAuthorsDestroyRequestParams {
 
 export interface LibraryAuthorsPartialUpdateRequestParams {
     id: number;
-    author: Author;
+    patchedAuthorRequest?: PatchedAuthorRequest;
 }
 
 export interface LibraryAuthorsRetrieveRequestParams {
@@ -38,11 +42,11 @@ export interface LibraryAuthorsRetrieveRequestParams {
 
 export interface LibraryAuthorsUpdateRequestParams {
     id: number;
-    author: Author;
+    authorRequest: AuthorRequest;
 }
 
 export interface LibraryBooksCreateRequestParams {
-    book: Book;
+    bookRequest: BookRequest;
 }
 
 export interface LibraryBooksDestroyRequestParams {
@@ -61,7 +65,7 @@ export interface LibraryBooksListRequestParams {
 
 export interface LibraryBooksPartialUpdateRequestParams {
     id: number;
-    book: Book;
+    patchedBookRequest?: PatchedBookRequest;
 }
 
 export interface LibraryBooksRetrieveRequestParams {
@@ -70,7 +74,7 @@ export interface LibraryBooksRetrieveRequestParams {
 
 export interface LibraryBooksUpdateRequestParams {
     id: number;
-    book: Book;
+    bookRequest: BookRequest;
 }
 
 
