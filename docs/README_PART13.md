@@ -1006,3 +1006,8 @@ export class AddNewBookComponent implements OnInit {
 ![Autocomplete](/docs/images/part13_5.png)
 
 Now, let's try to insert out book.
+
+We can see that the book has been added correctly, however, there are still two problems to solve:
+
+1.  There is no message that allows us to understand if the book has been inserted correctly.
+2.  The list of books does not update at the end of the insertion task.
