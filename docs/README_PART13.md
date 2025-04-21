@@ -652,3 +652,357 @@ class AuthorViewSet(viewsets.ModelViewSet):
 ```
 
 Let's rebuild our rest client using `npm run generate:api`.
+
+### Use Mat-Autocomplete
+
+```html
+<!-- Author Field -->
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Author</mat-label>
+  <input matInput formControlName="author" placeholder="Enter author name" required [matAutocomplete]="auto" />
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+    @for (author of filteredOptions | async; track author.id) {
+    <mat-option [value]="author"> {{ author.first_name }} {{ author.last_name }} </mat-option>
+    }
+  </mat-autocomplete>
+  <mat-error *ngIf="addBookForm.get('author')?.hasError('required')"> Author is required </mat-error>
+</mat-form-field>
+```
+
+This code defines an Angular Material form field for selecting an author. Here’s a breakdown:
+
+- `<mat-form-field appearance="outline" class="full-width">`: Creates a styled input field that spans the full width of its container.
+- `<mat-label>Author</mat-label>`: Sets the label for the input field.
+- `<input matInput formControlName="author" ...>`: Binds the input to the `author` form control, making it part of a reactive form. The `required` attribute ensures the field must be filled.
+- `[matAutocomplete]="auto"`: Connects the input to a Material autocomplete dropdown.
+- `<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">`: Defines the autocomplete panel, using a custom display function (`displayFn`) to show selected values.
+- `@for (author of filteredOptions | async; track author.id) { ... }`: Iterates over the filtered list of authors (asynchronously), using each author's `id` for tracking.
+- `<mat-option [value]="author"> ... </mat-option>`: Displays each author as an option, showing their first and last name.
+- `<mat-error *ngIf="addBookForm.get('author')?.hasError('required')"> ... </mat-error>`: Shows an error message if the author field is left empty.
+
+This setup provides a user-friendly way to select an author from a filtered list, with validation and clear feedback.
+
+```typescript
+filteredOptions: Observable<Author[]> | undefined;
+```
+
+The line declares a TypeScript property named `filteredOptions`. This property can either hold an `Observable` that emits arrays of Author objects, or it can be `undefined`. In Angular applications, such a property is commonly used to store the results of a filter operation, for example, when implementing autocomplete functionality. The use of `Observable` allows the UI to reactively update as the data changes over time.
+
+```typescript
+  ngOnInit(): void {
+    const authorControl = new FormControl('', Validators.required);
+
+    this.addBookForm = this.fb.group({
+      title: ['', Validators.required],
+      author: authorControl,
+      publication_date: ['', Validators.required],
+    });
+
+    this.filteredOptions = authorControl.valueChanges.pipe(
+      startWith(''),
+      switchMap((value) => {
+        if (typeof value === 'string') {
+          return this._filter(value);
+        }
+        return [[]];
+      })
+    );
+  }
+```
+
+This code defines the `ngOnInit` lifecycle hook in an Angular component. Here’s what happens step by step:
+
+1. **FormControl Initialization:**  
+   A new `FormControl` named `authorControl` is created for the author field, with a required validator to ensure the field is not left empty.
+
+2. **Form Group Creation:**  
+   The `addBookForm` form group is initialized using Angular's `FormBuilder` (`this.fb.group`). It contains three fields:
+
+   - `title`: A required text field.
+   - `author`: The previously created `authorControl`.
+   - `publication_date`: Another required text field.
+
+3. **Autocomplete Filtering:**  
+   The `filteredOptions` observable is set up to provide filtered autocomplete options for the author field.
+   - It listens to value changes on `authorControl`.
+   - On each change, it starts with an empty string and uses `switchMap` to call the `_filter` method if the value is a string.
+   - If the value is not a string, it returns an empty array.
+
+**Key Points:**
+
+- This setup is typical for implementing an autocomplete input in Angular forms.
+- Validators ensure that required fields are filled.
+- The use of observables allows for reactive updates to the autocomplete options as the user types.
+
+```typescript
+  displayFn(author: Author): string {
+    return author ? author.first_name + ' ' + author.last_name : '';
+  }
+```
+
+The `displayFn` function takes an `Author` object as input and returns a string. If the `author` exists (is not null or undefined), it concatenates the `first_name` and `last_name` properties with a space in between, effectively displaying the author's full name. If the `author` is not provided, it returns an empty string. This function is useful for formatting author information for display purposes.
+
+```typescript
+  private _filter(name: string): Observable<Author[]> {
+    const params: LibraryAuthorsListRequestParams = {
+      search: name,
+      pageSize: 3,
+    };
+
+    return this.libraryService
+      .libraryAuthorsList(params)
+      .pipe(
+        map((data) => (data && Array.isArray(data.results) ? data.results : []))
+      );
+  }
+```
+
+The `_filter` method is a private function that takes a string parameter `name` and returns an `Observable` of an array of `Author` objects. Here’s a breakdown of how it works:
+
+1. **Parameter Preparation:**  
+   It creates a `params` object of type `LibraryAuthorsListRequestParams`, setting the `search` property to the provided `name` and limiting the `pageSize` to 3. This means the method will only request up to 3 authors matching the search term.
+
+2. **Service Call:**  
+   It calls `libraryService.libraryAuthorsList(params)`, which is expected to return an observable containing the results of the author search.
+
+3. **Result Mapping:**  
+   The method uses the `pipe` and `map` operators from RxJS to process the response. It checks if the response (`data`) exists and if `data.results` is an array. If so, it returns `data.results`; otherwise, it returns an empty array.
+
+**Key Points:**
+
+- This method is useful for implementing features like autocomplete or search suggestions, where you want to fetch a small, filtered list of authors based on user input.
+- The use of observables allows the method to handle asynchronous data streams, which is common in Angular applications.
+
+**Potential Gotchas:**
+
+- If `libraryService.libraryAuthorsList` does not return an object with a `results` array, the method will always return an empty array.
+- The method is private, so it can only be used within the class where it is defined.
+
+Here the full code:
+
+```html
+<!-- src/app/modules/library/components/add-new-book/add-new-book.component.html -->
+<h2 mat-dialog-title>Add New Book</h2>
+<mat-dialog-content>
+  <form [formGroup]="addBookForm" id="addBookForm">
+    <!-- Title Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter book title" required />
+      <mat-error *ngIf="addBookForm.get('title')?.hasError('required')"> Title is required </mat-error>
+    </mat-form-field>
+
+    <!-- Author Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Author</mat-label>
+      <input matInput formControlName="author" placeholder="Enter author name" required [matAutocomplete]="auto" />
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+        @for (author of filteredOptions | async; track author.id) {
+        <mat-option [value]="author"> {{ author.first_name }} {{ author.last_name }} </mat-option>
+        }
+      </mat-autocomplete>
+      <mat-error *ngIf="addBookForm.get('author')?.hasError('required')"> Author is required </mat-error>
+    </mat-form-field>
+
+    <!-- Publication Date Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Publication Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="publication_date" placeholder="Choose a date" required />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="addBookForm.get('publication_date')?.hasError('required')"> Publication Date is required </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <!-- Bind the form submission to the form element's submit event -->
+  <button mat-raised-button color="primary" type="submit" form="addBookForm" [disabled]="!addBookForm.valid" (click)="onSubmit()">Add Book</button>
+</mat-dialog-actions>
+```
+
+```typescript
+// src/app/modules/library/components/add-new-book/add-new-book.component.ts
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from "@angular/forms";
+import { MatDialogRef } from "@angular/material/dialog";
+import { Author, BookRequest, LibraryAuthorsListRequestParams, LibraryBooksCreateRequestParams, LibraryService } from "../../../core/api/v1"; // Adjust path as needed
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter } from "@angular/material/core";
+import { CommonModule } from "@angular/common";
+import { MatDialogModule, MatDialogTitle, MatDialogContent, MatDialogActions } from "@angular/material/dialog";
+import { filter, map, Observable, startWith, switchMap } from "rxjs";
+
+@Component({
+  selector: "app-add-new-book",
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatDialogModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatAutocompleteModule,
+  ],
+  providers: [
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
+  ],
+  templateUrl: "./add-new-book.component.html",
+  styleUrls: ["./add-new-book.component.scss"],
+})
+/**
+ * Component for adding a new book to the library.
+ *
+ * This component provides a form for entering book details, including title, author, and publication date.
+ * It features an autocomplete input for selecting authors, which fetches matching authors from the backend as the user types.
+ * Upon form submission, the component validates the input, formats the data as required by the API, and sends a request to create the new book.
+ * The dialog is closed upon successful creation or cancellation.
+ *
+ * @remarks
+ * - Uses Angular Reactive Forms for form handling and validation.
+ * - Integrates with the `LibraryService` to fetch authors and create books.
+ * - Utilizes Angular Material Dialog for modal functionality.
+ * - Implements an autocomplete feature for author selection.
+ *
+ * @see LibraryService
+ */
+export class AddNewBookComponent implements OnInit {
+  addBookForm!: FormGroup;
+  filteredOptions: Observable<Author[]> | undefined;
+
+  /**
+   * Initializes a new instance of the AddNewBookComponent.
+   *
+   * @param fb - The FormBuilder service used to create and manage reactive forms.
+   * @param dialogRef - Reference to the dialog opened for adding a new book.
+   * @param libraryService - Service for interacting with the library's data and operations.
+   */
+  constructor(private fb: FormBuilder, public dialogRef: MatDialogRef<AddNewBookComponent>, private libraryService: LibraryService) {}
+
+  /**
+   * Initializes the add book form and sets up the filtered options for the author autocomplete.
+   *
+   * - Creates a reactive form group with controls for title, author, and publication date.
+   * - Sets up an observable (`filteredOptions`) that listens to changes in the author input,
+   *   and filters the available author options accordingly.
+   * - Uses `startWith` to initialize the filter and `switchMap` to handle asynchronous filtering logic.
+   */
+  ngOnInit(): void {
+    const authorControl = new FormControl("", Validators.required);
+
+    this.addBookForm = this.fb.group({
+      title: ["", Validators.required],
+      author: authorControl,
+      publication_date: ["", Validators.required],
+    });
+
+    this.filteredOptions = authorControl.valueChanges.pipe(
+      startWith(""),
+      switchMap((value) => {
+        if (typeof value === "string") {
+          return this._filter(value);
+        }
+        return [[]];
+      })
+    );
+  }
+
+  /**
+   * Formats an Author object into a display string.
+   *
+   * @param author - The Author object to format.
+   * @returns The author's full name as a string, or an empty string if the author or first name is not provided.
+   */
+  displayFn(author: Author): string {
+    return author ? author.first_name + " " + author.last_name : "";
+  }
+
+  /**
+   * Filters authors based on the provided name by querying the library service.
+   *
+   * @param name - The search string used to filter authors.
+   * @returns An Observable emitting an array of Author objects matching the search criteria.
+   */
+  private _filter(name: string): Observable<Author[]> {
+    const params: LibraryAuthorsListRequestParams = {
+      search: name,
+      pageSize: 3,
+    };
+
+    return this.libraryService.libraryAuthorsList(params).pipe(map((data) => (data && Array.isArray(data.results) ? data.results : [])));
+  }
+
+  /**
+   * Handles the form submission. If the form is valid, it formats the data,
+   * calls the library service to create the book, and closes the dialog on success.
+   */
+  onSubmit(): void {
+    console.log("Form submitted:", this.addBookForm.value);
+    if (this.addBookForm.valid) {
+      // Ensure dte is formatted correctly if needed by the API (e.g., YYYY-MM-DD)
+      const formattedDate = this.formatDate(this.addBookForm.value.publication_date);
+
+      const bookRequest: BookRequest = {
+        title: this.addBookForm.value.title,
+        author: this.addBookForm.value.author.id,
+        publication_date: formattedDate,
+      };
+
+      const bookData: LibraryBooksCreateRequestParams = {
+        bookRequest: bookRequest,
+      };
+
+      this.libraryService.libraryBooksCreate(bookData).subscribe({
+        next: (response) => {
+          console.log("Book added successfully", response);
+          this.dialogRef.close(true);
+        },
+        error: (error) => {
+          console.error("Error adding book:", error);
+        },
+      });
+    } else {
+      this.addBookForm.markAllAsTouched();
+    }
+  }
+
+  /**
+   * Closes the dialog without submitting the form.
+   */
+  onCancel(): void {
+    this.dialogRef.close(); // Close dialog without passing any data
+  }
+
+  /**
+   * Helper function to format a Date object into 'YYYY-MM-DD' string format.
+   * @param date - The date to format.
+   * @returns The formatted date string.
+   */
+  private formatDate(date: Date): string {
+    const d = new Date(date);
+    let month = "" + (d.getMonth() + 1);
+    let day = "" + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
+  }
+}
+```
+
+![Autocomplete](/docs/images/part13_5.png)
+
+Now, let's try to insert out book.

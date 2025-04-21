@@ -23,7 +23,15 @@
         formControlName="author"
         placeholder="Enter author name"
         required
+        [matAutocomplete]="auto"
       />
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+        @for (author of filteredOptions | async; track author.id) {
+        <mat-option [value]="author">
+          {{ author.first_name }} {{ author.last_name }}
+        </mat-option>
+        }
+      </mat-autocomplete>
       <mat-error *ngIf="addBookForm.get('author')?.hasError('required')">
         Author is required
       </mat-error>
