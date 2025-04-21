@@ -1042,3 +1042,12 @@ export interface LibraryNotification {
   duration?: number; // Duration in milliseconds
 }
 ```
+
+Generate a new service `LibraryNotificationService`:
+
+```bash
+# ng generate service  modules/library/services/LibraryNotification
+
+CREATE src/app/modules/library/services/library-notification.service.spec.ts (423 bytes)
+CREATE src/app/modules/library/services/library-notification.service.ts (148 bytes)
+```
