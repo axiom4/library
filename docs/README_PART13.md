@@ -1011,3 +1011,36 @@ We can see that the book has been added correctly, however, there are still two 
 
 1.  There is no message that allows us to understand if the book has been inserted correctly.
 2.  The list of books does not update at the end of the insertion task.
+
+## Add Notification Alert
+
+We add a new component `LibraryNotificationComponent`:
+
+```bash
+# ng generate component modules/library/components/LibraryNotification
+
+CREATE src/app/modules/library/components/library-notification/library-notification.component.scss (0 bytes)
+CREATE src/app/modules/library/components/library-notification/library-notification.component.html (35 bytes)
+CREATE src/app/modules/library/components/library-notification/library-notification.component.spec.ts (684 bytes)
+CREATE src/app/modules/library/components/library-notification/library-notification.component.ts (270 bytes)
+```
+
+Now we create a new interface to manage the notification messages.
+
+```bash
+# ng generate interface  modules/library/models/LibraryNotification
+
+CREATE src/app/modules/library/models/library-notification.ts (41 bytes)
+```
+
+Update `LibraryNotification` interface as follow:
+
+```typescript
+export interface LibraryNotification {
+  export interface LibraryNotification {
+  message: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  duration?: number; // Duration in milliseconds
+}
+}
+```
