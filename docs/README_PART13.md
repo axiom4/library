@@ -1037,10 +1037,8 @@ Update `LibraryNotification` interface as follow:
 
 ```typescript
 export interface LibraryNotification {
-  export interface LibraryNotification {
   message: string;
-  type: 'success' | 'error' | 'info' | 'warning';
+  type: "success" | "error" | "info" | "warning";
   duration?: number; // Duration in milliseconds
-}
 }
 ```
