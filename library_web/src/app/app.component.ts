@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { LibraryComponent } from './modules/library/components/library/library.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { LibraryNotificationService } from './modules/library/services/library-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,23 @@ import { MatIconModule } from '@angular/material/icon';
 export class AppComponent implements OnInit {
   title = 'Library';
 
-  constructor() {}
+  constructor(private libraryNotificationService: LibraryNotificationService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.libraryNotificationService.addNotification({
+      message: 'Welcome to the Library!',
+      type: 'info',
+      duration: 3000,
+    });
+    this.libraryNotificationService.addNotification({
+      message: 'New book added to the library!',
+      type: 'success',
+      duration: 5000,
+    });
+    this.libraryNotificationService.addNotification({
+      message: 'Error loading book data.',
+      type: 'error',
+      duration: 4000,
+    });
+  }
 }

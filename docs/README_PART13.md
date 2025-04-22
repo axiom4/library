@@ -1051,3 +1051,5 @@ Generate a new service `LibraryNotificationService`:
 CREATE src/app/modules/library/services/library-notification.service.spec.ts (423 bytes)
 CREATE src/app/modules/library/services/library-notification.service.ts (148 bytes)
 ```
+
+Now, edt service as follow:
