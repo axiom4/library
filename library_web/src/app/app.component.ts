@@ -1,11 +1,10 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LibraryComponent } from './modules/library/components/library/library.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { LibraryNotificationService } from './modules/library/services/library-notification.service';
 import { LibraryNotificationComponent } from './modules/library/components/library-notification/library-notification.component';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +25,7 @@ import { Subject, takeUntil } from 'rxjs';
  *
  * @implements {OnInit}
  */
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   title = 'Library';
   constructor(private libraryNotificationService: LibraryNotificationService) {}
 
@@ -53,9 +52,5 @@ export class AppComponent implements OnInit, OnDestroy {
         duration: 6000,
       });
     }, 2000); // Simulate a delay before adding notifications
-  }
-
-  ngOnDestroy() {
-    this.destroyStream$.next();
   }
 }
