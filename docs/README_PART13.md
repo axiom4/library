@@ -1053,3 +1053,200 @@ CREATE src/app/modules/library/services/library-notification.service.ts (148 byt
 ```
 
 Now, edt service as follow:
+
+```typescript
+import { BehaviorSubject, Observable } from "rxjs";
+import { Injectable } from "@angular/core";
+import { LibraryNotification } from "../models/library-notification";
+
+@Injectable({
+  providedIn: "root",
+})
+/**
+ * Service for managing and emitting library notifications.
+ *
+ * This service uses a BehaviorSubject to hold and update a list of LibraryNotification objects.
+ * It provides methods to add, retrieve, and remove notifications, and exposes an observable
+ * stream of notifications for components to subscribe to.
+ */
+export class LibraryNotificationService {
+  private notification$: BehaviorSubject<LibraryNotification[]> = new BehaviorSubject<LibraryNotification[]>([]);
+
+  notification: Observable<LibraryNotification[]> = this.notification$.asObservable();
+
+  constructor() {}
+
+  /**
+   * Adds a new notification to the list and emits the updated array.
+   * @param notification - The notification to add.
+   */
+  notify(notification: LibraryNotification) {
+    // console.log('Notification:', notification);
+    this.notification$.next([...this.notification$.value, notification]);
+  }
+
+  /**
+   * Retrieves the first notification from the notification stream.
+   * @returns {LibraryNotification} The first notification in the stream.
+   */
+  getNotification(): LibraryNotification {
+    return this.notification$.value[0];
+  }
+
+  /**
+   * Removes a notification from the list and emits the updated array.
+   * @param notification - The notification to remove.
+   */
+  removeNotification(notification: LibraryNotification) {
+    const notifications = this.notification$.value.filter((n) => n !== notification);
+    this.notification$.next(notifications);
+  }
+}
+```
+
+The selected code is a service written in TypeScript for an Angular application. It's designed to manage and emit notifications within a library. Let's break down the code section by section:
+
+**1. Imports:**
+
+```typescript
+import { BehaviorSubject, Observable } from "rxjs";
+import { Injectable } from "@angular/core";
+import { LibraryNotification } from "../models/library-notification";
+```
+
+- `BehaviorSubject` and `Observable` from `rxjs`: These are part of the Reactive Extensions for JavaScript (RxJS) library, which is heavily used in Angular for handling asynchronous data streams. `BehaviorSubject` is a type of `Observable` that holds a current value and emits it to new subscribers.
+- `Injectable` from `@angular/core`: This decorator marks the class as a service that can be injected into other components or services using Angular's dependency injection system.
+- `LibraryNotification` from `'../models/library-notification'`: This imports a custom type or class definition for a notification object. It's assumed that `LibraryNotification` is defined in a separate file and has properties relevant to the notification (e.g., message, type, etc.).
+
+**2. `@Injectable` Decorator:**
+
+```typescript
+@Injectable({
+  providedIn: 'root',
+})
+```
+
+- `@Injectable`: As mentioned above, this marks the class as available for dependency injection.
+- `providedIn: 'root'`: This configures the service to be a singleton, meaning Angular will create only one instance of this service for the entire application. It's available at the root injector level.
+
+**3. Class Definition: `LibraryNotificationService`**
+
+```typescript
+export class LibraryNotificationService {
+  // ... class members ...
+}
+```
+
+- This defines the service class itself. The `export` keyword makes it available for use in other parts of the application.
+
+**4. `notification$` (BehaviorSubject):**
+
+```typescript
+private notification$: BehaviorSubject<LibraryNotification[]> =
+    new BehaviorSubject<LibraryNotification[]>([]);
+```
+
+- `private notification$: BehaviorSubject<LibraryNotification[]>`: This declares a private `BehaviorSubject` named `notification$`.
+  - `BehaviorSubject<LibraryNotification[]>`: It's designed to hold an array of `LibraryNotification` objects. The `$` suffix is a convention to indicate that this is an Observable.
+  - `new BehaviorSubject<LibraryNotification[]>([])`: It's initialized with an empty array (`[]`), meaning the initial value of the notification stream is an empty list of notifications.
+
+**5. `notification` (Observable):**
+
+```typescript
+notification: Observable<LibraryNotification[]> = this.notification$.asObservable();
+```
+
+- `notification: Observable<LibraryNotification[]>`: This declares a public `Observable` named `notification`.
+  - `this.notification$.asObservable()`: It's created by calling `.asObservable()` on the `notification$` BehaviorSubject. This returns a read-only Observable that components can subscribe to. Subscribers will receive updates whenever the `notification$` BehaviorSubject emits a new value. Critically, components can't directly call `.next()` on this `Observable` to emit new values; only the service can do that through the `notification$` BehaviorSubject.
+
+**6. `constructor()`:**
+
+```typescript
+constructor() {}
+```
+
+- This is the constructor of the service. It's currently empty, but you could inject other services here if this service needed to depend on them.
+
+**7. `notify()` Method:**
+
+```typescript
+notify(notification: LibraryNotification) {
+    // console.log('Notification:', notification);
+    this.notification$.next([...this.notification$.value, notification]);
+  }
+```
+
+- `notify(notification: LibraryNotification)`: This method is used to add a new notification to the stream.
+  - `this.notification$.next([...this.notification$.value, notification])`: This is the core logic for emitting a new notification.
+    - `this.notification$.value`: This gets the current array of notifications from the `BehaviorSubject`.
+    - `[...this.notification$.value, notification]`: This uses the spread operator (`...`) to create a new array containing all the existing notifications plus the new `notification` added to the end. **Important:** This creates a _new_ array, which is crucial for change detection in Angular. If you were to modify the existing array directly, Angular might not detect the change and update the UI.
+    - `this.notification$.next(...)`: This emits the new array to all subscribers of the `notification` Observable.
+
+**8. `getNotification()` Method:**
+
+```typescript
+getNotification(): LibraryNotification {
+    return this.notification$.value[0];
+  }
+```
+
+- `getNotification(): LibraryNotification`: This method retrieves the _first_ notification from the current array of notifications.
+  - `return this.notification$.value[0]`: It accesses the first element (index 0) of the `notification$.value` array and returns it.
+  - **Important:** This method has a potential issue: If the `notification$.value` array is empty, accessing index 0 will result in an error (`undefined`). A safer implementation would include a check to ensure the array is not empty before attempting to access the first element.
+
+**9. `removeNotification()` Method:**
+
+```typescript
+removeNotification(notification: LibraryNotification) {
+    const notifications = this.notification$.value.filter(
+      (n) => n !== notification
+    );
+    this.notification$.next(notifications);
+  }
+```
+
+- `removeNotification(notification: LibraryNotification)`: This method removes a specific notification from the stream.
+  - `this.notification$.value.filter((n) => n !== notification)`: This uses the `filter` method to create a _new_ array containing only the notifications that are _not_ equal to the `notification` being removed. It uses strict equality (`!==`) for comparison.
+  - `this.notification$.next(notifications)`: This emits the new filtered array to all subscribers of the `notification` Observable.
+
+**Key Concepts and Potential Improvements:**
+
+- **Immutability:** The service correctly uses immutable operations (spread operator and `filter`) to create new arrays when adding or removing notifications. This is important for change detection in Angular and helps prevent unexpected side effects.
+- **RxJS:** The use of `BehaviorSubject` and `Observable` allows for a reactive approach to managing notifications. Components can subscribe to the `notification` Observable and automatically receive updates whenever the notification list changes.
+- **Error Handling:** The `getNotification()` method should include error handling to prevent errors when the notification array is empty. Consider returning `undefined` or throwing an error.
+- **Notification IDs:** For more robust notification management, especially when removing notifications, consider adding a unique ID to each `LibraryNotification` object. This would allow you to remove specific notifications based on their ID, rather than relying on object equality, which can be problematic.
+- **Alternative to `BehaviorSubject`:** Depending on the specific requirements, a `Subject` or `ReplaySubject` might be more appropriate than a `BehaviorSubject`. A `Subject` doesn't hold a current value, while a `ReplaySubject` can replay a certain number of past emissions to new subscribers.
+
+**Example Usage:**
+
+In a component, you would inject the `LibraryNotificationService` and subscribe to the `notification` Observable:
+
+```typescript
+import { Component, OnInit } from "@angular/core";
+import { LibraryNotificationService } from "./library-notification.service";
+import { LibraryNotification } from "./models/library-notification";
+
+@Component({
+  selector: "app-my-component",
+  template: `
+    <ul>
+      <li *ngFor="let notification of notifications">
+        {{ notification.message }}
+      </li>
+    </ul>
+  `,
+})
+export class MyComponent implements OnInit {
+  notifications: LibraryNotification[] = [];
+
+  constructor(private notificationService: LibraryNotificationService) {}
+
+  ngOnInit() {
+    this.notificationService.notification.subscribe((notifications) => {
+      this.notifications = notifications;
+    });
+  }
+}
+```
+
+This component subscribes to the `notification` Observable and updates its local `notifications` array whenever a new notification is emitted by the service. The template then displays the notifications in a list.
