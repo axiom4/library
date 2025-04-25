@@ -13,11 +13,11 @@ import { LibraryNotification } from '../models/library-notification';
  * stream of notifications for components to subscribe to.
  */
 export class LibraryNotificationService {
-  private notification$: BehaviorSubject<LibraryNotification[]> =
+  private notification_list$: BehaviorSubject<LibraryNotification[]> =
     new BehaviorSubject<LibraryNotification[]>([]);
 
-  notification: Observable<LibraryNotification[]> =
-    this.notification$.asObservable();
+  notification_list: Observable<LibraryNotification[]> =
+    this.notification_list$.asObservable();
 
   constructor() {}
 
@@ -27,7 +27,10 @@ export class LibraryNotificationService {
    */
   notify(notification: LibraryNotification) {
     // console.log('Notification:', notification);
-    this.notification$.next([...this.notification$.value, notification]);
+    this.notification_list$.next([
+      ...this.notification_list$.value,
+      notification,
+    ]);
   }
 
   /**
@@ -35,7 +38,7 @@ export class LibraryNotificationService {
    * @returns {LibraryNotification} The first notification in the stream.
    */
   getNotification(): LibraryNotification {
-    return this.notification$.value[0];
+    return this.notification_list$.value[0];
   }
 
   /**
@@ -43,9 +46,9 @@ export class LibraryNotificationService {
    * @param notification - The notification to remove.
    */
   removeNotification(notification: LibraryNotification) {
-    const notifications = this.notification$.value.filter(
+    const notifications = this.notification_list$.value.filter(
       (n) => n !== notification
     );
-    this.notification$.next(notifications);
+    this.notification_list$.next(notifications);
   }
 }

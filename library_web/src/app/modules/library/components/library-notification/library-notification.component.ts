@@ -63,7 +63,7 @@ export class LibraryNotificationComponent implements OnInit, OnDestroy {
    * @returns {Promise<void>}
    */
   async events() {
-    this.libraryNotificationService.notification
+    this.libraryNotificationService.notification_list
       .pipe(takeUntil(this.destroyStream$))
       .subscribe(async (notifications) => {
         if (notifications.length > 0) {
