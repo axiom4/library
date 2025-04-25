@@ -1216,3 +1216,318 @@ removeNotification(notification: LibraryNotification) {
 - **Error Handling:** The `getNotification()` method should include error handling to prevent errors when the notification array is empty. Consider returning `undefined` or throwing an error.
 - **Notification IDs:** For more robust notification management, especially when removing notifications, consider adding a unique ID to each `LibraryNotification` object. This would allow you to remove specific notifications based on their ID, rather than relying on object equality, which can be problematic.
 - **Alternative to `BehaviorSubject`:** Depending on the specific requirements, a `Subject` or `ReplaySubject` might be more appropriate than a `BehaviorSubject`. A `Subject` doesn't hold a current value, while a `ReplaySubject` can replay a certain number of past emissions to new subscribers.
+
+Now we update `LibraryNotification` component as follow
+
+```typescript
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { LibraryNotificationService } from "../../services/library-notification.service";
+import { LibraryNotification } from "../../models/library-notification";
+import { Subject, takeUntil } from "rxjs";
+import { NgClass, NgIf } from "@angular/common";
+import { MatIconModule } from "@angular/material/icon";
+import { MatDividerModule } from "@angular/material/divider";
+import { MatButtonModule } from "@angular/material/button";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+
+@Component({
+  selector: "app-library-notification",
+  imports: [NgIf, NgClass, MatIconModule, MatDividerModule, MatButtonModule, MatProgressBarModule],
+  templateUrl: "./library-notification.component.html",
+  styleUrl: "./library-notification.component.scss",
+})
+/**
+ * `LibraryNotificationComponent` is responsible for displaying and managing library notifications.
+ * It subscribes to the `LibraryNotificationService` to receive notifications and displays them to the user.
+ * The component automatically removes notifications after a specified duration.
+ * It also provides a method to manually close notifications.
+ *
+ * Implements `OnInit` and `OnDestroy` lifecycle hooks for initialization and cleanup.
+ */
+export class LibraryNotificationComponent implements OnInit, OnDestroy {
+  /**
+   * The `notification` property holds the current notification object.
+   * It is initialized to null, indicating that there is no notification by default.
+   *
+   * @type {LibraryNotification | undefined}
+   */
+  notification: LibraryNotification | undefined;
+  private destroyStream$ = new Subject<void>();
+
+  constructor(private readonly libraryNotificationService: LibraryNotificationService) {}
+  /**
+   * The `ngOnInit` lifecycle hook is called after the component has been initialized.
+   * It is used to perform any necessary initialization tasks, such as subscribing
+   * to services or fetching data.
+   *
+   * @returns {void}
+   */
+  ngOnInit(): void {
+    console.log("LibraryNotificationComponent initialized");
+    this.events();
+  }
+
+  /**
+   * @description This method subscribes to the notification stream from the library notification service.
+   * When notifications are received, it updates the component's notification property and sets a timeout to remove the notification after its specified duration.
+   * If there are no notifications, it clears the component's notification property.
+   * The subscription is automatically unsubscribed when the component is destroyed.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async events() {
+    this.libraryNotificationService.notification_list.pipe(takeUntil(this.destroyStream$)).subscribe(async (notifications) => {
+      if (notifications.length > 0) {
+        const notification = this.libraryNotificationService.getNotification();
+        this.notification = notification;
+        if (this.notification) {
+          await new Promise((resolve) =>
+            setTimeout(() => {
+              this.libraryNotificationService.removeNotification(notification);
+              resolve(undefined);
+            }, notification.duration)
+          );
+        }
+      } else {
+        this.notification = undefined;
+      }
+    });
+  }
+
+  /**
+   * Closes the current notification by removing it from the library notification service.
+   * This function checks if a notification exists and then calls the service to remove it.
+   */
+  closeNotification() {
+    if (this.notification) {
+      this.libraryNotificationService.removeNotification(this.notification);
+    }
+  }
+
+  /**
+   * Lifecycle hook that is called when the component is destroyed.
+   * It completes the `destroyStream$` Subject, signaling all subscribers to unsubscribe.
+   */
+  ngOnDestroy() {
+    this.destroyStream$.complete();
+  }
+}
+```
+
+### Explanation:
+
+- **Imports:** The code imports necessary modules from Angular core, RxJS, Angular common, and Angular Material. These modules provide functionalities for creating components, handling asynchronous operations, and using pre-built UI elements.
+- **Component Decorator:** The `@Component` decorator is used to define the component's metadata, such as its selector, template URL, style URL, and any required modules.
+- **Class Definition:** The `LibraryNotificationComponent` class is defined, implementing the `OnInit` and `OnDestroy` interfaces.
+- **Properties:**
+  - `notification`: This property holds the current notification object of type `LibraryNotification` or `undefined`.
+  - `destroyStream$`: This is a `Subject` used to manage the component's lifecycle and unsubscribe from observables when the component is destroyed.
+- **Constructor:** The constructor injects the `LibraryNotificationService`, which is used to manage the library notifications.
+- **ngOnInit:** This lifecycle hook is called when the component is initialized. It calls the `events()` method to subscribe to the notification stream.
+- **events():** This method subscribes to the `notification_list` stream from the `LibraryNotificationService`. When notifications are received, it updates the component's `notification` property and sets a timeout to remove the notification after its specified duration.
+- **closeNotification():** This method is called when the user manually closes the notification. It removes the current notification from the `LibraryNotificationService`.
+- **ngOnDestroy:** This lifecycle hook is called when the component is destroyed. It completes the `destroyStream$` Subject, signaling all subscribers to unsubscribe and prevent memory leaks.
+
+In essence, this component is designed to display library notifications, manage their display duration, and allow users to manually close them. It utilizes Angular's component lifecycle hooks and RxJS observables to handle asynchronous operations and manage the component's state.
+
+```html
+<div *ngIf="notification" [ngClass]="notification.type" class="notification">
+  <div class="notification-header">
+    <ng-container *ngIf="notification.type === 'error'">
+      <mat-icon>error</mat-icon>
+    </ng-container>
+    <ng-container *ngIf="notification.type === 'success'">
+      <mat-icon>check_circle</mat-icon>
+    </ng-container>
+    <ng-container *ngIf="notification.type === 'info'">
+      <mat-icon>info</mat-icon>
+    </ng-container>
+    <ng-container *ngIf="notification.type === 'warning'">
+      <mat-icon>warning</mat-icon>
+    </ng-container>
+    &nbsp;
+    <span>{{ notification.type }}</span>
+    <button class="close-btn" mat-icon-button (click)="closeNotification()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="notification-content">
+    <div>{{ notification.message }}</div>
+  </div>
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
+```
+
+The provided code snippet is an Angular template that displays a notification message to the user. Here's a breakdown:
+
+- **`*ngIf="notification"`**: This directive checks if the `notification` object exists. If it does, the entire notification container is rendered; otherwise, it's hidden.
+- **`[ngClass]="notification.type"`**: This dynamically adds a CSS class to the main `div` based on the `notification.type` property (e.g., 'error', 'success', 'info', 'warning'). This allows you to style the notification based on its type.
+- **`class="notification"`**: This is a standard CSS class to style the notification container.
+- **`notification-header`**: This `div` contains the header of the notification, including an icon, the notification type, and a close button.
+- **`*ngIf="notification.type === 'error'"` (and similar for other types)**: These directives conditionally render a `mat-icon` (from Angular Material) based on the `notification.type`. Each type gets a different icon (error, check_circle, info, warning).
+- **`&nbsp;`**: This adds a non-breaking space for visual separation between the icon and the notification type text.
+- **`<span>{{ notification.type }}</span>`**: This displays the type of notification as text.
+- **`(click)="closeNotification()"`**: This binds the click event of the close button to the `closeNotification()` method in the component, allowing the user to dismiss the notification.
+- **`<mat-divider>`**: This is an Angular Material component that displays a horizontal line to visually separate the header from the content.
+- **`notification-content`**: This `div` contains the actual notification message.
+- **`<div>{{ notification.message }}</div>`**: This displays the notification message.
+- **`<mat-progress-bar mode="indeterminate">`**: This is an Angular Material progress bar that indicates an ongoing process. `mode="indeterminate"` means the progress bar will show a looping animation without a specific value.
+
+In essence, this template creates a reusable notification component that can display different types of messages with appropriate styling and icons. The `notification` object likely contains properties like `type` (e.g., 'error', 'success') and `message` (the text to display). The `closeNotification()` method would handle removing the `notification` object, thus hiding the notification.
+
+Finally, we update `style.scss`:
+
+```scss
+@use "@angular/material" as mat;
+
+:root {
+  @include mat.divider-overrides(
+    (
+      color: white,
+    )
+  );
+  @include mat.progress-bar-overrides(
+    (
+      active-indicator-color: rgb(188, 180, 180),
+      track-color: white,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+} /* You can add global styles to this file, and also import other style files */
+
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+a {
+  color: red;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: red;
+}
+
+.book {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  padding: 10px;
+}
+
+.not_found {
+  color: #fff;
+  background-color: rgba(255, 0, 0, 0.65);
+  font-style: italic;
+  text-align: center;
+}
+
+.library {
+  display: block;
+  justify-content: center;
+  align-items: left;
+  width: 1200px;
+  margin: 0 auto;
+  border: #333 solid 1px;
+  border-radius: 5px;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.library h2 {
+  display: inline-block;
+  text-align: left;
+  color: #333;
+  width: 200px;
+}
+
+.search-form-field {
+  float: right;
+  width: 250px;
+}
+
+.library-footer {
+  margin: 20px 0 0 0;
+  width: 100%;
+  text-align: right;
+}
+
+.full-width {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Ensure mat-dialog-content has enough space */
+mat-dialog-content {
+  padding-top: 20px;
+}
+
+.notification {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  width: 300px;
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+  z-index: 100000;
+  border-radius: 10px;
+  border: 1px solid black;
+  box-shadow: 0 2px 4px 0x0c0c0c85;
+  transition: opacity 0.3s ease-in-out;
+}
+.notification.success {
+  background-color: #4caf50;
+}
+.notification.error {
+  background-color: #f44336;
+}
+.notification.info {
+  background-color: #2196f3;
+}
+.notification.warning {
+  background-color: #ffaa29;
+}
+
+.notification-header {
+  font-weight: bold;
+  font-size: 1.2em;
+  display: flex;
+  height: 30px;
+  text-shadow: 1px 1px 1px #0c0c0c85;
+}
+
+.notification-header .close-btn {
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  position: absolute;
+  color: white;
+}
+
+.notification-header .close-btn:hover {
+  color: white;
+}
+
+.notification-content {
+  margin: 1em 0;
+  height: 50px;
+  text-shadow: 1px 1px 1px #0c0c0c85;
+}
+```
