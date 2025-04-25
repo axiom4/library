@@ -1531,3 +1531,5 @@ mat-dialog-content {
   text-shadow: 1px 1px 1px #0c0c0c85;
 }
 ```
+
+## LibraryNotification integration
