@@ -35,7 +35,8 @@ import {
   MatDialogContent,
   MatDialogActions,
 } from '@angular/material/dialog';
-import { filter, map, Observable, startWith, switchMap } from 'rxjs';
+import { map, Observable, startWith, switchMap } from 'rxjs';
+import { LibraryNotificationService } from '../../services/library-notification.service';
 
 @Component({
   selector: 'app-add-new-book',
@@ -90,7 +91,8 @@ export class AddNewBookComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<AddNewBookComponent>,
-    private libraryService: LibraryService
+    private libraryService: LibraryService,
+    private libraryNotificationService: LibraryNotificationService
   ) {}
 
   /**
@@ -175,10 +177,28 @@ export class AddNewBookComponent implements OnInit {
       this.libraryService.libraryBooksCreate(bookData).subscribe({
         next: (response) => {
           console.log('Book added successfully', response);
+          this.libraryNotificationService.notify({
+            message: 'Book added successfully',
+            type: 'success',
+            duration: 3000,
+          });
           this.dialogRef.close(true);
         },
         error: (error) => {
-          console.error('Error adding book:', error);
+          const errorMessage = error?.error || {};
+
+          let errorMessageString = '<br><br>';
+
+          for (const key in errorMessage) {
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+          }
+
+          // Handle error response
+          this.libraryNotificationService.notify({
+            message: 'Error adding book \n' + errorMessageString,
+            type: 'error',
+            duration: 30000,
+          });
         },
       });
     } else {

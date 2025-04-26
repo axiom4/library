@@ -1544,4 +1544,98 @@ Finally, we need to add `<app-library-notification></app-library-notification>` 
 <app-library-notification></app-library-notification>
 ```
 
-## LibraryNotification integration
+Now we can update `onSubmit()` method in `AddNewBookComponent` to manage notification:
+
+```typescript
+  /**
+   * Handles the form submission. If the form is valid, it formats the data,
+   * calls the library service to create the book, and closes the dialog on success.
+   */
+  onSubmit(): void {
+    console.log('Form submitted:', this.addBookForm.value);
+    if (this.addBookForm.valid) {
+      // Ensure date is formatted correctly if needed by the API (e.g., YYYY-MM-DD)
+      const formattedDate = this.formatDate(
+        this.addBookForm.value.publication_date
+      );
+
+      const bookRequest: BookRequest = {
+        title: this.addBookForm.value.title,
+        author: this.addBookForm.value.author.id,
+        publication_date: formattedDate,
+      };
+
+      const bookData: LibraryBooksCreateRequestParams = {
+        bookRequest: bookRequest,
+      };
+
+      this.libraryService.libraryBooksCreate(bookData).subscribe({
+        next: (response) => {
+          console.log('Book added successfully', response);
+          this.libraryNotificationService.notify({
+            message: 'Book added successfully',
+            type: 'success',
+            duration: 3000,
+          });
+          this.dialogRef.close(true);
+        },
+        error: (error) => {
+          const errorMessage = error?.error || {};
+
+          let errorMessageString = '<br><br>';
+
+          for (const key in errorMessage) {
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+          }
+
+          // Handle error response
+          this.libraryNotificationService.notify({
+            message: 'Error adding book \n' + errorMessageString,
+            type: 'error',
+            duration: 3000,
+          });
+        },
+      });
+    } else {
+      this.addBookForm.markAllAsTouched();
+    }
+  }
+```
+
+**Explanation:**
+
+1.  **`this.libraryService.libraryBooksCreate(bookData).subscribe({ ... });`**
+
+    - This line initiates the process of creating a new book.
+    - `this.libraryService.libraryBooksCreate(bookData)`: This part calls a method (`libraryBooksCreate`) on a `libraryService` object. It passes `bookData` as an argument, which presumably contains the information needed to create the new book (title, author, etc.). This method likely returns an Observable (from RxJS).
+    - `.subscribe({...})`: This is the crucial part that handles the asynchronous nature of the API call. `subscribe` is used to listen for the results of the `libraryBooksCreate` method (the Observable). It takes an object with `next` and `error` functions.
+
+2.  **`next: (response) => { ... }`**
+
+    - This function is executed if the API call is successful.
+    - `console.log('Book added successfully', response);`: Logs a success message to the console, along with the API response data.
+    - `this.libraryNotificationService.notify({ ... });`: Calls a `notify` method on a `libraryNotificationService` to display a success message to the user.
+      - `message`: The message to display ("Book added successfully").
+      - `type`: The type of notification ("success"). This might determine the styling of the notification (e.g., green color).
+      - `duration`: How long the notification should be displayed (3000 milliseconds = 3 seconds).
+    - `this.dialogRef.close(true);`: Closes a dialog or modal window, passing `true` to indicate that the operation was successful.
+
+3.  **`error: (error) => { ... }`**
+
+    - This function is executed if the API call fails.
+    - `const errorMessage = error?.error || {};`: Extracts the error message from the `error` object. It uses the optional chaining operator (`?.`) to safely access the `error` property, and the `|| {}` to provide a default empty object if `error?.error` is null or undefined.
+    - The code then iterates through the keys of the `errorMessage` object and constructs an HTML string (`errorMessageString`) to display the error messages in a formatted way. It assumes the error message is an object where each key represents a field with an error, and the value is an array containing the error message for that field.
+    - `this.libraryNotificationService.notify({ ... });`: Displays an error notification to the user.
+      - `message`: The error message to display. It includes the formatted `errorMessageString` to show detailed error information.
+      - `type`: The type of notification ("error"). This might determine the styling of the notification (e.g., red color).
+      - `duration`: How long the notification should be displayed (3000 milliseconds).
+
+**In Summary:**
+
+The code handles the asynchronous creation of a book via an API. It displays a success notification if the book is created successfully and an error notification if the creation fails, including detailed error messages from the API. The dialog is closed after either a success or failure.
+
+Now, we can add the book `Hunger Games` by `Suzanne Collins` published on `14th September 2008`.
+
+![Notification Error](/docs/images/part13_6.png)
+
+We correctly obtained an error related to the fact that the author does not yet exist in our database. This functionality will be addressed later; however, we successfully tested our notification.
