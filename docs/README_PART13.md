@@ -1353,7 +1353,7 @@ In essence, this component is designed to display library notifications, manage 
   </div>
   <mat-divider></mat-divider>
   <div class="notification-content">
-    <div>{{ notification.message }}</div>
+    <div [innerHTML]="notification.message"></div>
   </div>
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
@@ -1527,9 +1527,21 @@ mat-dialog-content {
 
 .notification-content {
   margin: 1em 0;
-  height: 50px;
+  min-height: 50px;
   text-shadow: 1px 1px 1px #0c0c0c85;
 }
+```
+
+Finally, we need to add `<app-library-notification></app-library-notification>` in `app.component.html` template:
+
+```html
+<h1>{{ title }}</h1>
+
+<div class="library">
+  <app-library></app-library>
+  <router-outlet></router-outlet>
+</div>
+<app-library-notification></app-library-notification>
 ```
 
 ## LibraryNotification integration

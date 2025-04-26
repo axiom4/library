@@ -20,7 +20,7 @@
   </div>
   <mat-divider></mat-divider>
   <div class="notification-content">
-    <div>{{ notification.message }}</div>
+    <div [innerHTML]="notification.message"></div>
   </div>
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
