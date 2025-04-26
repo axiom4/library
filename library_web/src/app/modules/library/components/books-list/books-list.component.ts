@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { debounceTime, Subject } from 'rxjs';
+import { LibraryBooksListUpdateService } from '../../services/library-books-list-update.service';
 
 @Component({
   selector: 'app-books-list',
@@ -78,7 +79,10 @@ export class BooksListComponent implements OnInit {
   searchText = '';
   private searchSubject = new Subject<string>();
 
-  constructor(private readonly libraryService: LibraryService) {}
+  constructor(
+    private readonly libraryService: LibraryService,
+    private readonly booksListUpdateService: LibraryBooksListUpdateService
+  ) {}
 
   /**
    * Lifecycle hook that is called after the component's view has been initialized.
@@ -90,6 +94,11 @@ export class BooksListComponent implements OnInit {
     this.getBooks();
     this.searchSubject.pipe(debounceTime(300)).subscribe((searchText) => {
       this.searchText = searchText;
+      this.pageIndex = 0;
+      this.getBooks();
+    });
+    this.booksListUpdateService.booksListUpdate$.subscribe(() => {
+      this.searchText = '';
       this.pageIndex = 0;
       this.getBooks();
     });

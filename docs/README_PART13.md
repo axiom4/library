@@ -1639,3 +1639,71 @@ Now, we can add the book `Hunger Games` by `Suzanne Collins` published on `14th 
 ![Notification Error](/docs/images/part13_6.png)
 
 We correctly obtained an error related to the fact that the author does not yet exist in our database. This functionality will be addressed later; however, we successfully tested our notification.
+
+## Refresh Books List
+
+Generate new service:
+
+```bash
+# ng generate service  modules/library/services/LibraryBooksListUpdate
+CREATE src/app/modules/library/services/library-books-list-update.service.spec.ts (440 bytes)
+CREATE src/app/modules/library/services/library-books-list-update.service.ts (151 bytes)
+```
+
+Add as follow:
+
+```typscript
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class LibraryBooksListUpdateService {
+  private booksListUpdate: Subject<void> = new Subject<void>();
+  booksListUpdate$ = this.booksListUpdate.asObservable();
+
+  constructor() {}
+
+  updateBooksList() {
+    this.booksListUpdate.next();
+  }
+}
+```
+
+Update `ngInit()` methos in `BooksListComponent`:
+
+```typescript
+  ngOnInit(): void {
+    this.getBooks();
+    this.searchSubject.pipe(debounceTime(300)).subscribe((searchText) => {
+      this.searchText = searchText;
+      this.pageIndex = 0;
+      this.getBooks();
+    });
+
+    this.booksListUpdateService.booksListUpdate$.subscribe(() => {
+      this.searchText = '';
+      this.pageIndex = 0;
+      this.getBooks();
+    });
+  }
+```
+
+In `LibraryComponent`update:
+
+```typescript
+  openAddBookDialog(): void {
+    const dialogRef = this.dialog.open(AddNewBookComponent, {
+      width: '700px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed');
+      if (result) {
+        this.booksListUpdateService.updateBooksList();
+        console.log('Dialog result:', result);
+      }
+    });
+  }
+```
