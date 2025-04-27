@@ -1707,3 +1707,13 @@ In `LibraryComponent`update:
     });
   }
 ```
+
+## Add New Author
+
+```bash
+# ng generate component modules/library/components/AddNewAuthor
+CREATE src/app/modules/library/components/add-new-author/add-new-author.component.scss (0 bytes)
+CREATE src/app/modules/library/components/add-new-author/add-new-author.component.html (29 bytes)
+CREATE src/app/modules/library/components/add-new-author/add-new-author.component.spec.ts (636 bytes)
+CREATE src/app/modules/library/components/add-new-author/add-new-author.component.ts (245 bytes)
+```
