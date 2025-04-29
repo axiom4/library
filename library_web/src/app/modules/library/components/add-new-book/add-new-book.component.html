@@ -32,10 +32,24 @@
         </mat-option>
         }
       </mat-autocomplete>
+      <mat-hint align="end">
+        <strong>
+          <a mat-button (click)="toggleNewAuthor()">
+            @if (!newAuthor) { Add new author } @else { Select existing author }
+          </a>
+        </strong>
+      </mat-hint>
       <mat-error *ngIf="addBookForm.get('author')?.hasError('required')">
         Author is required
       </mat-error>
     </mat-form-field>
+
+    <div *ngIf="newAuthor">
+      <app-add-new-author
+        (authorCancelled)="onAuthorCancelled()"
+        (authorAdded)="onAuthorAdded($event)"
+      ></app-add-new-author>
+    </div>
 
     <!-- Publication Date Field -->
     <mat-form-field appearance="outline" class="full-width">

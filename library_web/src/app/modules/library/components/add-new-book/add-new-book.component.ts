@@ -28,7 +28,7 @@ import {
   MatNativeDateModule,
   NativeDateAdapter,
 } from '@angular/material/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import {
   MatDialogModule,
   MatDialogTitle,
@@ -37,6 +37,7 @@ import {
 } from '@angular/material/dialog';
 import { map, Observable, startWith, switchMap } from 'rxjs';
 import { LibraryNotificationService } from '../../services/library-notification.service';
+import { AddNewAuthorComponent } from '../add-new-author/add-new-author.component';
 
 @Component({
   selector: 'app-add-new-book',
@@ -53,6 +54,8 @@ import { LibraryNotificationService } from '../../services/library-notification.
     MatDialogContent,
     MatDialogActions,
     MatAutocompleteModule,
+    AddNewAuthorComponent,
+    NgIf,
   ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
@@ -80,6 +83,8 @@ import { LibraryNotificationService } from '../../services/library-notification.
 export class AddNewBookComponent implements OnInit {
   addBookForm!: FormGroup;
   filteredOptions: Observable<Author[]> | undefined;
+  newAuthor = false;
+  authorControl = new FormControl('', Validators.required);
 
   /**
    * Initializes a new instance of the AddNewBookComponent.
@@ -104,15 +109,13 @@ export class AddNewBookComponent implements OnInit {
    * - Uses `startWith` to initialize the filter and `switchMap` to handle asynchronous filtering logic.
    */
   ngOnInit(): void {
-    const authorControl = new FormControl('', Validators.required);
-
     this.addBookForm = this.fb.group({
       title: ['', Validators.required],
-      author: authorControl,
+      author: this.authorControl,
       publication_date: ['', Validators.required],
     });
 
-    this.filteredOptions = authorControl.valueChanges.pipe(
+    this.filteredOptions = this.authorControl.valueChanges.pipe(
       startWith(''),
       switchMap((value) => {
         if (typeof value === 'string') {
@@ -158,6 +161,7 @@ export class AddNewBookComponent implements OnInit {
    */
   onSubmit(): void {
     console.log('Form submitted:', this.addBookForm.value);
+
     if (this.addBookForm.valid) {
       // Ensure date is formatted correctly if needed by the API (e.g., YYYY-MM-DD)
       const formattedDate = this.formatDate(
@@ -166,7 +170,9 @@ export class AddNewBookComponent implements OnInit {
 
       const bookRequest: BookRequest = {
         title: this.addBookForm.value.title,
-        author: this.addBookForm.value.author.id,
+        author: this.addBookForm.value.author
+          ? this.addBookForm.value.author.id
+          : null,
         publication_date: formattedDate,
       };
 
@@ -197,7 +203,7 @@ export class AddNewBookComponent implements OnInit {
           this.libraryNotificationService.notify({
             message: 'Error adding book \n' + errorMessageString,
             type: 'error',
-            duration: 30000,
+            duration: 3000,
           });
         },
       });
@@ -228,5 +234,32 @@ export class AddNewBookComponent implements OnInit {
     if (day.length < 2) day = '0' + day;
 
     return [year, month, day].join('-');
+  }
+
+  toggleNewAuthor(): void {
+    // Logic to add a new author
+    // This could involve opening another dialog or navigating to an author creation page
+    console.log('Add new author clicked');
+    this.newAuthor = !this.newAuthor; // Toggle the new author form visibility
+
+    if (this.newAuthor) {
+      this.authorControl.setValue(''); // Clear the author control value
+      this.authorControl.disable(); // Enable the author control when adding a new author
+    } else {
+      this.authorControl.enable(); // Disable the author control when adding a new author
+    }
+  }
+
+  onAuthorCancelled() {
+    this.newAuthor = false; // Reset the new author form visibility
+    this.authorControl.enable(); // Re-enable the author control
+  }
+
+  onAuthorAdded(author: Author) {
+    console.log('Author added:', author);
+    this.newAuthor = false; // Reset the new author form visibility
+    this.addBookForm.controls['author'].setValue(author);
+
+    this.authorControl.enable(); // Re-enable the author control
   }
 }
