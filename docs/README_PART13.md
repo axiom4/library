@@ -1671,6 +1671,29 @@ export class LibraryBooksListUpdateService {
 }
 ```
 
+**Explanation:**
+
+- **Imports:**
+  - `Injectable` from `@angular/core`: This decorator marks the class as one that can be injected with dependencies.
+  - `Subject` from `rxjs`: A `Subject` is a special type of Observable that allows values to be multicasted to many Observers. It's used here as a way to signal updates to the books list.
+- **`@Injectable` Decorator:**
+  - `@Injectable({ providedIn: 'root' })`: This makes the service available throughout the entire application. The `root` setting means Angular will create a single, shared instance of the service.
+- **`LibraryBooksListUpdateService` Class:**
+  - This service is designed to manage updates to a list of library books.
+  - `private booksListUpdate: Subject<void> = new Subject<void>();`:
+    - `booksListUpdate` is a private `Subject`. It's of type `void` because we're not sending any specific data with the update, just a notification that an update has occurred.
+    - `Subject<void>`: A Subject that doesn't carry any data.
+    - `private`: This ensures that only the service itself can directly trigger updates.
+  - `booksListUpdate$ = this.booksListUpdate.asObservable();`:
+    - `booksListUpdate$` is a public Observable that components can subscribe to.
+    - `.asObservable()`: This converts the `Subject` into an `Observable`, preventing external components from directly calling `next()` on the Subject (which would allow them to trigger updates). This enforces the principle that only the service itself should initiate updates.
+  - `constructor() {}`: An empty constructor. No dependencies are injected in this example.
+  - `updateBooksList() { this.booksListUpdate.next(); }`:
+    - This method is the public API for triggering an update to the books list.
+    - `this.booksListUpdate.next()`: This emits a notification to all subscribers of the `booksListUpdate$` Observable, signaling that the books list has been updated.
+
+**In essence, this service provides a centralized way to notify components that the library books list has changed, allowing them to refresh their data.**
+
 Update `ngInit()` methos in `BooksListComponent`:
 
 ```typescript
@@ -1690,6 +1713,14 @@ Update `ngInit()` methos in `BooksListComponent`:
   }
 ```
 
+- `this.booksListUpdateService.booksListUpdate$.subscribe(() => { ... });`: This subscribes to an observable `booksListUpdate$` from a service called `booksListUpdateService`.
+  - `() => { ... }`: This is the callback function that executes when the `booksListUpdate$` observable emits a value.
+  - `this.searchText = '';`: It clears the `searchText`, likely to reset the search.
+  - `this.pageIndex = 0;`: It resets the `pageIndex` to 0.
+  - `this.getBooks();`: It calls the `getBooks` method again to refresh the book list, possibly after an update or modification.
+
+In summary, the `ngOnInit` method initializes the component by fetching books, setting up a debounced search functionality, and subscribing to a book list update service to refresh the list when changes occur.
+
 In `LibraryComponent`update:
 
 ```typescript
@@ -1708,7 +1739,38 @@ In `LibraryComponent`update:
   }
 ```
 
+The `openAddBookDialog` function is responsible for opening a dialog box (likely a modal) that allows the user to add a new book. Let's break it down step by step:
+
+1.  **Opening the Dialog:**
+
+    - `this.dialog.open(AddNewBookComponent, { width: '700px' });`
+      - This line uses the `dialog` service (presumably from Angular Material or a similar UI library) to open a dialog.
+      - `AddNewBookComponent` is the component that will be displayed inside the dialog. It likely contains the form and logic for adding a new book.
+      - `{ width: '700px' }` is a configuration object that sets the width of the dialog to 700 pixels.
+      - The `dialog.open` method returns a reference to the opened dialog (`dialogRef`).
+
+2.  **Handling Dialog Closure:**
+
+    - `dialogRef.afterClosed().subscribe((result) => { ... });`
+      - This sets up a subscription to the `afterClosed()` observable of the dialog reference. This observable emits a value when the dialog is closed (either by submitting the form or canceling).
+      - The `result` parameter inside the `subscribe` callback contains the data passed back from the dialog when it's closed. This could be the new book data, or `undefined` if the dialog was canceled.
+
+3.  **Post-Dialog Logic:**
+
+    - `console.log('The dialog was closed');`
+      - A simple console log to indicate that the dialog has been closed.
+    - `if (result) { ... }`
+      - This checks if the `result` is truthy (i.e., not `null`, `undefined`, or an empty object). This implies that the user likely submitted the form successfully.
+    - `this.booksListUpdateService.updateBooksList();`
+      - If a `result` exists, this line calls a method on `booksListUpdateService` to refresh the list of books. This likely fetches the updated list from a backend or updates the local list with the newly added book.
+    - `console.log('Dialog result:', result);`
+      - Logs the `result` to the console, allowing you to inspect the data returned from the dialog.
+
+In essence, this function opens a dialog, and when the dialog is closed, it updates the book list if the dialog returned a valid result.
+
 ## Add New Author
+
+Now udpate our `AddNewBookComponent` to manage the provisioning of new authors. Let's create a new component called `AddNewAuthorComponent`:
 
 ```bash
 # ng generate component modules/library/components/AddNewAuthor
@@ -1717,3 +1779,226 @@ CREATE src/app/modules/library/components/add-new-author/add-new-author.componen
 CREATE src/app/modules/library/components/add-new-author/add-new-author.component.spec.ts (636 bytes)
 CREATE src/app/modules/library/components/add-new-author/add-new-author.component.ts (245 bytes)
 ```
+
+Update `add-new-author.component.html` as follow:
+
+```html
+<mat-card class="add-author-card">
+  <form class="add-author-form" [formGroup]="addAuthorForm">
+    <mat-card-header>
+      <mat-card-title>Add New Author</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>First Name</mat-label>
+        <input formControlName="first_name" matInput placeholder="First Name" required />
+        <mat-error *ngIf="addAuthorForm.get('first_name')?.hasError('required')"> First Name is required </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Last Name</mat-label>
+        <input formControlName="last_name" matInput placeholder="Last Name" required />
+        <mat-error *ngIf="addAuthorForm.get('last_name')?.hasError('required')"> Last Name is required </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Cityzenship</mat-label>
+        <input formControlName="citizenship" matInput placeholder="Cityzenship" required />
+        <mat-error *ngIf="addAuthorForm.get('citizenship')?.hasError('required')"> Cityzenship </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Date of Birth</mat-label>
+        <input matInput formControlName="date_of_birth" [matDatepicker]="picker_birth" placeholder="Choose a date" required />
+        <mat-datepicker-toggle matSuffix [for]="picker_birth"></mat-datepicker-toggle>
+        <mat-datepicker #picker_birth></mat-datepicker>
+        <mat-error *ngIf="addAuthorForm.get('date_of_birth')?.hasError('required')"> Date of Birth is required </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Date of Death</mat-label>
+        <input matInput formControlName="date_of_death" [matDatepicker]="picker_death" placeholder="Choose a date" />
+        <mat-datepicker-toggle matSuffix [for]="picker_death"></mat-datepicker-toggle>
+        <mat-datepicker #picker_death></mat-datepicker>
+      </mat-form-field>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button (click)="onCancel()" mat-button type="button">Cancel</button>
+      <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="!addAuthorForm.valid">Save</button>
+    </mat-card-actions>
+  </form>
+</mat-card>
+```
+
+The code is an Angular component template that defines a form for adding a new author. It uses Angular Material components for the UI elements and defines a reusable form component for adding author information, leveraging Angular Material for a consistent and visually appealing user interface. The form includes validation to ensure that required fields are filled in before submission.
+
+In our `style.scss` we add:
+
+```scss
+.add-author-card {
+  margin-top: 20px;
+}
+```
+
+Finally , we update `add-new-author.component.ts` as follow:
+
+```typescript
+import { AuthorRequest } from "./../../../core/api/v1/model/authorRequest";
+import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { MatCardModule } from "@angular/material/card";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter } from "@angular/material/core";
+import { FormGroup, Validators, ReactiveFormsModule, FormBuilder } from "@angular/forms";
+import { NgIf } from "@angular/common";
+import { Author, LibraryAuthorsCreateRequestParams, LibraryBooksCreateRequestParams, LibraryService } from "../../../core/api/v1";
+import { LibraryNotificationService } from "../../services/library-notification.service";
+
+@Component({
+  selector: "app-add-new-author",
+  templateUrl: "./add-new-author.component.html",
+  styleUrl: "./add-new-author.component.scss",
+  imports: [MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, ReactiveFormsModule, NgIf],
+  providers: [
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
+  ],
+})
+export class AddNewAuthorComponent implements OnInit {
+  addAuthorForm!: FormGroup;
+  @Output() authorAdded: EventEmitter<Author> = new EventEmitter();
+  @Output() authorCancelled: EventEmitter<void> = new EventEmitter();
+
+  constructor(private fb: FormBuilder, private readonly libraryService: LibraryService, private readonly libraryNotificationService: LibraryNotificationService) {}
+
+  ngOnInit() {
+    this.addAuthorForm = this.fb.group({
+      first_name: ["", Validators.required],
+      last_name: ["", Validators.required],
+      citizenship: ["", Validators.required],
+      date_of_birth: ["", Validators.required],
+      date_of_death: [""],
+    });
+  }
+
+  onSubmit() {
+    if (this.addAuthorForm.valid) {
+      const authorValue: Author = this.addAuthorForm.value;
+
+      let AuthorRequest: AuthorRequest = {
+        first_name: authorValue.first_name,
+        last_name: authorValue.last_name,
+        citizenship: authorValue.citizenship,
+        date_of_birth: this.formatDate(this.addAuthorForm.value.date_of_birth),
+        date_of_death: this.addAuthorForm.value.date_of_death ? this.formatDate(this.addAuthorForm.value.date_of_death) : undefined,
+      };
+
+      const params: LibraryAuthorsCreateRequestParams = {
+        authorRequest: AuthorRequest,
+      };
+
+      this.libraryService.libraryAuthorsCreate(params).subscribe({
+        next: (author) => {
+          console.log("Author added successfully:", author);
+          this.libraryNotificationService.notify({
+            message: "Author added successfully",
+            type: "success",
+            duration: 3000,
+          });
+
+          this.authorAdded.emit(author);
+          this.addAuthorForm.reset();
+        },
+        error: (error) => {
+          console.error("Error adding author:", error);
+          const errorMessage = error?.error || {};
+
+          let errorMessageString = "<br><br>";
+
+          for (const key in errorMessage) {
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+          }
+
+          // Handle error response
+          this.libraryNotificationService.notify({
+            message: "Error adding author \n" + errorMessageString,
+            type: "error",
+            duration: 3000,
+          });
+        },
+      });
+    } else {
+      this.addAuthorForm.markAllAsTouched();
+      console.log("Form is invalid");
+    }
+  }
+
+  onCancel() {
+    this.authorCancelled.emit();
+    this.addAuthorForm.reset();
+  }
+
+  /**
+   * Helper function to format a Date object into 'YYYY-MM-DD' string format.
+   * @param date - The date to format.
+   * @returns The formatted date string.
+   */
+  private formatDate(date: Date): string {
+    const d = new Date(date);
+    let month = "" + (d.getMonth() + 1);
+    let day = "" + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
+  }
+}
+```
+
+The provided code defines an Angular component named `AddNewAuthorComponent`, which is designed to handle the creation of new authors in a library system. This component uses Angular Material for its UI elements and Angular Reactive Forms for form handling and validation.
+
+### Key Features:
+
+1. **Form Initialization**:
+
+   - The `addAuthorForm` is initialized in the `ngOnInit` lifecycle hook using `FormBuilder`. It contains fields for `first_name`, `last_name`, `citizenship`, `date_of_birth`, and `date_of_death`.
+   - Validators are applied to ensure that required fields are filled before submission.
+
+2. **Event Emitters**:
+
+   - The component defines two `@Output` properties: `authorAdded` and `authorCancelled`. These emit events when an author is successfully added or the form is canceled, allowing parent components to react accordingly.
+
+   The selected line of code defines an Angular `@Output` property named `authorAdded`. This property is an instance of `EventEmitter`, which is a class provided by Angular to facilitate communication between a child component and its parent component.
+
+   ### Explanation:
+
+   1. **`@Output` Decorator**:
+
+   - The `@Output` decorator marks the `authorAdded` property as an output property of the component. This means that the component can emit events through this property, and parent components can listen for these events using Angular's event binding syntax (e.g., `(authorAdded)="onAuthorAdded($event)"`).
+
+   2. **`EventEmitter`**:
+
+   - The `EventEmitter` is a generic class provided by Angular. In this case, it is parameterized with the `Author` type, indicating that the events emitted by this property will carry data of type `Author`.
+
+   3. **Purpose**:
+
+   - The `authorAdded` property is used to notify the parent component when a new author has been successfully added. The emitted event will typically include the newly created `Author` object as its payload, allowing the parent component to update its state or perform additional actions (e.g., refreshing a list of authors).
+
+   4. **Initialization**:
+
+   - The `authorAdded` property is initialized as a new instance of `EventEmitter`. This allows the component to call the `emit()` method on this property to send events to the parent component.
+
+   This line of code is part of a child component's API, enabling it to communicate with its parent component. By emitting events through the `authorAdded` property, the child component can inform the parent component about the successful addition of a new author, facilitating seamless interaction between the two components.
+
+3. **Form Submission**:
+
+   - The `onSubmit` method is triggered when the form is submitted. It validates the form and constructs an `AuthorRequest` object with the form data.
+   - The `libraryService.libraryAuthorsCreate` method is called to send the data to the backend API. If the request is successful, a success notification is displayed, and the `authorAdded` event is emitted with the newly created author. If the request fails, an error notification is displayed with detailed error messages.
+
+The `AddNewAuthorComponent` provides a user-friendly form with validation, integrates with a backend API for data submission, and uses notifications to inform the user of the operation's success or failure. The use of event emitters ensures that the component can seamlessly communicate with its parent components.
