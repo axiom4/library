@@ -137,7 +137,7 @@ You can then access the Keycloak admin console at [http://127.0.0.1:8080](http:/
 
 ![Keycloak Login Page](/docs/images/part14_1.png)
 
-## Configuring a new Keycloak Realm
+## Configuring Keycloak
 
 A **realm** in Keycloak is an isolated space for managing users, roles, groups, and clients. Each realm is independent: users, roles, and configurations in one realm are not visible or accessible from another. This allows you to manage multiple applications or environments (such as development, testing, and production) within the same Keycloak instance, keeping data and configurations separate.
 
@@ -165,3 +165,47 @@ To organize users, roles, and clients for your application, you need to create a
 ![New Keycloak Realm](/docs/images/part14_2.png)
 
 Your new realm `library-realm` is now ready. You can now proceed to configure clients, roles, and users within this realm for your Django and Angular applications.
+
+### Creating a new client: `library-web`
+
+A **client** in Keycloak represents an application or service that interacts with the Keycloak server to authenticate users and obtain security tokens. Clients can be frontend applications (like Angular or React apps), backend services, or any system that needs to use Keycloak for authentication and authorization. Defining a client allows Keycloak to manage how users log in to your application, what permissions they have, and how tokens are issued.
+
+#### Steps to Create a New Client: `library-web`
+
+To allow your frontend application to authenticate users via Keycloak, you need to create a new public client:
+
+1. **Navigate to Clients**
+
+- In the Keycloak Admin Console, ensure you are in the `library-realm`.
+- In the left sidebar, click on **Clients**.
+
+2. **Create the Client**
+
+- Click the `Create client` button.
+
+In `Genereral Settings`:
+
+- For `Client type`, select `OpenID Connect`.
+- Enter `library-web` as the `Client ID`.
+- Enter `Library Web`as the `Client Name`.
+- Click **Next**.
+
+![New Client](/docs/images/part14_3.png)
+
+In `Capability config`:
+
+- Set `Client Authentication` to `off`.
+- In `Authentication Flow` select only `Standard Flow.
+- Click **Next**.
+
+![New Client](/docs/images/part14_4.png)
+
+In `Login settings`:
+
+- Set `Valid redirect URIs` to `*`.
+- Set `Web origins` to `*`.
+- Click **Save**.
+
+![New Client](/docs/images/part14_5.png)
+
+Your `library-web` client is now configured. This client will allow your Angular frontend to redirect users to Keycloak for authentication and receive tokens for secure API calls.
