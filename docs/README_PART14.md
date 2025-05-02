@@ -534,25 +534,83 @@ This code manages authentication using Keycloak.
 
 This updates ensures that the user is authenticated with Keycloak when the app starts, reacts to authentication events. It uses Angular's dependency injection and reactive programming features to manage authentication state.
 
-<!-- ### 5. Use Keycloak in Your Components
+Finnaly, we update our routing modules:
 
-You can now inject `KeycloakService` into your components to access user information, roles, and tokens.
+**library-routing.module.ts**
 
 ```typescript
-import { Component } from "@angular/core";
-import { KeycloakService } from "keycloak-angular";
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { BookComponent } from "./components/book/book.component";
+import { LibraryComponent } from "./components/library/library.component";
 
-@Component({
-  selector: "app-profile",
-  template: `<div *ngIf="username">Welcome, {{ username }}</div>`,
+const routes: Routes = [
+  { path: "", component: LibraryComponent },
+  { path: "books/:id", component: BookComponent },
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class ProfileComponent {
-  username = "";
+export class LibraryRoutingModule {}
+```
 
-  constructor(private keycloak: KeycloakService) {
-    this.username = this.keycloak.getUsername();
-  }
-}
-````
+- `{ path: "", component: LibraryComponent }`  
+  This means when the user navigates to the root URL (no path), the `LibraryComponent` will be shown.
 
-With this setup, your Angular 19 application is integrated with Keycloak using the `keycloak-angular` library and the `library-web` client. Authenticated routes are protected with a guard, and user authentication is managed seamlessly. -->
+**app.routes.ts**
+
+```typescript
+import { Routes } from "@angular/router";
+import { authGuard } from "./auth.guard";
+
+export const routes: Routes = [
+  {
+    path: "library",
+    loadChildren: () => import("./modules/library/library.module").then((m) => m.LibraryModule),
+    canActivate: [authGuard],
+  },
+  { path: "", redirectTo: "/library", pathMatch: "full" },
+  { path: "**", redirectTo: "/library", pathMatch: "full" },
+];
+```
+
+- `routes: Routes = [...]`: Declares an array of route objects, which Angular uses to determine which component or module to load based on the URL path.
+
+- First route object:
+
+  - `path: "library"`: When the URL path is library, this route is activated.
+  - `loadChildren`: Uses lazy loading to load the `LibraryModule` only when the library route is accessed. This improves performance by not loading the module until needed.
+  - `canActivate: [authGuard]`: Protects the route using an authentication guard. Only users who pass the `authGuard` check can access this route.
+
+- Second route object:
+
+  - `path: ""`: When the URL path is empty (the root path), the user is redirected to library.
+  - `redirectTo: "/library"`: Specifies the redirect target.
+  - `pathMatch: "full"`: Ensures the redirect only happens when the full path is empty.
+
+- Third route object:
+  - `path: "**"`: This is a wildcard route that matches any path not previously matched.
+  - `redirectTo: "/library"`: Redirects all unknown paths to library.
+  - `pathMatch: "full"`: Ensures the redirect applies to the full unmatched path.
+
+Now, when we try navigating on our app `http://127.0.0.1:4200`, we will redirect on our `keycloak` login page. So, we need going to keycloak admin console and insert e new user into the `library-realm`.
+
+Go to "Users" and select `Create new user" button.
+
+![Add new user](/docs/images/part14_6.png)
+
+Insert `Username` and enable `Email verified`. Click on `Create`.
+
+![Add new user](/docs/images/part14_7.png)
+
+Now go on `Credentials` tab and click on `Set password`. Finally, set and confirm your password and disable `Temporary` flag, so, click on `Save` button and confirm your actions.
+
+![Set user Password](/docs/images/part14_8.png)
+
+Now we can to login on our app. After login, Keycloak could ask to insert e-mail, first name and last name, we submit al request data.
+
+Now we will logged in and redirect on `/library` route.
+
+![Frontend Login](/docs/images/part14_9.png)
