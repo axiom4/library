@@ -393,6 +393,44 @@ export const routes: Routes = [
 ];
 ```
 
+## Use Keycloak in our Components
+
+Now we update our app to manage authentication using keycloak and evaluate user roles.
+
+First, we update our app routing, to make this, we move inside `library` components all app logic.
+
+Edit `library.component.html` and update it as follow:
+
+```html
+<h2>Books</h2>
+
+<app-books-list></app-books-list>
+
+<hr />
+<div class="library-footer">
+  <a mat-raised-button color="primary" (click)="openAddBookDialog()"> <mat-icon>add</mat-icon> Add New Book </a>
+</div>
+
+<app-library-notification></app-library-notification>
+```
+
+Formally, we move `LibraryNotification` in this component, so, we need to update imports of our `library.component.ts`:
+
+```typescript
+// ... existing code ...
+import { LibraryNotificationComponent } from '../library-notification/library-notification.component';
+
+@Component({
+  selector: 'app-library',
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    BooksListComponent,
+    LibraryNotificationComponent,
+  ],
+// ... existing code ...
+```
+
 <!-- ### 5. Use Keycloak in Your Components
 
 You can now inject `KeycloakService` into your components to access user information, roles, and tokens.
@@ -412,6 +450,6 @@ export class ProfileComponent {
     this.username = this.keycloak.getUsername();
   }
 }
-```
+````
 
 With this setup, your Angular 19 application is integrated with Keycloak using the `keycloak-angular` library and the `library-web` client. Authenticated routes are protected with a guard, and user authentication is managed seamlessly. -->
