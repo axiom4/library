@@ -15,9 +15,15 @@ import { environment } from '../environments/environment.development';
 import {
   provideHttpClient,
   withFetch,
-  withInterceptors,
   withXsrfConfiguration,
 } from '@angular/common/http';
+
+import {
+  provideKeycloak,
+  withAutoRefreshToken,
+  AutoRefreshTokenService,
+  UserActivityService,
+} from 'keycloak-angular';
 
 export function apiConfigFactory(): Configuration {
   const params: ConfigurationParameters = {
@@ -26,8 +32,30 @@ export function apiConfigFactory(): Configuration {
   return new Configuration(params);
 }
 
+export const provideKeycloakAngular = () =>
+  provideKeycloak({
+    config: {
+      url: environment.keycloak.url,
+      realm: environment.keycloak.realm,
+      clientId: environment.keycloak.client_id,
+    },
+    initOptions: {
+      onLoad: 'check-sso',
+      silentCheckSsoRedirectUri:
+        window.location.origin + '/silent-check-sso.html',
+    },
+    features: [
+      withAutoRefreshToken({
+        onInactivityTimeout: 'logout',
+        sessionTimeout: 1000 * 60, // 1 hour
+      }),
+    ],
+    providers: [AutoRefreshTokenService, UserActivityService],
+  });
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideKeycloakAngular(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     importProvidersFrom(ApiModule.forRoot(apiConfigFactory)),
