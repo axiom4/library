@@ -1,4 +1,4 @@
-# A Full Test Application Using Django and Angular (Part 14) - Django Roles
+# A Full Test Application Using Django and Angular (Part 14) - Keycloak Integration
 
 In this chapter, we will address a crucial aspect of any modern web application: API security. Protecting our APIs is essential to ensure that only authorized users can access and modify data.
 
