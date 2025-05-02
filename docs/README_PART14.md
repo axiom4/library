@@ -209,3 +209,209 @@ In `Login settings`:
 ![New Client](/docs/images/part14_5.png)
 
 Your `library-web` client is now configured. This client will allow your Angular frontend to redirect users to Keycloak for authentication and receive tokens for secure API calls.
+
+## Configure Keycloack-Angular
+
+To integrate our Angular 19 frontend application with Keycloak using the `keycloak-angular` library and the `library-web` client, follow these steps. This guide uses the new Angular standalone APIs and `app.config.ts` for configuration, and demonstrates how to create an Angular guard to protect authenticated routes.
+
+### 1. Install Dependencies
+
+Install the required packages:
+
+```bash
+# npm install keycloak-angular keycloak-js
+
+
+added 100 packages, and audited 1119 packages in 2s
+
+183 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+```
+
+### 2. Add keycloak enviroments in `enviroments.development.ts`
+
+Edit `enviroments.development.ts` and add keycloak config:
+
+```typescript
+export const environment = {
+  production: false,
+  api_url: "http://127.0.0.1:8000",
+
+  keycloak: {
+    url: "http://127.0.0.1:8080",
+    realm: "library-realm",
+    client_id: "library-web",
+  },
+};
+```
+
+### 3. Configure Keycloak in `app.config.ts`
+
+Update your `app.config.ts` file to initialize Keycloak during app startup:
+
+**Add new `provideKeycloakAngular`**
+
+```typescript
+// app.config.ts
+export const provideKeycloakAngular = () =>
+  provideKeycloak({
+    config: {
+      url: environment.keycloak.url,
+      realm: environment.keycloak.realm,
+      clientId: environment.keycloak.client_id,
+    },
+    initOptions: {
+      onLoad: "check-sso",
+      silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html",
+    },
+    features: [
+      withAutoRefreshToken({
+        onInactivityTimeout: "logout",
+        sessionTimeout: 60 * 60 * 1000, // 1 hour
+      }),
+    ],
+    providers: [AutoRefreshTokenService, UserActivityService],
+  });
+```
+
+This code defines a function called `provideKeycloakAngular` that sets up authentication in an Angular application using Keycloak, an identity and access management solution.
+
+- **provideKeycloak**: This function initializes Keycloak with the provided configuration.
+- **config**: Contains Keycloak connection details, such as the server URL, realm, and client ID. These values are pulled from the application's environment settings.
+- **initOptions**: Sets options for how Keycloak should initialize.
+  - `onLoad: "check-sso"` tells Keycloak to check if the user is already logged in (Single Sign-On).
+  - `silentCheckSsoRedirectUri` specifies a URL used for silent SSO checks, allowing the app to verify login status without redirecting the user.
+- **features**:
+  - `withAutoRefreshToken` enables automatic refreshing of the authentication token.
+    - `onInactivityTimeout: "logout"` logs the user out after inactivity.
+    - `sessionTimeout: 60 * 60 * 1000` sets the session timeout to 1 hour.
+- **providers**: Registers services (`AutoRefreshTokenService`, `UserActivityService`) that help manage token refresh and user activity.
+
+**Import new provider**
+
+```typescript
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideKeycloakAngular(),
+    // ... existing code ...
+  ],
+};
+```
+
+In `public`directory add new file `silent-check-sso.html`:
+
+```html
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Silent SSO Check</title>
+  </head>
+  <body>
+    <script>
+      parent.postMessage(location.href, location.origin);
+    </script>
+  </body>
+</html>
+```
+
+### 4. Create an Auth Guard
+
+Generate an Angular guard to protect authenticated routes:
+
+```bash
+# ng generate guard  Auth
+? Which type of guard would you like to create? (Select CanActivate)
+❯◉ CanActivate
+ ◯ CanActivateChild
+ ◯ CanDeactivate
+ ◯ CanMatch
+
+✔ Which type of guard would you like to create? CanActivate
+CREATE src/app/auth.guard.spec.ts (461 bytes)
+CREATE src/app/auth.guard.ts (128 bytes)
+```
+
+```typescript
+// auth.guard.ts
+import { ActivatedRouteSnapshot, CanActivateFn, RouterStateSnapshot, UrlTree } from "@angular/router";
+import { AuthGuardData, createAuthGuard } from "keycloak-angular";
+
+const isAccessAllowed = async (route: ActivatedRouteSnapshot, _: RouterStateSnapshot, authData: AuthGuardData): Promise<boolean | UrlTree> => {
+  const { authenticated, grantedRoles } = authData;
+
+  if (authenticated) {
+    return true;
+  }
+
+  return false;
+};
+
+export const authGuard: CanActivateFn = createAuthGuard<CanActivateFn>(isAccessAllowed);
+```
+
+This code defines a custom authentication guard for an Angular application using the `keycloak-angular` library. The purpose of an authentication guard is to control access to certain routes based on the user's authentication status.
+
+**Key parts:**
+
+1. **Imports:**
+
+   - `ActivatedRouteSnapshot`, `CanActivateFn`, `RouterStateSnapshot`, and `UrlTree` are imported from Angular's router module.
+   - `AuthGuardData` and `createAuthGuard` are imported from `keycloak-angular`, which helps integrate Keycloak authentication.
+
+2. **isAccessAllowed Function:**
+
+   - This asynchronous function receives the current route, router state, and authentication data.
+   - It destructures `authenticated` and `grantedRoles` from `authData`.
+   - If the user is authenticated (`authenticated` is true), it returns `true`, allowing access to the route.
+   - Otherwise, it returns `false`, denying access.
+
+3. **authGuard Export:**
+   - `authGuard` is created by passing the `isAccessAllowed` function to `createAuthGuard`.
+   - This guard can be used in Angular route definitions to protect routes and ensure only authenticated users can access them.
+
+The guard currently only checks if the user is authenticated. Later, we restrict access based on user roles adding logic to `grantedRoles`.
+
+### 4. Protect Routes in Your Router
+
+Apply the guard to routes that require authentication:
+
+```typescript
+// app.routes.ts
+import { Routes } from "@angular/router";
+import { AuthGuard } from "./auth.guard";
+
+export const routes: Routes = [
+  {
+    path: "protected",
+    loadComponent: () => import("./protected/protected.component").then((m) => m.ProtectedComponent),
+    canActivate: [AuthGuard],
+  },
+  // ...other routes
+];
+```
+
+<!-- ### 5. Use Keycloak in Your Components
+
+You can now inject `KeycloakService` into your components to access user information, roles, and tokens.
+
+```typescript
+import { Component } from "@angular/core";
+import { KeycloakService } from "keycloak-angular";
+
+@Component({
+  selector: "app-profile",
+  template: `<div *ngIf="username">Welcome, {{ username }}</div>`,
+})
+export class ProfileComponent {
+  username = "";
+
+  constructor(private keycloak: KeycloakService) {
+    this.username = this.keycloak.getUsername();
+  }
+}
+```
+
+With this setup, your Angular 19 application is integrated with Keycloak using the `keycloak-angular` library and the `library-web` client. Authenticated routes are protected with a guard, and user authentication is managed seamlessly. -->
