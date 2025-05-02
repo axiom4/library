@@ -431,6 +431,109 @@ import { LibraryNotificationComponent } from '../library-notification/library-no
 // ... existing code ...
 ```
 
+Now update `app.component.html` as follow:
+
+```html
+<h1>{{ title }}</h1>
+
+<div class="library">
+  <router-outlet></router-outlet>
+</div>
+```
+
+We remove `<app-library>` and `<app-library-notification>`. Update `app.component.ts`:
+
+```typescript
+import { Component, effect, OnInit } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import Keycloak from "keycloak-js";
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType, typeEventArgs, ReadyArgs } from "keycloak-angular";
+import { inject } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.scss",
+  imports: [RouterOutlet],
+})
+/**
+ * The `AppComponent` serves as the root component of the Library application.
+ * It initializes the application state and interacts with the `LibraryService`
+ * to fetch and display a list of books.
+ *
+ * @implements {OnInit}
+ */
+export class AppComponent implements OnInit {
+  title = "Library";
+  authenticated = false;
+  keycloakStatus: string | undefined;
+  private readonly keycloak = inject(Keycloak);
+  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+
+  constructor() {
+    effect(() => {
+      const keycloakEvent = this.keycloakSignal();
+
+      console.log("Keycloak event:", keycloakEvent);
+
+      this.keycloakStatus = keycloakEvent.type;
+
+      if (this.keycloakStatus === KeycloakEventType.Ready) {
+        this.authenticated = typeEventArgs<ReadyArgs>(keycloakEvent.args);
+        console.log("Keycloak is ready:", this.authenticated);
+      } else if (this.keycloakStatus === KeycloakEventType.AuthLogout) {
+        this.authenticated = false;
+      } else {
+        console.log("Keycloak status:", this.keycloakStatus);
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    if (!this.keycloak.authenticated) {
+      this.keycloak.login().then(() => {
+        if (this.keycloak.authenticated && this.keycloak.token) {
+          console.log("Keycloak token:", this.keycloak.token);
+
+          this.authenticated = true;
+        }
+      });
+    } else {
+      if (this.keycloak.token) {
+        console.log("Keycloak token:", this.keycloak.token);
+      }
+    }
+  }
+}
+```
+
+This code manages authentication using Keycloak.
+
+**Key points:**
+
+- **Properties:**
+
+  - `title`: Sets the component title to "Library".
+  - `authenticated`: Tracks if the user is logged in.
+  - `keycloakStatus`: Stores the current Keycloak event type.
+  - `keycloak` and `keycloakSignal`: Injected services for interacting with Keycloak and listening to its events.
+
+- **Constructor:**
+
+  - Sets up a reactive `effect` that listens for Keycloak events.
+  - Updates `keycloakStatus` and `authenticated` based on the event type:
+    - If Keycloak is "Ready", it checks if the user is authenticated.
+    - If the user logs out, it sets `authenticated` to `false`.
+    - Logs other event statuses for debugging.
+
+- **ngOnInit():**
+
+  - On component initialization, checks if the user is authenticated.
+  - If not, it triggers the Keycloak login process.
+  - After login, if authentication and a token are present, it sets `authenticated` to `true` and logs the token.
+
+This updates ensures that the user is authenticated with Keycloak when the app starts, reacts to authentication events. It uses Angular's dependency injection and reactive programming features to manage authentication state.
+
 <!-- ### 5. Use Keycloak in Your Components
 
 You can now inject `KeycloakService` into your components to access user information, roles, and tokens.
