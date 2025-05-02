@@ -6,9 +6,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddNewBookComponent } from '../add-new-book/add-new-book.component';
 import { BooksListComponent } from '../books-list/books-list.component';
 import { LibraryBooksListUpdateService } from '../../services/library-books-list-update.service';
+import { LibraryNotificationComponent } from '../library-notification/library-notification.component';
 @Component({
   selector: 'app-library',
-  imports: [MatButtonModule, MatIconModule, BooksListComponent],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    BooksListComponent,
+    LibraryNotificationComponent,
+  ],
   templateUrl: './library.component.html',
   styleUrl: './library.component.scss',
 })
