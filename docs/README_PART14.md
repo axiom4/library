@@ -614,3 +614,39 @@ Now we can to login on our app. After login, Keycloak could ask to insert e-mail
 Now we will logged in and redirect on `/library` route.
 
 ![Frontend Login](/docs/images/part14_9.png)
+
+## Webservice Authentication
+
+Now we need to integrate a new `Authenticator` class into Django, in fact, all our operations are unprotected, so, anyone can access and insert, update or delete our data.
+
+First, we need to protect our services using `DEFAULT_PERMISSION_CLASSES` inside our `settings.py`. Add the following into `REST_FRAMEWORK` setting.
+
+```python
+# ... exsting code ...
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    # ...
+}
+# ... exsting code ...
+```
+
+You can obtain some effet adding the property `permission_classes` into your `ViewSet` classes.
+
+_Example:_
+
+```python
+# ... exsting code ...
+from rest_framework import permissions
+
+class AuthorViewSet(viewsets.ModelViewSet):
+  # ... exsting code ...
+  permission_classes = [permissions.IsAuthenticated]
+```
+
+The `permission_classes` property overwrites `DEFAUL_PERMISSION_CLASSES` setting.
+
+Now when you open your app, you will get an error that you do not have permission to access the data.
+
+![Permission Error](/docs/images/part14_10.png)

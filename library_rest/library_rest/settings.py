@@ -151,6 +151,9 @@ ACCESS_LIST = ['127.0.0.1', '::1']
 
 REST_FRAMEWORK = {
     # YOUR SETTINGS
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.BrowsableAPIRenderer',
