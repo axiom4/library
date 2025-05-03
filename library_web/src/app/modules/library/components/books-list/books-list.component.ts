@@ -1,3 +1,5 @@
+import { LibraryNotificationService } from './../../services/library-notification.service';
+import { LibraryNotification } from './../../models/library-notification';
 import { Component, OnInit } from '@angular/core';
 import {
   Book,
@@ -81,7 +83,8 @@ export class BooksListComponent implements OnInit {
 
   constructor(
     private readonly libraryService: LibraryService,
-    private readonly booksListUpdateService: LibraryBooksListUpdateService
+    private readonly booksListUpdateService: LibraryBooksListUpdateService,
+    private readonly libraryNotificationService: LibraryNotificationService
   ) {}
 
   /**
@@ -201,7 +204,16 @@ export class BooksListComponent implements OnInit {
         this.totalBooks = data.total_records || 0;
       },
       error: (err) => {
-        console.error(err);
+        const errorMessage = err?.error || {};
+
+        let errorMessageString = '<br><br>' + errorMessage.detail;
+
+        // Handle error response
+        this.libraryNotificationService.notify({
+          message: 'Error get book list \n' + errorMessageString,
+          type: 'error',
+          duration: 3000,
+        });
       },
     });
   }
