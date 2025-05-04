@@ -95,7 +95,7 @@ DATABASES = {
         'USER': mysql_env('MYSQL_USER'),
         'PASSWORD': mysql_env('MYSQL_PASSWORD'),
         'HOST': mysql_env('MYSQL_HOST', default='localhost'),
-        'PORT': mysql_env('MYSQL_PORT', default='5432'),
+        'PORT': mysql_env('MYSQL_PORT', default='3306'),
     }
 }
 
@@ -143,6 +143,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
+    'http://localhost:8000',
+    'http://localhost:4200',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:4200',
 )
@@ -175,6 +177,15 @@ SPECTACULAR_SETTINGS = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://localhost:4200',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:4200',
 ]
+
+KEYCLOAK_CONFIG = {
+    'KEYCLOAK_SERVER_URL': django_env('KEYCLOAK_SERVER_URL'),
+    'KEYCLOAK_REALM': django_env('KEYCLOAK_REALM'),
+    'KEYCLOAK_CLIENT_ID': django_env('KEYCLOAK_CLIENT_ID'),
+    'KEYCLOAK_CLIENT_SECRET_KEY': django_env('KEYCLOAK_CLIENT_SECRET_KEY')
+}
