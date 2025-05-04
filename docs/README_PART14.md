@@ -801,29 +801,29 @@ Introspection allows the backend to securely validate tokens and obtain up-to-da
 Below is a summary diagram illustrating the integration between the different components of our application and Keycloak:
 
 ```mermaid
-flowchart LR
-  subgraph Frontend["Frontend"]
-    A["Angular App"]
-  end
-  subgraph Backend["Backend"]
-    B["Django API"]
-  end
-  subgraph Keycloak["Keycloak"]
-    C["Keycloak Server"]
-  end
-  n1["User"] -- "1 - Request" --> A
-  A -- "2 - Authenticate (OIDC)" --> C
-  A -- "3 - Obtain Access Token" --> C
-  A -- "4 -Send Token in API Request" --> B
-  B -- "5 - Introspect/Validate Token" --> C
-  C -- "6 - User/Role Info" --> B
-  C -- "7 - Store Data" --> D[("MySQL DB")]
-  B -- "8 - Respond with Data" --> A
-  A -- "9 - Response" --> n1
-  style A fill:#e3f2fd,stroke:#2196f3
-  style B fill:#e8f5e9,stroke:#43a047
-  style C fill:#fff3e0,stroke:#fb8c00
-  style D fill:#f3e5f5,stroke:#8e24aa
+sequenceDiagram
+    participant Angular App as Angular App
+    participant Keycloak as Keycloak
+    participant Django API as Django API
+    Angular App ->> Keycloak: Authenticate (OIDC)
+    Keycloak ->> Angular App: Obtain Access Token
+    loop For Each Request
+        alt If Token is Active
+            Angular App ->> Django API: Send Token in API Request
+            Django API ->> Keycloak: Introspect/Validate Token
+            alt If Token is Valid
+                Keycloak ->> Django API: User/Role Info
+                Django API -->> Django API: Elaborate Data
+                Django API ->> Angular App: Respond with Data
+            else If Token is not Valid
+                Keycloak ->> Django API: Send HTTP ERROR - Invalid Token
+                Django API ->> Angular App: Send 403 Forbidden to Angular App
+            end
+        else If token has expired
+            Angular App ->> Keycloak: Use Refresh Token to Request new Access Token
+            Keycloak ->> Angular App: Obtain Access Token
+        end
+    end
 ```
 
 **Legend:**
@@ -831,6 +831,5 @@ flowchart LR
 - **Angular App:** Authenticates users via Keycloak and attaches the access token to API requests.
 - **Django API:** Receives requests, validates tokens (using introspection if needed), and enforces permissions.
 - **Keycloak Server:** Handles authentication, issues tokens, and provides user/role information.
-- **MySQL DB:** Stores Keycloak's configuration and user data.
 
 This diagram summarizes how authentication and authorization flow through the system, with Keycloak acting as the central identity provider.
