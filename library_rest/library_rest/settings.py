@@ -95,7 +95,7 @@ DATABASES = {
         'USER': mysql_env('MYSQL_USER'),
         'PASSWORD': mysql_env('MYSQL_PASSWORD'),
         'HOST': mysql_env('MYSQL_HOST', default='localhost'),
-        'PORT': mysql_env('MYSQL_PORT', default='5432'),
+        'PORT': mysql_env('MYSQL_PORT', default='3306'),
     }
 }
 
@@ -145,17 +145,27 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
     'http://localhost:4200',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:4200',
 )
 
 ACCESS_LIST = ['127.0.0.1', '::1']
 
 REST_FRAMEWORK = {
     # YOUR SETTINGS
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'library_rest.authentications.KeyCloakAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ]
 }
 
 SPECTACULAR_SETTINGS = {
@@ -174,4 +184,13 @@ SPECTACULAR_SETTINGS = {
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://localhost:4200',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:4200',
 ]
+
+KEYCLOAK_CONFIG = {
+    'KEYCLOAK_SERVER_URL': django_env('KEYCLOAK_SERVER_URL'),
+    'KEYCLOAK_REALM': django_env('KEYCLOAK_REALM'),
+    'KEYCLOAK_CLIENT_ID': django_env('KEYCLOAK_CLIENT_ID'),
+    'KEYCLOAK_CLIENT_SECRET_KEY': django_env('KEYCLOAK_CLIENT_SECRET_KEY')
+}

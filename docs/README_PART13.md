@@ -2303,3 +2303,51 @@ export class AddNewBookComponent implements OnInit {
 Finally we can add our "The Hunger Games" book:
 
 ![Final Form](/docs/images/part13_7.png)
+
+Before concluding, let's use our `LibraryNotification` class to display a notification in case of an error during the request for the list of books.
+
+Update `getBooks()` method in `BookListComponent` as follow:
+
+```typescript
+  getBooks() {
+    /**
+     * Parameters for requesting a list of library books.
+     *
+     * @property page - The current page index incremented by 1 to match the API's 1-based pagination.
+     * @property pageSize - The number of items to display per page.
+     * @property ordering - The ordering criteria for the list of books.
+     * @property search - The search text to filter the list of books (optional).
+     */
+    let params: LibraryBooksListRequestParams = {
+      page: this.pageIndex + 1,
+      pageSize: this.pageSize,
+      ordering: this.ordering,
+    };
+
+    if (this.searchText !== '') {
+      params['search'] = this.searchText;
+    }
+
+    this.libraryService.libraryBooksList(params).subscribe({
+      next: (data: PaginatedBookList) => {
+        console.log(data);
+        this.books = data.results || [];
+        this.totalBooks = data.total_records || 0;
+      },
+      error: (err) => {
+        const errorMessage = err?.error || {};
+
+        let errorMessageString = '<br><br>' + errorMessage.detail;
+
+        // Handle error response
+        this.libraryNotificationService.notify({
+          message: 'Error get book list \n' + errorMessageString,
+          type: 'error',
+          duration: 3000,
+        });
+      },
+    });
+  }
+```
+
+That's all.
