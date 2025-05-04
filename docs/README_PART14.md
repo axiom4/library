@@ -650,3 +650,187 @@ The `permission_classes` property overwrites `DEFAUL_PERMISSION_CLASSES` setting
 Now when you open your app, you will get an error that you do not have permission to access the data.
 
 ![Permission Error](/docs/images/part14_10.png)
+
+### Install `python-keycloak` lib
+
+Let's install `python-keycloak` library to support our Django App.
+
+```bash
+# pip install python-keycloak
+Collecting python-keycloak
+  Using cached python_keycloak-5.5.0-py3-none-any.whl.metadata (6.0 kB)
+Collecting aiofiles>=24.1.0 (from python-keycloak)
+  Using cached aiofiles-24.1.0-py3-none-any.whl.metadata (10 kB)
+Collecting async-property>=0.2.2 (from python-keycloak)
+  Using cached async_property-0.2.2-py2.py3-none-any.whl.metadata (5.3 kB)
+Collecting deprecation>=2.1.0 (from python-keycloak)
+  Using cached deprecation-2.1.0-py2.py3-none-any.whl.metadata (4.6 kB)
+Collecting httpx>=0.23.2 (from python-keycloak)
+  Using cached httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting jwcrypto>=1.5.4 (from python-keycloak)
+  Using cached jwcrypto-1.5.6-py3-none-any.whl.metadata (3.1 kB)
+Collecting requests>=2.20.0 (from python-keycloak)
+  Using cached requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+Collecting requests-toolbelt>=0.6.0 (from python-keycloak)
+  Using cached requests_toolbelt-1.0.0-py2.py3-none-any.whl.metadata (14 kB)
+Collecting packaging (from deprecation>=2.1.0->python-keycloak)
+  Using cached packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting anyio (from httpx>=0.23.2->python-keycloak)
+  Using cached anyio-4.9.0-py3-none-any.whl.metadata (4.7 kB)
+Collecting certifi (from httpx>=0.23.2->python-keycloak)
+  Using cached certifi-2025.4.26-py3-none-any.whl.metadata (2.5 kB)
+Collecting httpcore==1.* (from httpx>=0.23.2->python-keycloak)
+  Using cached httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Collecting idna (from httpx>=0.23.2->python-keycloak)
+  Using cached idna-3.10-py3-none-any.whl.metadata (10 kB)
+Collecting h11>=0.16 (from httpcore==1.*->httpx>=0.23.2->python-keycloak)
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting cryptography>=3.4 (from jwcrypto>=1.5.4->python-keycloak)
+  Using cached cryptography-44.0.3-cp39-abi3-macosx_10_9_universal2.whl.metadata (5.7 kB)
+Requirement already satisfied: typing-extensions>=4.5.0 in /Users/rgiannetto/Developer/library/venv/lib/python3.12/site-packages (from jwcrypto>=1.5.4->python-keycloak) (4.13.2)
+Collecting cffi>=1.12 (from cryptography>=3.4->jwcrypto>=1.5.4->python-keycloak)
+  Using cached cffi-1.17.1-cp312-cp312-macosx_11_0_arm64.whl.metadata (1.5 kB)
+Collecting pycparser (from cffi>=1.12->cryptography>=3.4->jwcrypto>=1.5.4->python-keycloak)
+  Using cached pycparser-2.22-py3-none-any.whl.metadata (943 bytes)
+Collecting charset-normalizer<4,>=2 (from requests>=2.20.0->python-keycloak)
+  Downloading charset_normalizer-3.4.2-cp312-cp312-macosx_10_13_universal2.whl.metadata (35 kB)
+Collecting urllib3<3,>=1.21.1 (from requests>=2.20.0->python-keycloak)
+  Using cached urllib3-2.4.0-py3-none-any.whl.metadata (6.5 kB)
+Collecting sniffio>=1.1 (from anyio->httpx>=0.23.2->python-keycloak)
+  Using cached sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+Using cached python_keycloak-5.5.0-py3-none-any.whl (77 kB)
+Using cached aiofiles-24.1.0-py3-none-any.whl (15 kB)
+Using cached async_property-0.2.2-py2.py3-none-any.whl (9.5 kB)
+Using cached deprecation-2.1.0-py2.py3-none-any.whl (11 kB)
+Using cached httpx-0.28.1-py3-none-any.whl (73 kB)
+Using cached httpcore-1.0.9-py3-none-any.whl (78 kB)
+Using cached h11-0.16.0-py3-none-any.whl (37 kB)
+Using cached jwcrypto-1.5.6-py3-none-any.whl (92 kB)
+Using cached cryptography-44.0.3-cp39-abi3-macosx_10_9_universal2.whl (6.7 MB)
+Using cached cffi-1.17.1-cp312-cp312-macosx_11_0_arm64.whl (178 kB)
+Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+Downloading charset_normalizer-3.4.2-cp312-cp312-macosx_10_13_universal2.whl (199 kB)
+Using cached idna-3.10-py3-none-any.whl (70 kB)
+Using cached urllib3-2.4.0-py3-none-any.whl (128 kB)
+Using cached certifi-2025.4.26-py3-none-any.whl (159 kB)
+Using cached requests_toolbelt-1.0.0-py2.py3-none-any.whl (54 kB)
+Using cached anyio-4.9.0-py3-none-any.whl (100 kB)
+Using cached sniffio-1.3.1-py3-none-any.whl (10 kB)
+Using cached packaging-25.0-py3-none-any.whl (66 kB)
+Using cached pycparser-2.22-py3-none-any.whl (117 kB)
+Installing collected packages: async-property, urllib3, sniffio, pycparser, packaging, idna, h11, charset-normalizer, certifi, aiofiles, requests, httpcore, deprecation, cffi, anyio, requests-toolbelt, httpx, cryptography, jwcrypto, python-keycloak
+Successfully installed aiofiles-24.1.0 anyio-4.9.0 async-property-0.2.2 certifi-2025.4.26 cffi-1.17.1 charset-normalizer-3.4.2 cryptography-44.0.3 deprecation-2.1.0 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.10 jwcrypto-1.5.6 packaging-25.0 pycparser-2.22 python-keycloak-5.5.0 requests-2.32.3 requests-toolbelt-1.0.0 sniffio-1.3.1 urllib3-2.4.0
+```
+
+Upgrade `requirements.txt`
+
+```bash
+# pip freeze > requirements.txt
+```
+
+Now we need configuring a new `library-api` client in our `library-realm`, to make it, we go on Kecloak admin console and, inside `Clients` menù, select `Create client` button.
+
+![New Client library-api](/docs/images/part14_11.png)
+
+In `General Settings`:
+
+- **Client type**: `OpenID Connect`.
+- **ClientID**: `library-api`.
+- **Name**: `Library api`.
+- Click `Next` button
+
+![library-api capability config](/docs/images/part14_12.png)
+
+In `Capability config`:
+
+- Enable `Client authentication` flag.
+- Enable `Authorizzation` flag.
+- In `Authorizzation flow` select:
+  - **Standard flow**.
+  - **OAuth 2.0 Device Authorization Grant**.
+- Click `Next` button
+
+![library-api Login settings](/docs/images/part14_13.png)
+
+In `Login settings`:
+
+- Set `Valid redirect URIs` to `*`.
+- Set `Web origins` to `*`.
+- Click **Save**.
+
+![library-api Login settings](/docs/images/part14_14.png)
+
+Now, inside `library-api` client, open `Credendials` tab and copy `Client Secret`.
+
+We have configured Keycloak client to use `introspection`.
+
+## Keycloak Integration Overview
+
+**Keycloak Introspection**
+
+Keycloak's **introspection** is used to verify and obtain information about an access token presented by a client (for example, your Angular application via the Django backend).
+
+### Details:
+
+- **What is introspection?**  
+  It is an endpoint exposed by Keycloak (compliant with the OAuth2 standard) that allows an application to send a token and receive a response indicating whether the token is valid, expired, revoked, and what permissions or user information it contains.
+
+- **Why is it useful?**  
+  The backend (Django API) often receives requests with a token. Instead of blindly trusting the token, it can ask Keycloak if the token is still valid and obtain details such as the user, roles, expiration, etc.
+
+- **When is it used?**
+  - When the backend cannot validate the token locally (for example, it does not have the updated public key).
+  - When you want to ensure that the token has not been revoked and is still active.
+
+### Example Flow
+
+1. The user authenticates via Keycloak and obtains an access token.
+2. The user sends the token to the Django backend.
+3. Django calls Keycloak's introspection endpoint, passing the token.
+4. Keycloak responds with the token's status and associated information.
+5. Django decides whether to accept or reject the request.
+
+### Gotchas
+
+- Introspection adds a network call, so it can slightly slow down requests compared to local validation.
+- It is especially useful for **opaque** tokens (not JWT) or when you need to know if the token has been revoked.
+
+**In summary:**  
+Introspection allows the backend to securely validate tokens and obtain up-to-date information about users and their permissions, relying directly on Keycloak as the authoritative source.
+
+Below is a summary diagram illustrating the integration between the different components of our application and Keycloak:
+
+```mermaid
+flowchart LR
+  subgraph Frontend["Frontend"]
+    A["Angular App"]
+  end
+  subgraph Backend["Backend"]
+    B["Django API"]
+  end
+  subgraph Keycloak["Keycloak"]
+    C["Keycloak Server"]
+  end
+  n1["User"] -- "1 - Request" --> A
+  A -- "2 - Authenticate (OIDC)" --> C
+  A -- "3 - Obtain Access Token" --> C
+  A -- "4 -Send Token in API Request" --> B
+  B -- "5 - Introspect/Validate Token" --> C
+  C -- "6 - User/Role Info" --> B
+  C -- "7 - Store Data" --> D[("MySQL DB")]
+  B -- "8 - Respond with Data" --> A
+  A -- "9 - Response" --> n1
+  style A fill:#e3f2fd,stroke:#2196f3
+  style B fill:#e8f5e9,stroke:#43a047
+  style C fill:#fff3e0,stroke:#fb8c00
+  style D fill:#f3e5f5,stroke:#8e24aa
+```
+
+**Legend:**
+
+- **Angular App:** Authenticates users via Keycloak and attaches the access token to API requests.
+- **Django API:** Receives requests, validates tokens (using introspection if needed), and enforces permissions.
+- **Keycloak Server:** Handles authentication, issues tokens, and provides user/role information.
+- **MySQL DB:** Stores Keycloak's configuration and user data.
+
+This diagram summarizes how authentication and authorization flow through the system, with Keycloak acting as the central identity provider.
