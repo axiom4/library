@@ -865,3 +865,299 @@ An **Authentication Class** in Django REST Framework identifies the user making 
 > The Bearer Token is the key that allows a client to prove its identity and access protected APIs securely.
 
 With this theoretical foundation, we can now implement the necessary code to make our application work.
+
+## Implementing Keycloak Authentication in Django
+
+Let's implement a custom authentication class in Django REST Framework that validates Keycloak tokens using the introspection endpoint.
+
+### 1. Create the Authentication Class
+
+Create a new file, for example, `library_rest/library_rest/authentications.py` in your Django app:
+
+```python
+from rest_framework import authentication
+from rest_framework import exceptions
+
+from keycloak import KeycloakOpenID
+import keycloak.exceptions
+
+from django.conf import settings
+
+from datetime import datetime
+from django.utils import timezone
+import json
+from django.contrib.auth.models import AbstractBaseUser
+
+
+from drf_spectacular.extensions import OpenApiAuthenticationExtension
+
+
+class KeyCloakAuthenticationSchema(OpenApiAuthenticationExtension):
+    # full import path OR class ref
+    target_class = 'IpBlocker.authentication.KeyCloakAuthentication'
+    name = 'KeyCloakAuthentication'  # name used in the schema
+
+    def get_security_definition(self, auto_schema):
+        return {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'api_key',
+        }
+
+
+class KeyCloakAuthentication(authentication.BaseAuthentication):
+    def authenticate(self, request):
+        access_token = request.META.get('HTTP_AUTHORIZATION')
+
+        if not access_token:
+            return None
+
+        access_token = access_token.replace("Bearer ", "")
+
+        try:
+            keycloak_openid = KeycloakOpenID(
+                server_url=settings.KEYCLOAK_CONFIG['KEYCLOAK_SERVER_URL'],
+                client_id=settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'],
+                realm_name=settings.KEYCLOAK_CONFIG['KEYCLOAK_REALM'],
+                client_secret_key=settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_SECRET_KEY']
+            )
+
+            user_info = keycloak_openid.userinfo(
+                access_token
+            )
+
+            token_info = keycloak_openid.introspect(access_token)
+
+        except keycloak.exceptions.KeycloakAuthenticationError:
+            raise exceptions.AuthenticationFailed('Invalid token')
+        except keycloak.exceptions.KeycloakGetError as e:
+            JSON = json.loads(e.response_body.decode('utf8'))
+            raise exceptions.AuthenticationFailed(
+                'Keycloak error: {}'.format(JSON['error']))
+        except keycloak.exceptions.KeycloakConnectionError:
+            raise exceptions.AuthenticationFailed(
+                'Keycloak connection error')
+
+        # user = User(is_authenticated=True)
+        class User(object):
+            pass
+
+        user = User()
+        user.username = user_info['preferred_username']
+        user.email = user_info['email']
+        user.first_name = user_info['given_name']
+        user.last_name = user_info['family_name']
+        user.is_superuser = False
+        user.is_staff = False
+        user.is_active = True
+        user.is_authenticated = True
+        user.last_login = timezone.now()
+        user.user_info = user_info
+        user.token_info = token_info
+
+        return (user, None)
+```
+
+The code defines two Python classes for authentication via Keycloak in our Django application:
+
+### 1. `KeyCloakAuthenticationSchema`
+
+- **Purpose:** Extends `OpenApiAuthenticationExtension` to document the authentication schema in OpenAPI/Swagger.
+- **Properties:**
+  - `target_class`: points to the actual authentication class.
+  - `name`: the name used in the schema.
+- **Method `get_security_definition`:**  
+  Returns a dictionary describing the authentication type as `apiKey`, specifying that the key is located in the HTTP header with the name `api_key`.
+
+### 2. `KeyCloakAuthentication`
+
+- **Purpose:** Extends `authentication.BaseAuthentication` to implement authentication via Keycloak.
+- **Method `authenticate`:**
+  1. Retrieves the access token from the request's `Authorization` header.
+  2. If the token is not present, returns `None` (no authenticated user).
+  3. Removes the "Bearer " prefix from the token.
+  4. Creates a `KeycloakOpenID` instance using settings from the configuration file.
+  5. Retrieves user information (`userinfo`) and token information (`introspect`) from Keycloak.
+  6. Handles various authentication and connection errors, returning appropriate errors.
+  7. Dynamically creates a `User` object and populates its attributes with data obtained from Keycloak.
+  8. Returns a tuple `(user, None)` as required by Django's authentication system.
+
+### 2. Register the Authentication Class
+
+In our `settings.py`, update the REST framework authentication classes:
+
+```python
+REST_FRAMEWORK = {
+  'DEFAULT_AUTHENTICATION_CLASSES': [
+      'library_rest.authentications.KeyCloakAuthentication',
+      'rest_framework.authentication.SessionAuthentication',
+      'rest_framework.authentication.BasicAuthentication',
+  ],
+  # ... other settings ...
+}
+```
+
+Now we need to ensure that a `Bearer token` is sent with REST calls to our API service whenever a resource requires authentication. The `keycloak-angular` library already provides a way to integrate an `Interceptor` class for this purpose.
+
+### What is an Interceptor
+
+An **Interceptor** in Angular is a class that implements the `HttpInterceptor` interface and allows you to intercept and modify all HTTP requests and responses made by the application. Interceptors are commonly used to:
+
+- Automatically add authentication headers (such as the Bearer token) to every API request.
+- Handle global HTTP errors.
+- Modify or log requests and responses.
+
+In the context of `keycloak-angular`, an interceptor is used to insert the access token obtained from Keycloak into the `Authorization` header of every request to protected APIs, ensuring that only authenticated users can access backend resources.
+
+**How it works:**
+
+1. The user logs in via Keycloak and obtains an access token.
+2. Every time the application makes an HTTP request to the backend, the interceptor automatically adds the `Authorization: Bearer <token>` header.
+3. The backend can then validate the token and authorize access to the requested resources.
+
+This approach makes the integration between frontend and backend transparent and secure.
+
+Edit `app.config.ts` as follow:
+
+```typescript
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from "@angular/core";
+import { provideRouter } from "@angular/router";
+
+import { routes } from "./app.routes";
+import { ApiModule, Configuration, ConfigurationParameters } from "./modules/core/api/v1";
+import { environment } from "../environments/environment.development";
+import { provideHttpClient, withFetch, withInterceptors, withXsrfConfiguration } from "@angular/common/http";
+
+import {
+  provideKeycloak,
+  withAutoRefreshToken,
+  AutoRefreshTokenService,
+  UserActivityService,
+  createInterceptorCondition,
+  IncludeBearerTokenCondition,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+  includeBearerTokenInterceptor,
+} from "keycloak-angular";
+
+export function apiConfigFactory(): Configuration {
+  const params: ConfigurationParameters = {
+    basePath: environment.api_url,
+  };
+  return new Configuration(params);
+}
+
+const regex = new RegExp(`^(${environment.api_url})(/.*)?$`, "i");
+
+const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: regex,
+  bearerPrefix: "Bearer",
+});
+
+export const provideKeycloakAngular = () =>
+  provideKeycloak({
+    config: {
+      url: environment.keycloak.url,
+      realm: environment.keycloak.realm,
+      clientId: environment.keycloak.client_id,
+    },
+    initOptions: {
+      onLoad: "check-sso",
+      silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html",
+    },
+    features: [
+      withAutoRefreshToken({
+        onInactivityTimeout: "logout",
+        sessionTimeout: 1000 * 60 * 60, // 1 hour
+      }),
+    ],
+    providers: [AutoRefreshTokenService, UserActivityService],
+  });
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideKeycloakAngular(),
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [urlCondition], // <-- Note that multiple conditions might be added.
+    },
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    importProvidersFrom(ApiModule.forRoot(apiConfigFactory)),
+    provideHttpClient(
+      withFetch(),
+      withXsrfConfiguration({
+        cookieName: "CUSTOM_XSRF_TOKEN",
+        headerName: "X-Custom-Xsrf-Header",
+      }),
+      withInterceptors([includeBearerTokenInterceptor])
+    ),
+  ],
+};
+```
+
+```typescript
+const regex = new RegExp(`^(${environment.api_url})(/.*)?$`, "i");
+```
+
+Create a new regular expression (`regex`). The regular expression is designed to match any URL that starts with the value of `environment.api_url`, optionally followed by a slash `/` and anything else. The **'i' flag** makes the search case-insensitive.
+
+```typescript
+const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: regex,
+  bearerPrefix: "Bearer",
+});
+```
+
+Create a condition (`urlCondition`) for an interceptor (likely HTTP). Pass an object with two properties:
+
+- `urlPattern`: the regex just created, which is used to identify the URLs to which the condition should apply.
+- `bearerPrefix`: the string `'Bearer'`, probably used to add an authentication token in the Authorization header of HTTP requests.
+
+This code defines a rule to intercept all HTTP requests going to the API specified in `environment.api_url` and, for these, applies logic that likely adds a Bearer token for authentication.
+
+```typescript
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [urlCondition], // <-- Note that multiple conditions might be added.
+    },
+```
+
+- **provide:** Specifies the injection token (`INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG`). This is used to identify the configuration you want to provide to Angular's Dependency Injection system.
+- **useValue:** Here you assign a static value that will be used when someone requests `INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG`.
+- **[urlCondition]:** is our regular expression that allows intercepting all calls that should go to our Django services.
+
+The line:
+
+```typescript
+withInterceptors([includeBearerTokenInterceptor]);
+```
+
+- **withInterceptors**: is a function that allows you to add one or more "interceptors" to HTTP requests. An interceptor is a piece of code that can modify or observe a request or response before it is sent or received.
+- **[includeBearerTokenInterceptor]**: is an array containing an interceptor called `includeBearerTokenInterceptor`. This interceptor, as the name suggests, adds a "Bearer" token (typically used for OAuth2 authentication) to the Authorization header of each HTTP request.
+
+Now, open your web application and use your browser's debug console to inspect the HTTP headers sent in requests to your API.
+
+```http
+GET /library/books?ordering=title&page=1&page_size=5 HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0
+Accept: application/json
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br, zstd
+Referer: http://127.0.0.1:4200/
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJMUEZvd2RMbFRNUWRoOWhMZjM3ZFk5WUpGYXBEVURnNGE5Q3FUS1VHbkhNIn0.eyJleHAiOjE3NDYzNzE5NTIsImlhdCI6MTc0NjM3MTY1MiwiYXV0aF90aW1lIjoxNzQ2MzcxNjUyLCJqdGkiOiJvbnJ0YWM6NGE3YWYwMzAtYzM2Ny00MjZjLWFhN2EtZmI4MzUzYjQ0ZmE3IiwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo4MDgwL3JlYWxtcy9saWJyYXJ5LXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImRjYTI2ZTdjLTVjNmEtNGY3NC1hYjI5LTA5YWI5M2IwZDIwOCIsInR5cCI6IkJlYXJlciIsImF6cCI6ImxpYnJhcnktd2ViIiwic2lkIjoiMTgwYTU1ZDQtZGQ2Zi00NzFhLWJlMGYtMTlhNjJjYjA4MzhjIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWxpYnJhcnktcmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IlJpY2NhcmRvIEdpYW5uZXR0byIsInByZWZlcnJlZF91c2VybmFtZSI6ImF4aW9tNCIsImdpdmVuX25hbWUiOiJSaWNjYXJkbyIsImZhbWlseV9uYW1lIjoiR2lhbm5ldHRvIiwiZW1haWwiOiJyZ2lhbm5ldHRvQGdtYWlsLmNvbSJ9.mtCK6Nfff1gozkYsZiicdmSAGrsbL-UJmfLKyL3Nz8PL06m_jxIeSIF0Lc4qTFNTwlpykWemb86kWCgIQp7NjhLBLZXAFwxtcpoI99AdebhlQS5EMhoQrX7A1xENqc9a-aPfOTjbo9jBm_xVLijxJRYolXgbxa8t7NEC7JM5E0vYs52Up5y3gz1uhbz-KRhr1f9BeuwX7P1E6mCHDZxZ13_z4cWlgyycXJhg0JgSCIBPWkLceR59fCYiSC13VoeVoiBTAP8s8NfUEWmCsRpqAK3jb2zd-AHPbrRNdyo9WPyrwz8Uf50FyBtQgywNrKj5blHJee_MJMffSEDyWz0a6A
+Origin: http://127.0.0.1:4200
+DNT: 1
+Sec-GPC: 1
+Connection: keep-alive
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+Priority: u=4
+Pragma: no-cache
+Cache-Control: no-cache
+```
+
+As we can see, an `Authorization` header is now included with the required Bearer token to validate our identity. Note that, as requested, the Authorization header is present only in requests directed to our Django application.
+
+Now our application works correctly.

@@ -15,6 +15,7 @@ import { environment } from '../environments/environment.development';
 import {
   provideHttpClient,
   withFetch,
+  withInterceptors,
   withXsrfConfiguration,
 } from '@angular/common/http';
 
@@ -23,6 +24,10 @@ import {
   withAutoRefreshToken,
   AutoRefreshTokenService,
   UserActivityService,
+  createInterceptorCondition,
+  IncludeBearerTokenCondition,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+  includeBearerTokenInterceptor,
 } from 'keycloak-angular';
 
 export function apiConfigFactory(): Configuration {
@@ -31,6 +36,13 @@ export function apiConfigFactory(): Configuration {
   };
   return new Configuration(params);
 }
+
+const regex = new RegExp(`^(${environment.api_url})(/.*)?$`, 'i');
+
+const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: regex,
+  bearerPrefix: 'Bearer',
+});
 
 export const provideKeycloakAngular = () =>
   provideKeycloak({
@@ -56,6 +68,10 @@ export const provideKeycloakAngular = () =>
 export const appConfig: ApplicationConfig = {
   providers: [
     provideKeycloakAngular(),
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [urlCondition], // <-- Note that multiple conditions might be added.
+    },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     importProvidersFrom(ApiModule.forRoot(apiConfigFactory)),
@@ -64,7 +80,8 @@ export const appConfig: ApplicationConfig = {
       withXsrfConfiguration({
         cookieName: 'CUSTOM_XSRF_TOKEN',
         headerName: 'X-Custom-Xsrf-Header',
-      })
+      }),
+      withInterceptors([includeBearerTokenInterceptor])
     ),
   ],
 };
