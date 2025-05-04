@@ -1,19 +1,19 @@
 # A Full Test Application Using Django and Angular (Part 14) - Keycloak Integration
 
-In this chapter, we will address a crucial aspect of any modern web application: API security. Protecting our APIs is essential to ensure that only authorized users can access and modify data.
+In this chapter, we address a crucial aspect of modern web applications: API security. Protecting APIs ensures that only authorized users can access and modify data.
 
-To achieve this goal, we will use **Keycloak**, an open-source solution for Identity and Access Management (IAM). Keycloak provides robust authentication and authorization features, simplifying the implementation of standard security mechanisms such as OAuth 2.0 and OpenID Connect.
+To achieve this, we use **Keycloak**, an open-source Identity and Access Management (IAM) solution. Keycloak provides robust authentication and authorization features, simplifying the implementation of standard security mechanisms such as OAuth 2.0 and OpenID Connect.
 
-The integration of Keycloak will take place on two fronts:
+Keycloak integration will occur on two fronts:
 
-1.  **Frontend (Angular):** We will configure our Angular application to interact with Keycloak. This will allow users to authenticate via Keycloak and enable the Angular application to obtain access tokens for making secure calls to the backend APIs. We will use the `keycloak-angular` library to facilitate this integration.
-2.  **Backend (Django):** We will protect our Django APIs so that a valid access token issued by Keycloak is required for every request. Django will be configured to validate these tokens and extract user and role information, enabling fine-grained access control based on the roles defined in Keycloak.
+1.  **Frontend (Angular):** We configure the Angular application to interact with Keycloak, enabling users to authenticate and obtain access tokens for secure backend API calls. The `keycloak-angular` library facilitates this integration.
+2.  **Backend (Django):** We protect Django APIs so that a valid access token issued by Keycloak is required for every request. Django will validate these tokens and extract user and role information, enabling fine-grained access control based on Keycloak roles.
 
-In the following steps, we will see in detail how to configure Keycloak, integrate the Angular client, and secure Django views.
+The following steps detail how to configure Keycloak, integrate the Angular client, and secure Django views.
 
 ## Keycloak Installation
 
-Let's create a new schema on our Mysql (see part 3). Go on your terminal and login on your MySQL.
+First, create a new schema in MySQL (see part 3). Open your terminal and log in to MySQL:
 
 ```bash
 # mysql -h 127.0.0.1 -u root -p
@@ -33,7 +33,7 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 mysql>
 ```
 
-Add new user `keycloak` and select a password:
+Add a new user `keycloak` and set a password:
 
 ```sql
 mysql> CREATE USER keycloak@'%' IDENTIFIED BY 'keycloak';
@@ -47,21 +47,21 @@ mysql> CREATE DATABASE keycloak;
 Query OK, 1 row affected (0,01 sec)
 ```
 
-Add acl on new schema to user `keycloak`:
+Grant privileges on the new schema to the `keycloak` user:
 
 ```sql
 mysql> GRANT ALL PRIVILEGES ON keycloak.* TO keycloak@'%';
 Query OK, 0 rows affected (0,02 sec)
 ```
 
-Reload the privileges on database:
+Reload privileges:
 
 ```sql
 mysql> FLUSH PRIVILEGES;
 Query OK, 0 rows affected (0,01 sec)
 ```
 
-Now we install `keycloak`. To quickly set up a develpment environment of Keycloak using Docker, update our `docker-compose.yml` file with the following content:
+Now, install Keycloak. To quickly set up a development environment using Docker, update your `docker-compose.yml` file:
 
 ```yaml
 name: library
@@ -69,7 +69,6 @@ services:
   db:
     image: mysql
     container_name: mysql
-
     restart: always
     env_file:
       - path: ./environments/mysql.env
@@ -104,7 +103,7 @@ networks:
     driver: bridge
 ```
 
-Define new environment file `environments/keycloak.env` as following:
+Define the environment file `environments/keycloak.env`:
 
 ```bash
 KEYCLOAK_ADMIN=admin
@@ -116,7 +115,7 @@ KC_DB_USERNAME=keycloak
 KC_DB_PASSWORD=keycloak
 ```
 
-Deploy keycloak running:
+Deploy Keycloak:
 
 ```bash
 # docker-compose up -d
@@ -133,40 +132,33 @@ Deploy keycloak running:
  ✔ Container keycloak       Started                                             0.9s
 ```
 
-You can then access the Keycloak admin console at [http://127.0.0.1:8080](http://127.0.0.1:8080).
+You can access the Keycloak admin console at [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
 ![Keycloak Login Page](/docs/images/part14_1.png)
 
 ## Configuring Keycloak
 
-A **realm** in Keycloak is an isolated space for managing users, roles, groups, and clients. Each realm is independent: users, roles, and configurations in one realm are not visible or accessible from another. This allows you to manage multiple applications or environments (such as development, testing, and production) within the same Keycloak instance, keeping data and configurations separate.
-
-A realm is useful for:
-
-- Separating users and permissions between different applications or environments.
-- Centrally managing authentication and authorization for a specific group of applications.
-- Applying security policies and configurations tailored to each context.
+A **realm** in Keycloak is an isolated space for managing users, roles, groups, and clients. Each realm is independent, allowing you to manage multiple applications or environments within the same Keycloak instance.
 
 ### Creating a New Realm: `library-realm`
 
-To organize users, roles, and clients for your application, you need to create a new realm in Keycloak. Follow these steps:
+To organize users, roles, and clients for your application:
 
 1. **Log in to the Keycloak Admin Console**  
-   Open [http://127.0.0.1:8080](http://127.0.0.1:8080) in your browser and log in using the admin credentials you set in the environment file (`KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD`).
+   Open [http://127.0.0.1:8080](http://127.0.0.1:8080) and log in using the admin credentials from the environment file.
 
 2. **Create the Realm**
-
-- In the left sidebar, click on `Manage realms` at the top.
-- Click `Create realm` button.
-- Enter `library-realm` as the **Realm Name**.
-- Optionally, add a description.
-- Click **Create**.
+   - Click `Manage realms` in the sidebar.
+   - Click `Create realm`.
+   - Enter `library-realm` as the **Realm Name**.
+   - Optionally, add a description.
+   - Click **Create**.
 
 ![New Keycloak Realm](/docs/images/part14_2.png)
 
-Your new realm `library-realm` is now ready. You can now proceed to configure clients, roles, and users within this realm for your Django and Angular applications.
+Your new realm `library-realm` is now ready. You can now configure clients, roles, and users within this realm.
 
-### Creating a new client: `library-web`
+### Creating a New Client: `library-web`
 
 A **client** in Keycloak represents an application or service that interacts with the Keycloak server to authenticate users and obtain security tokens. Clients can be frontend applications (like Angular or React apps), backend services, or any system that needs to use Keycloak for authentication and authorization. Defining a client allows Keycloak to manage how users log in to your application, what permissions they have, and how tokens are issued.
 
@@ -176,47 +168,40 @@ To allow your frontend application to authenticate users via Keycloak, you need 
 
 1. **Navigate to Clients**
 
-- In the Keycloak Admin Console, ensure you are in the `library-realm`.
-- In the left sidebar, click on **Clients**.
+   - Ensure you are in the `library-realm`.
+   - Click **Clients** in the sidebar.
 
 2. **Create the Client**
-
-- Click the `Create client` button.
-
-In `Genereral Settings`:
-
-- For `Client type`, select `OpenID Connect`.
-- Enter `library-web` as the `Client ID`.
-- Enter `Library Web`as the `Client Name`.
-- Click **Next**.
+   - Click `Create client`.
+   - In `General Settings`:
+     - `Client type`: `OpenID Connect`
+     - `Client ID`: `library-web`
+     - `Client Name`: `Library Web`
+     - Click **Next**.
 
 ![New Client](/docs/images/part14_3.png)
 
-In `Capability config`:
-
-- Set `Client Authentication` to `off`.
-- In `Authentication Flow` select only `Standard Flow.
-- Click **Next**.
+- In `Capability config`:
+  - Set `Client Authentication` to `off`.
+  - In `Authentication Flow`, select only `Standard Flow`.
+  - Click **Next**.
 
 ![New Client](/docs/images/part14_4.png)
 
-In `Login settings`:
-
-- Set `Valid redirect URIs` to `*`.
-- Set `Web origins` to `*`.
-- Click **Save**.
+- In `Login settings`:
+  - Set `Valid redirect URIs` to `*`.
+  - Set `Web origins` to `*`.
+  - Click **Save**.
 
 ![New Client](/docs/images/part14_5.png)
 
-Your `library-web` client is now configured. This client will allow your Angular frontend to redirect users to Keycloak for authentication and receive tokens for secure API calls.
+Your `library-web` client is now configured. This client allows your Angular frontend to redirect users to Keycloak for authentication and receive tokens for secure API calls.
 
-## Configure Keycloack-Angular
+## Configure Keycloak-Angular
 
-To integrate our Angular 19 frontend application with Keycloak using the `keycloak-angular` library and the `library-web` client, follow these steps. This guide uses the new Angular standalone APIs and `app.config.ts` for configuration, and demonstrates how to create an Angular guard to protect authenticated routes.
+To integrate the Angular 19 frontend with Keycloak using `keycloak-angular` and the `library-web` client:
 
 ### 1. Install Dependencies
-
-Install the required packages:
 
 ```bash
 # npm install keycloak-angular keycloak-js
@@ -230,9 +215,9 @@ added 100 packages, and audited 1119 packages in 2s
 found 0 vulnerabilities
 ```
 
-### 2. Add keycloak enviroments in `enviroments.development.ts`
+### 2. Add keycloak enviromments in `environments.development.ts`
 
-Edit `enviroments.development.ts` and add keycloak config:
+Edit `environments.development.ts` and add keycloak config:
 
 ```typescript
 export const environment = {
@@ -300,7 +285,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-In `public`directory add new file `silent-check-sso.html`:
+Add `silent-check-sso.html` in the `public` directory:
 
 ```html
 <html lang="en">
@@ -319,7 +304,7 @@ In `public`directory add new file `silent-check-sso.html`:
 
 ### 4. Create an Auth Guard
 
-Generate an Angular guard to protect authenticated routes:
+Generate an Angular guard:
 
 ```bash
 # ng generate guard  Auth
@@ -374,9 +359,9 @@ This code defines a custom authentication guard for an Angular application using
 
 The guard currently only checks if the user is authenticated. Later, we restrict access based on user roles adding logic to `grantedRoles`.
 
-### 4. Protect Routes in Your Router
+### 5. Protect Routes in Your Router
 
-Apply the guard to routes that require authentication:
+Apply the guard to protected routes:
 
 ```typescript
 // app.routes.ts
@@ -393,13 +378,11 @@ export const routes: Routes = [
 ];
 ```
 
-## Use Keycloak in our Components
+## Use Keycloak in Components
 
-Now we update our app to manage authentication using keycloak and evaluate user roles.
+Update your app to manage authentication and evaluate user roles.
 
-First, we update our app routing, to make this, we move inside `library` components all app logic.
-
-Edit `library.component.html` and update it as following:
+Update `library.component.html`:
 
 ```html
 <h2>Books</h2>
@@ -414,7 +397,7 @@ Edit `library.component.html` and update it as following:
 <app-library-notification></app-library-notification>
 ```
 
-Formally, we move `LibraryNotification` in this component, so, we need to update imports of our `library.component.ts`:
+Update imports in `library.component.ts`:
 
 ```typescript
 // ... existing code ...
@@ -428,10 +411,11 @@ import { LibraryNotificationComponent } from '../library-notification/library-no
     BooksListComponent,
     LibraryNotificationComponent,
   ],
-// ... existing code ...
+  // ... existing code ...
+})
 ```
 
-Now update `app.component.html` as following:
+Update `app.component.html`:
 
 ```html
 <h1>{{ title }}</h1>
@@ -597,29 +581,29 @@ export const routes: Routes = [
 
 Now, when we try navigating on our app `http://127.0.0.1:4200`, we will redirect on our `keycloak` login page. So, we need going to keycloak admin console and insert e new user into the `library-realm`.
 
-Go to "Users" and select `Create new user" button.
+Go to "Users" and click `Create new user`.
 
 ![Add new user](/docs/images/part14_6.png)
 
-Insert `Username` and enable `Email verified`. Click on `Create`.
+Enter a username, enable `Email verified`, and click `Create`.
 
 ![Add new user](/docs/images/part14_7.png)
 
-Now go on `Credentials` tab and click on `Set password`. Finally, set and confirm your password and disable `Temporary` flag, so, click on `Save` button and confirm your actions.
+Go to the `Credentials` tab, click `Set password`, set and confirm the password, disable the `Temporary` flag, and click `Save`.
 
 ![Set user Password](/docs/images/part14_8.png)
 
-Now we can to login on our app. After login, Keycloak could ask to insert e-mail, first name and last name, we submit al request data.
+Now you can log in to the app. After login, Keycloak may prompt for email, first name, and last name. Submit the required data.
 
-Now we will logged in and redirect on `/library` route.
+You will be logged in and redirected to the `/library` route.
 
 ![Frontend Login](/docs/images/part14_9.png)
 
 ## Webservice Authentication
 
-Now we need to integrate a new `Authenticator` class into Django, in fact, all our operations are unprotected, so, anyone can access and insert, update or delete our data.
+Next, integrate an `Authenticator` class into Django to protect your APIs.
 
-First, we need to protect our services using `DEFAULT_PERMISSION_CLASSES` inside our `settings.py`. Add the following into `REST_FRAMEWORK` setting.
+First, protect your services using `DEFAULT_PERMISSION_CLASSES` in `settings.py`:
 
 ```python
 # ... exsting code ...
@@ -632,9 +616,7 @@ REST_FRAMEWORK = {
 # ... exsting code ...
 ```
 
-You can obtain some effet adding the property `permission_classes` into your `ViewSet` classes.
-
-_Example:_
+Alternatively, set `permission_classes` in your `ViewSet` classes:
 
 ```python
 # ... exsting code ...
@@ -645,15 +627,15 @@ class AuthorViewSet(viewsets.ModelViewSet):
   permission_classes = [permissions.IsAuthenticated]
 ```
 
-The `permission_classes` property overwrites `DEFAUL_PERMISSION_CLASSES` setting.
+The `permission_classes` property overwrites `DEFAULT_PERMISSION_CLASSES` setting.
 
 Now when you open your app, you will get an error that you do not have permission to access the data.
 
 ![Permission Error](/docs/images/part14_10.png)
 
-### Install `python-keycloak` lib
+### Install `python-keycloak` Library
 
-Let's install `python-keycloak` library to support our Django App.
+Install the library:
 
 ```bash
 # pip install python-keycloak
@@ -728,39 +710,39 @@ Upgrade `requirements.txt`
 # pip freeze > requirements.txt
 ```
 
-Now we need configuring a new `library-api` client in our `library-realm`, to make it, we go on Kecloak admin console and, inside `Clients` menù, select `Create client` button.
+Now, configure a new `library-api` client in your `library-realm` via the Keycloak admin console.
 
 ![New Client library-api](/docs/images/part14_11.png)
 
 In `General Settings`:
 
-- **Client type**: `OpenID Connect`.
-- **ClientID**: `library-api`.
-- **Name**: `Library api`.
-- Click `Next` button
+- **Client type**: `OpenID Connect`
+- **ClientID**: `library-api`
+- **Name**: `Library api`
+- Click `Next`
 
 ![library-api capability config](/docs/images/part14_12.png)
 
 In `Capability config`:
 
-- Enable `Client authentication` flag.
-- Enable `Authorizzation` flag.
-- In `Authorizzation flow` select:
-  - **Standard flow**.
-  - **OAuth 2.0 Device Authorization Grant**.
-- Click `Next` button
+- Enable `Client authentication`
+- Enable `Authorization`
+- In `Authorization flow`, select:
+  - **Standard flow**
+  - **OAuth 2.0 Device Authorization Grant**
+- Click `Next`
 
 ![library-api Login settings](/docs/images/part14_13.png)
 
 In `Login settings`:
 
-- Set `Valid redirect URIs` to `*`.
-- Set `Web origins` to `*`.
-- Click **Save**.
+- Set `Valid redirect URIs` to `*`
+- Set `Web origins` to `*`
+- Click **Save**
 
 ![library-api Login settings](/docs/images/part14_14.png)
 
-Now, inside `library-api` client, open `Credendials` tab and copy `Client Secret`.
+In the `library-api` client, open the `Credentials` tab and copy the `Client Secret`.
 
 We have configured Keycloak client to use `introspection`.
 
@@ -768,37 +750,25 @@ We have configured Keycloak client to use `introspection`.
 
 **Keycloak Introspection**
 
-Keycloak's **introspection** is used to verify and obtain information about an access token presented by a client (for example, your Angular application via the Django backend).
+Keycloak's **introspection** endpoint allows an application to verify and obtain information about an access token.
 
-### Details:
-
-- **What is introspection?**  
-  It is an endpoint exposed by Keycloak (compliant with the OAuth2 standard) that allows an application to send a token and receive a response indicating whether the token is valid, expired, revoked, and what permissions or user information it contains.
+**Why use introspection?**
+It is an endpoint exposed by Keycloak (compliant with the OAuth2 standard) that allows an application to send a token and receive a response indicating whether the token is valid, expired, revoked, and what permissions or user information it contains.
 
 - **Why is it useful?**  
   The backend (Django API) often receives requests with a token. Instead of blindly trusting the token, it can ask Keycloak if the token is still valid and obtain details such as the user, roles, expiration, etc.
 
-- **When is it used?**
-  - When the backend cannot validate the token locally (for example, it does not have the updated public key).
-  - When you want to ensure that the token has not been revoked and is still active.
+**Example Flow:**
 
-### Example Flow
-
-1. The user authenticates via Keycloak and obtains an access token.
-2. The user sends the token to the Django backend.
-3. Django calls Keycloak's introspection endpoint, passing the token.
+1. User authenticates via Keycloak and obtains an access token.
+2. User sends the token to the Django backend.
+3. Django calls Keycloak's introspection endpoint with the token.
 4. Keycloak responds with the token's status and associated information.
-5. Django decides whether to accept or reject the request.
+5. Django accepts or rejects the request based on the response.
 
-### Gotchas
+**Note:** Introspection adds a network call, which may slightly slow down requests compared to local validation.
 
-- Introspection adds a network call, so it can slightly slow down requests compared to local validation.
-- It is especially useful for **opaque** tokens (not JWT) or when you need to know if the token has been revoked.
-
-**In summary:**  
-Introspection allows the backend to securely validate tokens and obtain up-to-date information about users and their permissions, relying directly on Keycloak as the authoritative source.
-
-Below is a summary diagram illustrating the integration between the different components of our application and Keycloak:
+**Summary Diagram:**
 
 ```mermaid
 sequenceDiagram
@@ -832,11 +802,11 @@ sequenceDiagram
 - **Django API:** Receives requests, validates tokens (using introspection if needed), and enforces permissions.
 - **Keycloak Server:** Handles authentication, issues tokens, and provides user/role information.
 
-This diagram summarizes how authentication and authorization flow through the system, with Keycloak acting as the central identity provider.
+This diagram summarizes the authentication and authorization flow, with Keycloak as the central identity provider.
 
-### Upgrade Django settings
+### Update Django Settings
 
-Let's to update django config to manage Keycloak properites. In our `django.env` add new enviroments:
+Add Keycloak properties to your `django.env`:
 
 ```bash
 KEYCLOAK_SERVER_URL=http://127.0.0.1:8080/
@@ -845,7 +815,7 @@ KEYCLOAK_CLIENT_ID=library-api
 KEYCLOAK_CLIENT_SECRET_KEY=[UPDATE WITH KEYCLOAK CLIENT SECRET]
 ```
 
-In `settings.py`add as following:
+In `settings.py`:
 
 ```python
 KEYCLOAK_CONFIG = {
@@ -856,42 +826,42 @@ KEYCLOAK_CONFIG = {
 }
 ```
 
-Now we will create a new `Authentication` class to manage and validate `Bearer Token` generated by keycloak.
+Now, create a new `Authentication` class to manage and validate `Bearer Token`s generated by Keycloak.
 
-#### What is the Purpose of an Authentication Class in Django?
+#### Purpose of an Authentication Class in Django
 
-In Django REST Framework, an **Authentication Class** is a core component responsible for identifying the user making an API request. Its main purpose is to analyze the credentials (such as tokens, username/password, HTTP headers, etc.) present in the request and determine whether the user is authenticated.
+An **Authentication Class** in Django REST Framework identifies the user making an API request by analyzing credentials (tokens, headers, etc.) and determines if the user is authenticated.
 
 **Why is it important?**
 
-- It protects APIs by ensuring that only authenticated users can access certain resources.
-- It allows support for different authentication methods (token, session, OAuth2, JWT, etc.) simply by changing or adding Authentication Classes.
-- It provides information about the authenticated user to views and permission checks.
+- Protects APIs by ensuring only authenticated users can access resources.
+- Supports different authentication methods by changing or adding Authentication Classes.
+- Provides user information to views and permission checks.
 
 **How does it work?**
 
-- Every API request passes through the configured Authentication Class.
-- If the request contains valid credentials, a user object is associated with the request (`request.user`).
-- If the credentials are missing or invalid, the request is rejected with an authentication error (typically HTTP 401 Unauthorized).
+- Every API request passes through the Authentication Class.
+- If valid credentials are present, a user object is associated with the request.
+- If credentials are missing or invalid, the request is rejected with an authentication error (HTTP 401 Unauthorized).
 
-**In our case**, we will implement a custom Authentication Class that validates Keycloak tokens via introspection, so that only those with a valid token can access the Django APIs.
+**In our case**, we implement a custom Authentication Class that validates Keycloak tokens via introspection, so only those with a valid token can access the Django APIs.
 
 > #### What is a Bearer Token and What Is It Used For?
 >
-> A **Bearer Token** is a type of access token used to authenticate and authorize requests to a protected API. The term "bearer" means that whoever possesses this token (the "bearer") can access protected resources without needing any further credentials.
+> A **Bearer Token** is an access token used to authenticate and authorize requests to a protected API. Whoever possesses this token (the "bearer") can access protected resources.
 >
-> **What is it used for:**
+> **Usage:**
 >
-> - It is issued by an authentication system (such as Keycloak) after the user has successfully logged in.
-> - It must be included in the `Authorization` header of every HTTP > request to the API, in the following format:
+> - Issued by an authentication system (such as Keycloak) after successful login.
+> - Included in the `Authorization` header of every HTTP request:
 >
 > ```
 > Authorization: Bearer <token>
 > ```
 >
-> - It allows the backend to identify the user and verify their permissions, without having to manage sessions or user credentials on every request.
-> - It is commonly used in security protocols such as OAuth 2.0 and OpenID Connect.
+> - Allows the backend to identify the user and verify permissions.
+> - Commonly used in OAuth 2.0 and OpenID Connect.
 >
-> The Bearer Token is the **key** that allows a client to prove its identity and gain access to protected APIs in a simple and secure way.
+> The Bearer Token is the key that allows a client to prove its identity and access protected APIs securely.
 
-Now that we have introduced the theoretical foundation, let's implement the code necessary to make our application work.
+With this theoretical foundation, we can now implement the necessary code to make our application work.
