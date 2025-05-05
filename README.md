@@ -46,3 +46,4 @@ This demo project guides you through the process of creating a full-stack applic
 12. [Angular Material Components PART2](/docs/README_PART12.md)
 13. [Forms Control](/docs/README_PART13.md)
 14. [Keycloak Integration](/docs/README_PART14.md)
+15. [Roles](/docs/README_PART14.md)
