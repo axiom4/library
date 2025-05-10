@@ -18,7 +18,7 @@ from drf_spectacular.extensions import OpenApiAuthenticationExtension
 
 class KeyCloakAuthenticationSchema(OpenApiAuthenticationExtension):
     # full import path OR class ref
-    target_class = 'IpBlocker.authentication.KeyCloakAuthentication'
+    target_class = 'library_rest.authentications.KeyCloakAuthentication'
     name = 'KeyCloakAuthentication'  # name used in the schema
 
     def get_security_definition(self, auto_schema):
