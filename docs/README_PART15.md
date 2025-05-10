@@ -313,3 +313,223 @@ mat-dialog-content {
   text-decoration: underline;
 }
 ```
+
+Now, we update `auth.guard.ts` to manage oue roles correctly:
+
+```typescript
+import { ActivatedRouteSnapshot, CanActivateFn, RouterStateSnapshot, UrlTree } from "@angular/router";
+import { AuthGuardData, createAuthGuard } from "keycloak-angular";
+
+const isAccessAllowed = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot, authData: AuthGuardData): Promise<boolean | UrlTree> => {
+  const { authenticated, grantedRoles } = authData;
+
+  const requiredRole = route.data["role"];
+
+  if (!requiredRole) {
+    return false;
+  }
+
+  const hasRequiredRole = (role: string): boolean => Object.values(grantedRoles.realmRoles).some((roles) => roles.includes(role));
+
+  if (authenticated && hasRequiredRole(requiredRole)) {
+    return true;
+  }
+
+  return false;
+};
+
+export const authGuard: CanActivateFn = createAuthGuard<CanActivateFn>(isAccessAllowed);
+```
+
+The code defines an **authentication guard**. Think of a guard as a bouncer at a club door. Before someone can enter a specific part of your application (a route), this guard checks if they have the necessary permissions.
+
+Here's a step-by-step explanation:
+
+1.  **Imports**:
+
+    - `ActivatedRouteSnapshot`, `CanActivateFn`, `RouterStateSnapshot`, `UrlTree`: These are standard Angular routing building blocks.
+      - `ActivatedRouteSnapshot`: Contains information about the route that is being activated (like URL segments, parameters, and data).
+      - `CanActivateFn`: This is the type for a function that Angular's router will call to decide if a route can be activated.
+      - `RouterStateSnapshot`: Represents the state of the router at a moment in time.
+      - `UrlTree`: A representation of a URL, often used for redirecting the user.
+    - `AuthGuardData`, `createAuthGuard` from `keycloak-angular`: These are specific to the `keycloak-angular` library, which helps integrate Keycloak (an open-source identity and access management solution) with Angular.
+      - `AuthGuardData`: An object provided by `keycloak-angular` that contains authentication status (`authenticated`) and the roles granted to the user (`grantedRoles`).
+      - `createAuthGuard`: A helper function from `keycloak-angular` to easily create an Angular route guard using custom logic.
+
+2.  **`isAccessAllowed` Function**:
+
+    - This is an `async` function that contains the core logic for deciding if access should be granted. It takes three arguments:
+      - `route: ActivatedRouteSnapshot`: Information about the route the user is trying to access.
+      - `state: RouterStateSnapshot`: Information about the overall router state.
+      - `authData: AuthGuardData`: Data from Keycloak about the user's authentication status and roles.
+    - It returns a `Promise<boolean | UrlTree>`:
+
+      - `true`: If access is allowed.
+      - `false`: If access is denied.
+      - `UrlTree`: If access is denied and you want to redirect the user to a different route (e.g., a login page). This specific function only returns `true` or `false`.
+
+    - **Inside `isAccessAllowed`**:
+      - `const { authenticated, grantedRoles } = authData;`: This line destructures the `authData` object to easily access `authenticated` (a boolean indicating if the user is logged in) and `grantedRoles` (an object containing the user's roles).
+      - `const requiredRole = route.data['role'];`: It tries to get a `role` from the `data` property of the route. This means when you define your routes in Angular, you'd specify which role is needed to access that route. For example:
+        ```typescript
+        // In your routing module
+        {
+          path: 'admin-panel',
+          component: AdminPanelComponent,
+          canActivate: [authGuard], // Our guard
+          data: { role: 'admin' } // The required role
+        }
+        ```
+      - `if (!requiredRole) { return false; }`: If the route definition doesn't specify a `requiredRole` in its `data` object, access is denied. This is a safety measure.
+      - `const hasRequiredRole = (role: string): boolean => ...;`: This is a helper function to check if the user has the `requiredRole`.
+        - `Object.values(grantedRoles.realmRoles)`: `grantedRoles` from Keycloak usually has a structure like `{ realmRoles: { 'your-client-id': ['role1', 'role2'] } }` or similar. This line gets an array of role arrays.
+        - `.some((roles) => roles.includes(role))`: It then checks if _any_ of these role arrays include the `requiredRole`. The `.some()` method stops and returns `true` as soon as it finds a match.
+      - `if (authenticated && hasRequiredRole(requiredRole)) { return true; }`: This is the main check. Access is granted (`return true`) **only if** the user is `authenticated` AND they `hasRequiredRole`.
+      - `return false;`: If any of the above conditions are not met, access is denied.
+
+3.  **`authGuard: CanActivateFn`**:
+    - `export const authGuard: CanActivateFn = createAuthGuard<CanActivateFn>(isAccessAllowed);`
+    - This line creates the actual Angular guard function named `authGuard`.
+    - It uses the `createAuthGuard` helper from `keycloak-angular`.
+    - You pass your custom logic function (`isAccessAllowed`) to `createAuthGuard`. `keycloak-angular` will then handle the interaction with Keycloak (like ensuring the Keycloak adapter is initialized) and then call your `isAccessAllowed` function with the necessary `authData`.
+    - The `export` keyword makes this `authGuard` available to be imported and used in your Angular routing configuration.
+
+**In summary:**
+
+This code sets up a route guard (`authGuard`) that uses Keycloak to check two things before allowing a user to access a route:
+
+1.  Is the user logged in (`authenticated`)?
+2.  Does the user have the specific `role` required for that route (as defined in the route's `data` property)?
+
+If both conditions are true, the user can proceed to the route. Otherwise, access is denied. This is a common pattern for implementing role-based access control in web applications.
+
+We need updating out `routing` by setting in `data` property the correct role. We will use `view-books` role name, so, the our `app.routes.ts` will be updated as following:
+
+```typescript
+import { Routes } from "@angular/router";
+import { authGuard } from "./auth.guard";
+
+export const routes: Routes = [
+  {
+    path: "library",
+    loadChildren: () => import("./modules/library/library.module").then((m) => m.LibraryModule),
+    canActivate: [authGuard],
+    data: { role: "view-books" },
+  },
+  { path: "", redirectTo: "/library", pathMatch: "full" },
+  { path: "**", redirectTo: "/library", pathMatch: "full" },
+];
+```
+
+Now, when navigating through our application, we will not be able to see any books because Keycloak does not assign the required role to the user.
+
+![No Data](/docs/images/part15_1.png)
+
+## Configuring Roles and Groups in Keycloak
+
+To allow users to access the protected features of the application, we will configure roles and assign them to a group called `library-readers`. Users who need to view books will be added to this group, simplifying permission management.
+
+Here are the main steps:
+
+1. **Access the Keycloak Administration Console**  
+   Go to your Keycloak URL and log in as an administrator.
+
+2. **Select the Correct Realm**  
+   Make sure you are in the realm used by your application.
+
+3. **Create the Required Role**
+
+![Roles](/docs/images/part15_2.png)
+
+- In the sidebar menu, go to **Roles**.
+- Click on **Create Role**.
+- Enter the role name (for example, `view-books`) and save.
+
+![Create Role](/docs/images/part15_3.png)
+
+4. **Create the `library-readers` Group**
+
+![Groups](/docs/images/part15_4.png)
+
+- Go to **Groups**.
+- Click on **New Group** and enter the name `library-readers`.
+- Save the group.
+
+![Create Group](/docs/images/part15_5.png)
+
+5. **Assign the Role to the Group**
+
+![Assign Role](/docs/images/part15_6.png)
+
+- Select the `library-readers` group.
+- Go to the group's **Roles** tab.
+- Click on **Assign Roles** button.
+- Change Filter from `Filter by clients` to `Filter by realm roles`.
+
+![Roles Filter](/docs/images/part15_7.png)
+
+- select the `view-books` role, then `Assign` button.
+
+![Role assign](/docs/images/part15_8.png)
+
+6. **Add the User to the Group**
+
+- Go to **Users** and select the user who should be able to view books.
+- In the **Groups** tab, click on **Join Groups** and select `library-readers`.
+
+![Group assign](/docs/images/part15_9.png)
+
+7. **Verify the Configuration**  
+   After assigning the user to the group, log out and log back in as the user in the application. The user should now be able to access the sections protected by the guard requiring the `view-books` role.
+
+This configuration allows you to centrally and scalably manage user permissions: simply add or remove users from the `library-readers` group to grant or revoke access to the book viewing features.
+
+Now our application works correctly.
+
+![Group assign](/docs/images/part15_10.png)
+
+Now let's verify our token. To do this, copy your token and run the following command in the terminal:
+
+```bash
+# echo "[ YOUR TIKEN ]" | jq -R 'split(".") | .[1] | @base64d | fromjson'
+{
+  "exp": 1746901020,
+  "iat": 1746900720,
+  "auth_time": 1746900700,
+  "jti": "onrtac:60f25a5e-44bd-4453-a1da-e822972013b9",
+  "iss": "http://127.0.0.1:8080/realms/library-realm",
+  "aud": "account",
+  "sub": "dca26e7c-5c6a-4f74-ab29-09ab93b0d208",
+  "typ": "Bearer",
+  "azp": "library-web",
+  "sid": "4d8d5e63-e5bf-406f-9a35-222e71fa57ff",
+  "acr": "0",
+  "allowed-origins": [
+    "*"
+  ],
+  "realm_access": {
+    "roles": [
+      "default-roles-library-realm",
+      "offline_access",
+      "view-books",
+      "uma_authorization"
+    ]
+  },
+  "resource_access": {
+    "account": {
+      "roles": [
+        "manage-account",
+        "manage-account-links",
+        "view-profile"
+      ]
+    }
+  },
+  "scope": "openid email profile",
+  "email_verified": true,
+  "name": "XXX",
+  "preferred_username": "xxx",
+  "given_name": "XXX",
+  "family_name": "XXX",
+  "email": "XXX"
+}
+```

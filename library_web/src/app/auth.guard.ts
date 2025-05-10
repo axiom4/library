@@ -8,32 +8,25 @@ import { AuthGuardData, createAuthGuard } from 'keycloak-angular';
 
 const isAccessAllowed = async (
   route: ActivatedRouteSnapshot,
-  _: RouterStateSnapshot,
+  state: RouterStateSnapshot,
   authData: AuthGuardData
 ): Promise<boolean | UrlTree> => {
   const { authenticated, grantedRoles } = authData;
 
-  if (authenticated) {
-    return true;
+  const requiredRole = route.data['role'];
+
+  if (!requiredRole) {
+    return false;
   }
 
-  // const requiredRole = route.data['role'];
+  const hasRequiredRole = (role: string): boolean =>
+    Object.values(grantedRoles.realmRoles).some((roles) =>
+      roles.includes(role)
+    );
 
-  // console.log('Required role:', requiredRole);
-  // console.log('Granted roles:', grantedRoles);
-
-  // if (!requiredRole) {
-  //   return false;
-  // }
-
-  // const hasRequiredRole = (role: string): boolean =>
-  //   Object.values(grantedRoles.realmRoles).some((roles) =>
-  //     roles.includes(role)
-  //   );
-
-  // if (authenticated && hasRequiredRole(requiredRole)) {
-  //   return true;
-  // }
+  if (authenticated && hasRequiredRole(requiredRole)) {
+    return true;
+  }
 
   return false;
 };
