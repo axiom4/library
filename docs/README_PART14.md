@@ -288,6 +288,7 @@ export const appConfig: ApplicationConfig = {
 Add `silent-check-sso.html` in the `public` directory:
 
 ```html
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
