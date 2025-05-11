@@ -1,6 +1,23 @@
-<h1>{{ title }}</h1>
+<mat-toolbar *ngIf="authenticated" color="primary">
+  <button mat-icon-button aria-label="Home" routerLink="/library">
+    <mat-icon>menu_book</mat-icon>
+  </button>
+  <span>{{ title }}</span>
+  <span class="spacer"></span>
+  <a href="{{ profile_url }}" class="profile-link">
+    <span class="username">{{ username }}</span>
+  </a>
+  <button
+    mat-icon-button
+    class="logout-button"
+    (click)="logout()"
+    matTooltip="Logout"
+    aria-label="Logout"
+  >
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
 
 <div class="library">
-  <!-- <app-library></app-library> -->
   <router-outlet></router-outlet>
 </div>

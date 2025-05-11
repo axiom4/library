@@ -105,7 +105,7 @@ export class AddNewAuthorComponent implements OnInit {
           let errorMessageString = '<br><br>';
 
           for (const key in errorMessage) {
-            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key]}<br><br>`;
           }
 
           // Handle error response

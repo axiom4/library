@@ -1,5 +1,5 @@
 // src/app/modules/library/components/add-new-book/add-new-book.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -38,6 +38,8 @@ import {
 import { map, Observable, startWith, switchMap } from 'rxjs';
 import { LibraryNotificationService } from '../../services/library-notification.service';
 import { AddNewAuthorComponent } from '../add-new-author/add-new-author.component';
+
+import Keycloak from 'keycloak-js';
 
 @Component({
   selector: 'app-add-new-book',
@@ -85,6 +87,8 @@ export class AddNewBookComponent implements OnInit {
   filteredOptions: Observable<Author[]> | undefined;
   newAuthor = false;
   authorControl = new FormControl('', Validators.required);
+  keycloak = inject(Keycloak);
+  realmRoles: string[] = [];
 
   /**
    * Initializes a new instance of the AddNewBookComponent.
@@ -124,6 +128,13 @@ export class AddNewBookComponent implements OnInit {
         return [[]];
       })
     );
+
+    if (this.keycloak.token) {
+      // Extract realm roles from the token
+      this.realmRoles =
+        this.keycloak.tokenParsed?.['realm_access']?.['roles'] || [];
+      console.log('Realm roles:', this.realmRoles);
+    }
   }
 
   /**
@@ -196,7 +207,7 @@ export class AddNewBookComponent implements OnInit {
           let errorMessageString = '<br><br>';
 
           for (const key in errorMessage) {
-            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key]}<br><br>`;
           }
 
           // Handle error response
@@ -261,5 +272,9 @@ export class AddNewBookComponent implements OnInit {
     this.addBookForm.controls['author'].setValue(author);
 
     this.authorControl.enable(); // Re-enable the author control
+  }
+
+  hasRole(role: string): boolean {
+    return this.realmRoles.includes(role);
   }
 }

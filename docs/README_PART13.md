@@ -1585,7 +1585,7 @@ Now we can update `onSubmit()` method in `AddNewBookComponent` to manage notific
           let errorMessageString = '<br><br>';
 
           for (const key in errorMessage) {
-            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key]}<br><br>`;
           }
 
           // Handle error response
@@ -1920,7 +1920,7 @@ export class AddNewAuthorComponent implements OnInit {
           let errorMessageString = "<br><br>";
 
           for (const key in errorMessage) {
-            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key]}<br><br>`;
           }
 
           // Handle error response
@@ -2231,7 +2231,7 @@ export class AddNewBookComponent implements OnInit {
           let errorMessageString = "<br><br>";
 
           for (const key in errorMessage) {
-            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key][0]}<br><br>`;
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key]}<br><br>`;
           }
 
           // Handle error response

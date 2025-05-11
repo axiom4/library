@@ -1,5 +1,5 @@
 import { Component, effect, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import Keycloak from 'keycloak-js';
 import {
   KEYCLOAK_EVENT_SIGNAL,
@@ -8,12 +8,23 @@ import {
   ReadyArgs,
 } from 'keycloak-angular';
 import { inject } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  imports: [RouterOutlet],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    MatIconModule,
+    MatToolbarModule,
+    MatButtonModule,
+    NgIf,
+  ],
 })
 /**
  * The `AppComponent` serves as the root component of the Library application.
@@ -28,6 +39,8 @@ export class AppComponent implements OnInit {
   keycloakStatus: string | undefined;
   private readonly keycloak = inject(Keycloak);
   private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+  username: string | undefined;
+  profile_url: string | undefined;
 
   constructor() {
     effect(() => {
@@ -39,6 +52,7 @@ export class AppComponent implements OnInit {
 
       if (this.keycloakStatus === KeycloakEventType.Ready) {
         this.authenticated = typeEventArgs<ReadyArgs>(keycloakEvent.args);
+        this.profile_url = this.keycloak.createAccountUrl();
         console.log('Keycloak is ready:', this.authenticated);
       } else if (this.keycloakStatus === KeycloakEventType.AuthLogout) {
         this.authenticated = false;
@@ -53,6 +67,8 @@ export class AppComponent implements OnInit {
       this.keycloak.login().then(() => {
         if (this.keycloak.authenticated && this.keycloak.token) {
           console.log('Keycloak token:', this.keycloak.token);
+          console.log('Keycloak token parsed:', this.keycloak.tokenParsed);
+          this.username = this.keycloak.tokenParsed?.['preferred_username'];
 
           this.authenticated = true;
         }
@@ -60,7 +76,15 @@ export class AppComponent implements OnInit {
     } else {
       if (this.keycloak.token) {
         console.log('Keycloak token:', this.keycloak.token);
+        this.username = this.keycloak.tokenParsed?.['preferred_username'];
+        console.log('Keycloak token parsed:', this.keycloak.tokenParsed);
       }
     }
+  }
+
+  logout() {
+    this.keycloak.logout().then(() => {
+      this.authenticated = false;
+    });
   }
 }
