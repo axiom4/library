@@ -6,7 +6,7 @@ We will start by updating our application to display a toolbar that allows users
 
 ## Logout function
 
-Let's open our `app.componet.html` and update it as following:
+Let's open our `app.componet.html` and update it as follows:
 
 ```html
 <mat-toolbar *ngIf="authenticated" color="primary">
@@ -135,7 +135,7 @@ Finally, we have created the `logout()` method, which will allow us to handle th
 
 Finally, we have updated our view to display this new information on a toolbar.
 
-Per migliorare la visualizzazione abbiamo aggiornato il nostro foglio `style.scss`:
+To improve the appearance, we updated our `style.scss` file:
 
 ```scss
 @use "@angular/material" as mat;
@@ -314,7 +314,7 @@ mat-dialog-content {
 }
 ```
 
-Now, we update `auth.guard.ts` to manage oue roles correctly:
+Now, let's update `auth.guard.ts` to correctly manage our roles:
 
 ```typescript
 import { ActivatedRouteSnapshot, CanActivateFn, RouterStateSnapshot, UrlTree } from "@angular/router";
@@ -723,7 +723,7 @@ This ensures that only users with the `view-books` role assigned in Keycloak can
 >
 > **Note:** Remember to call `super().list(request)` (or the corresponding method) if you want to keep the standard behavior in addition to your customizations.
 
-Now, we can testing our backend updating `@keycloak_role_required("view-books")` in `@keycloak_role_required("view-library")`.
+Now, we can test our backend by updating `@keycloak_role_required("view-books")` to `@keycloak_role_required("view-library")`.
 We get an error as expected.
 
 ![Backend Role Error](/docs/images/part15_11.png)
@@ -732,7 +732,7 @@ Now that you know what to do, implement two new roles in Keycloak: `create-book`
 
 ![library-administrators group](/docs/images/part15_12.png)
 
-Now we update our `ViewSet` to manage `view-books` privilege for readonly methods: `list` and `retrieve`, otherwise, for write methos: `create`, `update`, `partial_update` and `destroy` we assgign respectively `create-book` for `BookViewSet` and `create-author` for `AuthorViewSet`. Here the complete code:
+Now we update our `ViewSet` to manage `view-books` privilege for readonly methods: `list` and `retrieve`, otherwise, for write methods: `create`, `update`, `partial_update` and `destroy` we assign respectively `create-book` for `BookViewSet` and `create-author` for `AuthorViewSet`. Here is the complete code:
 
 ```python
 # file: library_rest/library/views/book_view_set.py
@@ -1053,6 +1053,459 @@ class AuthorViewSet(viewsets.ModelViewSet):
         return super().partial_update(request, pk)
 ```
 
-Now, if you try to add new book and your user is in `library-readers` group, you will obtain an error.
+Now, if you try to add a new book and your user is in the `library-readers` group, you will get an error.
 
 ![library-readers add error](/docs/images/part15_13.png)
+
+## Angular, Role-based functionality
+
+Finally, we want our frontend application to show, according to the user's roles, the buttons to add books or authors.
+
+### Angular: Conditionally Display Buttons Based on Roles
+
+To achieve this, we need to:
+
+1. **Expose user roles in the Angular app**  
+   After login, extract the user's roles from the Keycloak token and store them in a property (e.g., `realmRoles`).
+
+2. **Create a helper method to check for roles**  
+   Add a method in your component to check if the user has a specific role.
+
+3. **Use `*ngIf` in your templates**  
+   Show or hide buttons based on the user's roles.
+
+#### Example Implementation
+
+**In your `your.component.ts` (or a relevant component):**
+
+```typescript
+import Keycloak from "keycloak-js";
+// ... other imports
+
+export class YourComponent implements OnInit {
+  // ... existing properties
+  userRoles: string[] = [];
+
+  ngOnInit(): void {
+    // ... existing logic
+    if (this.keycloak.token) {
+      // Extract realm roles from the token
+      this.realmRoles = this.keycloak.tokenParsed?.["realm_access"]?.["roles"] || [];
+    }
+  }
+
+  hasRole(role: string): boolean {
+    return this.realmRoles.includes(role);
+  }
+}
+```
+
+**In your template (e.g., `your.component.html` or a feature component):**
+
+```html
+<!-- Show "Add Book" button only if user has 'create-book' role -->
+<button mat-raised-button color="primary" *ngIf="hasRole('create-book')">Add Book</button>
+
+<!-- Show "Add Author" button only if user has 'create-author' role -->
+<button mat-raised-button color="accent" *ngIf="hasRole('create-author')">Add Author</button>
+```
+
+You can use the `hasRole` method anywhere in your templates to conditionally display UI elements based on the user's roles.
+
+**Result:**
+
+- Users in the `library-readers` group will not see the "Add Book" or "Add Author" buttons.
+- Users in the `library-administrators` group (with `create-book` and `create-author` roles) will see the buttons and be able to use the related features.
+
+This approach ensures your frontend UI is consistent with your backend permissions, providing a secure and user-friendly experience.
+
+This the final code of our `LibraryComponent` and `AddNewBookComponent`:
+
+**LibraryComponent**
+
+```html
+<h2>Books</h2>
+
+<app-books-list></app-books-list>
+
+<hr />
+<div class="library-footer">
+  <a mat-raised-button color="primary" (click)="openAddBookDialog()" *ngIf="hasRole('create-book')">
+    <mat-icon>add</mat-icon>
+    Add New Book
+  </a>
+</div>
+
+<app-library-notification></app-library-notification>
+```
+
+```typescript
+import { Component, inject, OnInit } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
+
+import { MatDialog } from "@angular/material/dialog";
+import { AddNewBookComponent } from "../add-new-book/add-new-book.component";
+import { BooksListComponent } from "../books-list/books-list.component";
+import { LibraryBooksListUpdateService } from "../../services/library-books-list-update.service";
+import { LibraryNotificationComponent } from "../library-notification/library-notification.component";
+
+import Keycloak from "keycloak-js";
+import { NgIf } from "@angular/common";
+
+@Component({
+  selector: "app-library",
+  imports: [MatButtonModule, MatIconModule, BooksListComponent, LibraryNotificationComponent, NgIf],
+  templateUrl: "./library.component.html",
+  styleUrl: "./library.component.scss",
+})
+export class LibraryComponent implements OnInit {
+  keycloak = inject(Keycloak);
+  realmRoles: string[] = [];
+
+  constructor(public dialog: MatDialog, private readonly booksListUpdateService: LibraryBooksListUpdateService) {}
+
+  ngOnInit(): void {
+    if (this.keycloak.token) {
+      // Extract realm roles from the token
+      this.realmRoles = this.keycloak.tokenParsed?.["realm_access"]?.["roles"] || [];
+      console.log("Realm roles:", this.realmRoles);
+    }
+  }
+
+  /**
+   * Opens a dialog window containing the AddNewBookComponent.
+   * Configures the dialog's width.
+   */
+  openAddBookDialog(): void {
+    const dialogRef = this.dialog.open(AddNewBookComponent, {
+      width: "700px",
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log("The dialog was closed");
+      if (result) {
+        this.booksListUpdateService.updateBooksList();
+        console.log("Dialog result:", result);
+      }
+    });
+  }
+
+  /**
+   * Checks if the current user has the specified role.
+   *
+   * @param role - The name of the role to check for.
+   * @returns `true` if the user has the specified role, otherwise `false`.
+   */
+  hasRole(role: string): boolean {
+    return this.realmRoles.includes(role);
+  }
+}
+```
+
+**AddNewBookComponent**
+
+```html
+<h2 mat-dialog-title>Add New Book</h2>
+<mat-dialog-content>
+  <form [formGroup]="addBookForm" id="addBookForm">
+    <!-- Title Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter book title" required />
+      <mat-error *ngIf="addBookForm.get('title')?.hasError('required')"> Title is required </mat-error>
+    </mat-form-field>
+
+    <!-- Author Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Author</mat-label>
+      <input matInput formControlName="author" placeholder="Enter author name" required [matAutocomplete]="auto" />
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+        @for (author of filteredOptions | async; track author.id) {
+        <mat-option [value]="author"> {{ author.first_name }} {{ author.last_name }} </mat-option>
+        }
+      </mat-autocomplete>
+      <mat-hint align="end" *ngIf="hasRole('create-author')">
+        <strong>
+          <a mat-button (click)="toggleNewAuthor()"> @if (!newAuthor) { Add new author } @else { Select existing author } </a>
+        </strong>
+      </mat-hint>
+      <mat-error *ngIf="addBookForm.get('author')?.hasError('required')"> Author is required </mat-error>
+    </mat-form-field>
+
+    <div *ngIf="newAuthor">
+      <app-add-new-author (authorCancelled)="onAuthorCancelled()" (authorAdded)="onAuthorAdded($event)"></app-add-new-author>
+    </div>
+
+    <!-- Publication Date Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Publication Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="publication_date" placeholder="Choose a date" required />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="addBookForm.get('publication_date')?.hasError('required')"> Publication Date is required </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <!-- Bind the form submission to the form element's submit event -->
+  <button mat-raised-button color="primary" type="submit" form="addBookForm" [disabled]="!addBookForm.valid" (click)="onSubmit()">Add Book</button>
+</mat-dialog-actions>
+```
+
+```typescript
+// src/app/modules/library/components/add-new-book/add-new-book.component.ts
+import { Component, inject, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from "@angular/forms";
+import { MatDialogRef } from "@angular/material/dialog";
+import { Author, BookRequest, LibraryAuthorsListRequestParams, LibraryBooksCreateRequestParams, LibraryService } from "../../../core/api/v1"; // Adjust path as needed
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter } from "@angular/material/core";
+import { CommonModule, NgIf } from "@angular/common";
+import { MatDialogModule, MatDialogTitle, MatDialogContent, MatDialogActions } from "@angular/material/dialog";
+import { map, Observable, startWith, switchMap } from "rxjs";
+import { LibraryNotificationService } from "../../services/library-notification.service";
+import { AddNewAuthorComponent } from "../add-new-author/add-new-author.component";
+
+import Keycloak from "keycloak-js";
+
+@Component({
+  selector: "app-add-new-book",
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatDialogModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatAutocompleteModule,
+    AddNewAuthorComponent,
+    NgIf,
+  ],
+  providers: [
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
+  ],
+  templateUrl: "./add-new-book.component.html",
+  styleUrls: ["./add-new-book.component.scss"],
+})
+/**
+ * Component for adding a new book to the library.
+ *
+ * This component provides a form for entering book details, including title, author, and publication date.
+ * It features an autocomplete input for selecting authors, which fetches matching authors from the backend as the user types.
+ * Upon form submission, the component validates the input, formats the data as required by the API, and sends a request to create the new book.
+ * The dialog is closed upon successful creation or cancellation.
+ *
+ * @remarks
+ * - Uses Angular Reactive Forms for form handling and validation.
+ * - Integrates with the `LibraryService` to fetch authors and create books.
+ * - Utilizes Angular Material Dialog for modal functionality.
+ * - Implements an autocomplete feature for author selection.
+ *
+ * @see LibraryService
+ */
+export class AddNewBookComponent implements OnInit {
+  addBookForm!: FormGroup;
+  filteredOptions: Observable<Author[]> | undefined;
+  newAuthor = false;
+  authorControl = new FormControl("", Validators.required);
+  keycloak = inject(Keycloak);
+  realmRoles: string[] = [];
+
+  /**
+   * Initializes a new instance of the AddNewBookComponent.
+   *
+   * @param fb - The FormBuilder service used to create and manage reactive forms.
+   * @param dialogRef - Reference to the dialog opened for adding a new book.
+   * @param libraryService - Service for interacting with the library's data and operations.
+   */
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<AddNewBookComponent>,
+    private libraryService: LibraryService,
+    private libraryNotificationService: LibraryNotificationService
+  ) {}
+
+  /**
+   * Initializes the add book form and sets up the filtered options for the author autocomplete.
+   *
+   * - Creates a reactive form group with controls for title, author, and publication date.
+   * - Sets up an observable (`filteredOptions`) that listens to changes in the author input,
+   *   and filters the available author options accordingly.
+   * - Uses `startWith` to initialize the filter and `switchMap` to handle asynchronous filtering logic.
+   */
+  ngOnInit(): void {
+    this.addBookForm = this.fb.group({
+      title: ["", Validators.required],
+      author: this.authorControl,
+      publication_date: ["", Validators.required],
+    });
+
+    this.filteredOptions = this.authorControl.valueChanges.pipe(
+      startWith(""),
+      switchMap((value) => {
+        if (typeof value === "string") {
+          return this._filter(value);
+        }
+        return [[]];
+      })
+    );
+
+    if (this.keycloak.token) {
+      // Extract realm roles from the token
+      this.realmRoles = this.keycloak.tokenParsed?.["realm_access"]?.["roles"] || [];
+      console.log("Realm roles:", this.realmRoles);
+    }
+  }
+
+  /**
+   * Formats an Author object into a display string.
+   *
+   * @param author - The Author object to format.
+   * @returns The author's full name as a string, or an empty string if the author or first name is not provided.
+   */
+  displayFn(author: Author): string {
+    return author ? author.first_name + " " + author.last_name : "";
+  }
+
+  /**
+   * Filters authors based on the provided name by querying the library service.
+   *
+   * @param name - The search string used to filter authors.
+   * @returns An Observable emitting an array of Author objects matching the search criteria.
+   */
+  private _filter(name: string): Observable<Author[]> {
+    const params: LibraryAuthorsListRequestParams = {
+      search: name,
+      pageSize: 3,
+    };
+
+    return this.libraryService.libraryAuthorsList(params).pipe(map((data) => (data && Array.isArray(data.results) ? data.results : [])));
+  }
+
+  /**
+   * Handles the form submission. If the form is valid, it formats the data,
+   * calls the library service to create the book, and closes the dialog on success.
+   */
+  onSubmit(): void {
+    console.log("Form submitted:", this.addBookForm.value);
+
+    if (this.addBookForm.valid) {
+      // Ensure date is formatted correctly if needed by the API (e.g., YYYY-MM-DD)
+      const formattedDate = this.formatDate(this.addBookForm.value.publication_date);
+
+      const bookRequest: BookRequest = {
+        title: this.addBookForm.value.title,
+        author: this.addBookForm.value.author ? this.addBookForm.value.author.id : null,
+        publication_date: formattedDate,
+      };
+
+      const bookData: LibraryBooksCreateRequestParams = {
+        bookRequest: bookRequest,
+      };
+
+      this.libraryService.libraryBooksCreate(bookData).subscribe({
+        next: (response) => {
+          console.log("Book added successfully", response);
+          this.libraryNotificationService.notify({
+            message: "Book added successfully",
+            type: "success",
+            duration: 3000,
+          });
+          this.dialogRef.close(true);
+        },
+        error: (error) => {
+          const errorMessage = error?.error || {};
+
+          let errorMessageString = "<br><br>";
+
+          for (const key in errorMessage) {
+            errorMessageString += `<strong>${key}</strong>: ${errorMessage[key]}<br><br>`;
+          }
+
+          // Handle error response
+          this.libraryNotificationService.notify({
+            message: "Error adding book \n" + errorMessageString,
+            type: "error",
+            duration: 3000,
+          });
+        },
+      });
+    } else {
+      this.addBookForm.markAllAsTouched();
+    }
+  }
+
+  /**
+   * Closes the dialog without submitting the form.
+   */
+  onCancel(): void {
+    this.dialogRef.close(); // Close dialog without passing any data
+  }
+
+  /**
+   * Helper function to format a Date object into 'YYYY-MM-DD' string format.
+   * @param date - The date to format.
+   * @returns The formatted date string.
+   */
+  private formatDate(date: Date): string {
+    const d = new Date(date);
+    let month = "" + (d.getMonth() + 1);
+    let day = "" + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
+  }
+
+  toggleNewAuthor(): void {
+    // Logic to add a new author
+    // This could involve opening another dialog or navigating to an author creation page
+    console.log("Add new author clicked");
+    this.newAuthor = !this.newAuthor; // Toggle the new author form visibility
+
+    if (this.newAuthor) {
+      this.authorControl.setValue(""); // Clear the author control value
+      this.authorControl.disable(); // Enable the author control when adding a new author
+    } else {
+      this.authorControl.enable(); // Disable the author control when adding a new author
+    }
+  }
+
+  onAuthorCancelled() {
+    this.newAuthor = false; // Reset the new author form visibility
+    this.authorControl.enable(); // Re-enable the author control
+  }
+
+  onAuthorAdded(author: Author) {
+    console.log("Author added:", author);
+    this.newAuthor = false; // Reset the new author form visibility
+    this.addBookForm.controls["author"].setValue(author);
+
+    this.authorControl.enable(); // Re-enable the author control
+  }
+
+  hasRole(role: string): boolean {
+    return this.realmRoles.includes(role);
+  }
+}
+```
+
+Now our application correctly manages roles. You can experiment by creating new roles or by adding, removing, or moving a role from one group to another.  
+Note: Keycloak allows you to assign multiple groups to the same user. Try to see how the application's behavior changes in these cases.
+
+![Full Role Based Application](/docs/images/part15_14.png)

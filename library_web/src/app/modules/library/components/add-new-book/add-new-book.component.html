@@ -32,7 +32,7 @@
         </mat-option>
         }
       </mat-autocomplete>
-      <mat-hint align="end">
+      <mat-hint align="end" *ngIf="hasRole('create-author')">
         <strong>
           <a mat-button (click)="toggleNewAuthor()">
             @if (!newAuthor) { Add new author } @else { Select existing author }
