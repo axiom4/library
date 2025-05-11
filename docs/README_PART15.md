@@ -579,3 +579,74 @@ As we can see, within the Keycloak JWT token, roles are present in two distinct 
 - Use `resource_access` for roles specific to a single application/client.
 
 This distinction allows you to manage permissions both globally and per application in a flexible way.
+
+## Keycloak Roles Management in Django
+
+To leverage Keycloak roles within your Django backend, you need to extract and interpret the roles from the JWT token sent by the frontend. This allows your Django application to enforce role-based access control (RBAC) on API endpoints.
+
+```python
+from functools import wraps
+from rest_framework.response import Response
+from rest_framework import status
+
+
+def keycloak_role_required(required_role):
+    """
+    Decorator to enforce that the requesting user has a specific Keycloak realm role.
+
+    Args:
+        required_role (str): The name of the required Keycloak realm role.
+
+    Returns:
+        function: A decorator that wraps a Django REST Framework view function.
+
+    Behavior:
+        - Checks if the authenticated user possesses the specified Keycloak realm role.
+        - If the user has the required role, the view function is executed.
+        - If the user does not have the required role, returns a 403 Forbidden response.
+        - If there is an error accessing the token or roles, returns a 401 Unauthorized response.
+
+    Usage:
+        @keycloak_role_required('admin')
+        def my_func(request):
+        ...
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            try:
+                realm_roles = request.request.user.token_info['realm_access'].get('roles', [
+                ])
+
+                if required_role in realm_roles:
+                    return view_func(request, *args, **kwargs)
+                else:
+                    return Response({"detail": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+            except Exception:
+                return Response({"detail": "Invalid token."}, status=status.HTTP_401_UNAUTHORIZED)
+        return _wrapped_view
+    return decorator
+```
+
+The decorator is used to check that the user has a specific role before allowing the execution of a function (typically a view in a web application, such as Django or DRF).
+
+Here is a step-by-step explanation:
+
+1. **Definition of the decorator**  
+   The `decorator` function takes `view_func` as a parameter, which is the function you want to decorate (for example, a view).
+
+2. **Internal function `_wrapped_view`**  
+   This function wraps the original view and intercepts the call. It receives `request`, `*args`, and `**kwargs` to maintain compatibility with any view.
+
+3. **Role extraction**  
+   It tries to extract the authenticated user's roles from `request.request.user.token_info['realm_access']['roles']`. If the key is not found, it returns an empty list.
+
+4. **Required role check**  
+   If the required role (`required_role`) is present among the user's roles, the view is executed normally.  
+   Otherwise, it returns an HTTP 403 (Forbidden) response with a permission denied message.
+
+5. **Exception handling**  
+   If something goes wrong (for example, the token is invalid or some information is missing), it returns an HTTP 401 (Unauthorized) response.
+
+6. **Returning the decorator**  
+   Finally, the `decorator` function returns `_wrapped_view`, which replaces the original view.
