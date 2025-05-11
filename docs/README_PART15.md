@@ -584,8 +584,13 @@ This distinction allows you to manage permissions both globally and per applicat
 
 To leverage Keycloak roles within your Django backend, you need to extract and interpret the roles from the JWT token sent by the frontend. This allows your Django application to enforce role-based access control (RBAC) on API endpoints.
 
+Let's create new python module `library_rest/decorators.py` and define as following:
+
 ```python
+# file: library_rest/decorators.py
+
 from functools import wraps
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -602,6 +607,7 @@ def keycloak_role_required(required_role):
 
     Behavior:
         - Checks if the authenticated user possesses the specified Keycloak realm role.
+        - If DEBUG is active and user is superuser, bypass role checks.
         - If the user has the required role, the view function is executed.
         - If the user does not have the required role, returns a 403 Forbidden response.
         - If there is an error accessing the token or roles, returns a 401 Unauthorized response.
@@ -614,6 +620,10 @@ def keycloak_role_required(required_role):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
+
+            if settings.DEBUG and request.request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
+
             try:
                 realm_roles = request.request.user.token_info['realm_access'].get('roles', [
                 ])
@@ -638,15 +648,18 @@ Here is a step-by-step explanation:
 2. **Internal function `_wrapped_view`**  
    This function wraps the original view and intercepts the call. It receives `request`, `*args`, and `**kwargs` to maintain compatibility with any view.
 
-3. **Role extraction**  
+3. **Superuser Bypass (in DEBUG)**  
+   If Django is running in `DEBUG` mode and the user is a superuser, the view is executed without role checks. This is useful for local development and testing.
+
+4. **Role extraction**  
    It tries to extract the authenticated user's roles from `request.request.user.token_info['realm_access']['roles']`. If the key is not found, it returns an empty list.
 
-4. **Required role check**  
+5. **Required role check**  
    If the required role (`required_role`) is present among the user's roles, the view is executed normally.  
    Otherwise, it returns an HTTP 403 (Forbidden) response with a permission denied message.
 
-5. **Exception handling**  
+6. **Exception handling**  
    If something goes wrong (for example, the token is invalid or some information is missing), it returns an HTTP 401 (Unauthorized) response.
 
-6. **Returning the decorator**  
+7. **Returning the decorator**  
    Finally, the `decorator` function returns `_wrapped_view`, which replaces the original view.

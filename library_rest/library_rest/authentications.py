@@ -62,7 +62,6 @@ class KeyCloakAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(
                 'Keycloak connection error')
 
-        # user = User(is_authenticated=True)
         class User(object):
             pass
 
