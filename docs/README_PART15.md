@@ -403,7 +403,7 @@ This code sets up a route guard (`authGuard`) that uses Keycloak to check two th
 
 If both conditions are true, the user can proceed to the route. Otherwise, access is denied. This is a common pattern for implementing role-based access control in web applications.
 
-We need updating out `routing` by setting in `data` property the correct role. We will use `view-books` role name, so, the our `app.routes.ts` will be updated as following:
+We need to update our `routing` by setting the correct role in the `data` property. We will use the `view-books` role name, so our `app.routes.ts` will be updated as follows:
 
 ```typescript
 import { Routes } from "@angular/router";
@@ -468,7 +468,7 @@ Here are the main steps:
 
 ![Roles Filter](/docs/images/part15_7.png)
 
-- select the `view-books` role, then `Assign` button.
+- Select the `view-books` role, then click the `Assign` button.
 
 ![Role assign](/docs/images/part15_8.png)
 
@@ -491,7 +491,7 @@ Now our application works correctly.
 Now let's verify our token. To do this, copy your token and run the following command in the terminal:
 
 ```bash
-# echo "[ YOUR TIKEN ]" | jq -R 'split(".") | .[1] | @base64d | fromjson'
+# echo "[ YOUR TOKEN ]" | jq -R 'split(".") | .[1] | @base64d | fromjson'
 {
   "exp": 1746901020,
   "iat": 1746900720,
@@ -584,7 +584,7 @@ This distinction allows you to manage permissions both globally and per applicat
 
 To leverage Keycloak roles within your Django backend, you need to extract and interpret the roles from the JWT token sent by the frontend. This allows your Django application to enforce role-based access control (RBAC) on API endpoints.
 
-Let's create new python module `library_rest/decorators.py` and define as following:
+Let's create a new Python module `library_rest/decorators.py` and define it as follows:
 
 ```python
 # file: library_rest/decorators.py
@@ -663,3 +663,69 @@ Here is a step-by-step explanation:
 
 7. **Returning the decorator**  
    Finally, the `decorator` function returns `_wrapped_view`, which replaces the original view.
+
+### Add `@keycloak_role_required` decorator to our ViewSet
+
+To apply the role decorator to our viewset, simply add `@keycloak_role_required('view-books')` above the methods in your ViewSet that require role-based protection. To restrict access to the `list` method of a Django REST Framework ViewSet, we can do the following:
+
+```python
+# ... existing code ...
+
+class BookViewSet(viewsets.ModelViewSet):
+    # ... existing code ...
+
+    @keycloak_role_required("view-books")
+    def list(self, request):
+        """
+        Lists all book instances.
+
+        This method overrides the default `list` method to enforce that the requesting user
+        has the "view-books" role via the `keycloak_role_required` decorator. If the user
+        has the required role, it returns a list of all books; otherwise, access is denied.
+
+        Args:
+          request: The HTTP request object.
+          *args: Additional positional arguments.
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          Response: A DRF Response object containing the serialized list of books or an error message.
+        """
+        return super().list(request)
+
+```
+
+This ensures that only users with the `view-books` role assigned in Keycloak can access the `list` endpoint. You can apply the decorator to other methods (such as `create`, `update`, or `destroy`) as needed, depending on the required permissions for each operation.
+
+> ### Explain: How to override ViewSet methods in Django REST Framework
+>
+> To customize the behavior of a ViewSet, you can **override** its methods. The most common methods you can override are:
+>
+> - `list(self, request)`: for listing objects (GET on collection)
+> - `retrieve(self, request, pk=None)`: for retrieving a single object (GET on detail)
+> - `create(self, request)`: for creation (POST)
+> - `update(self, request, pk=None)`: for updating (PUT)
+> - `partial_update(self, request, pk=None)`: for updating (PATCH) only used fields.
+> - `destroy(self, request, pk=None)`: for deletion (DELETE)
+>
+> **Example of overriding the `list` method:**
+>
+> ```python
+> class BookViewSet(viewsets.ModelViewSet):
+>   queryset = Book.objects.all()
+>   serializer_class = BookSerializer
+>
+>   def list(self, request):
+>     # Custom logic here
+>     print("Book list requested")
+>     return super().list(request)
+> ```
+>
+> You can add decorators (like `@keycloak_role_required`) above these methods to apply specific permission checks.
+>
+> **Note:** Remember to call `super().list(request)` (or the corresponding method) if you want to keep the standard behavior in addition to your customizations.
+
+Now, we can testing our backend updating `@keycloak_role_required("view-books")` in `@keycloak_role_required("view-library")`.
+We get an error as expected.
+
+![Backend Role Error](/docs/images/part15_11.png)
