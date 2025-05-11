@@ -54,8 +54,6 @@ class BookViewSet(viewsets.ModelViewSet):
 
         Args:
           request: The HTTP request object.
-          *args: Additional positional arguments.
-          **kwargs: Additional keyword arguments.
 
         Returns:
           Response: A DRF Response object containing the serialized list of books or an error message.
