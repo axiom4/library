@@ -91,6 +91,17 @@ constructor({ accessToken, apiKeys, basePath, credentials, encodeParam, encoder,
         this.encodeParam = encodeParam ?? (param => this.defaultEncodeParam(param));
         this.credentials = credentials ?? {};
 
+        // init default KeyCloakAuthentication credential
+        if (!this.credentials['KeyCloakAuthentication']) {
+            this.credentials['KeyCloakAuthentication'] = () => {
+                if (this.apiKeys === null || this.apiKeys === undefined) {
+                    return undefined;
+                } else {
+                    return this.apiKeys['KeyCloakAuthentication'] || this.apiKeys['api_key'];
+                }
+            };
+        }
+
         // init default basicAuth credential
         if (!this.credentials['basicAuth']) {
             this.credentials['basicAuth'] = () => {
