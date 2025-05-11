@@ -511,7 +511,7 @@ Now let's verify our token. To do this, copy your token and run the following co
     "roles": [
       "default-roles-library-realm",
       "offline_access",
-      "view-books",
+      "view-books",      // <--- OUR ROLE
       "uma_authorization"
     ]
   },
@@ -533,3 +533,49 @@ Now let's verify our token. To do this, copy your token and run the following co
   "email": "XXX"
 }
 ```
+
+As we can see, within the Keycloak JWT token, roles are present in two distinct properties: `realm_access` and `resource_access`. Let's see the difference.
+
+### `realm_access`
+
+- Contains the **roles** assigned to the user at the **realm** level (i.e., global for the entire authentication domain).
+- These roles are valid for all applications/clients that are part of that realm.
+- Example:
+  ```json
+  "realm_access": {
+    "roles": [
+      "default-roles-library-realm",
+      "offline_access",
+      "view-books",
+      "uma_authorization"
+    ]
+  }
+  ```
+- If your backend checks whether the user has the `view-books` role, it will find it here.
+
+### `resource_access`
+
+- Contains the **roles** assigned to the user but **specific to each client** (application) registered in Keycloak.
+- It is a map where the key is the client name and the value is the list of roles for that application.
+- Example:
+  ```json
+  "resource_access": {
+    "account": {
+      "roles": [
+        "manage-account",
+        "manage-account-links",
+        "view-profile"
+      ]
+    }
+  }
+  ```
+- If you have roles that are valid only for a certain application (e.g., `admin` only for the `library-web` client), you will find them here.
+
+---
+
+**In summary:**
+
+- Use `realm_access` for global roles valid throughout the realm.
+- Use `resource_access` for roles specific to a single application/client.
+
+This distinction allows you to manage permissions both globally and per application in a flexible way.
