@@ -47,3 +47,4 @@ This demo project guides you through the process of creating a full-stack applic
 13. [Forms Control](/docs/README_PART13.md)
 14. [Keycloak Integration](/docs/README_PART14.md)
 15. [Roles](/docs/README_PART15.md)
+16. [Keycloak Advanced](/docs/README_PART16.md)
