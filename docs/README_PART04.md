@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     ...
-    'djangorestframework',
+    'rest_framework',
     'django_filters',
     'corsheaders',
     'library'
