@@ -7,7 +7,7 @@ import {
   PaginatedBookList,
   LibraryBooksListRequestParams,
 } from '../../../core/api/v1';
-import { DatePipe, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { Sort, MatSortModule, SortDirection } from '@angular/material/sort';
@@ -22,7 +22,6 @@ import { LibraryBooksListUpdateService } from '../../services/library-books-list
 @Component({
   selector: 'app-books-list',
   imports: [
-    NgIf,
     MatPaginatorModule,
     MatTableModule,
     MatSortModule,
@@ -31,8 +30,8 @@ import { LibraryBooksListUpdateService } from '../../services/library-books-list
     MatInputModule,
     FormsModule,
     MatButtonModule,
-    MatIconModule,
-  ],
+    MatIconModule
+],
   templateUrl: './books-list.component.html',
   styleUrl: './books-list.component.scss',
 })

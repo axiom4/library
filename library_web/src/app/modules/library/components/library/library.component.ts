@@ -9,7 +9,7 @@ import { LibraryBooksListUpdateService } from '../../services/library-books-list
 import { LibraryNotificationComponent } from '../library-notification/library-notification.component';
 
 import Keycloak from 'keycloak-js';
-import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'app-library',
@@ -17,9 +17,8 @@ import { NgIf } from '@angular/common';
     MatButtonModule,
     MatIconModule,
     BooksListComponent,
-    LibraryNotificationComponent,
-    NgIf,
-  ],
+    LibraryNotificationComponent
+],
   templateUrl: './library.component.html',
   styleUrl: './library.component.scss',
 })

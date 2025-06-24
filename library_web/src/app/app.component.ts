@@ -11,7 +11,7 @@ import { inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'app-root',
@@ -22,9 +22,8 @@ import { NgIf } from '@angular/common';
     RouterLink,
     MatIconModule,
     MatToolbarModule,
-    MatButtonModule,
-    NgIf,
-  ],
+    MatButtonModule
+],
 })
 /**
  * The `AppComponent` serves as the root component of the Library application.

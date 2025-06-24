@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LibraryNotificationService } from '../../services/library-notification.service';
 import { LibraryNotification } from '../../models/library-notification';
 import { Subject, takeUntil } from 'rxjs';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,13 +11,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 @Component({
   selector: 'app-library-notification',
   imports: [
-    NgIf,
     NgClass,
     MatIconModule,
     MatDividerModule,
     MatButtonModule,
-    MatProgressBarModule,
-  ],
+    MatProgressBarModule
+],
   templateUrl: './library-notification.component.html',
   styleUrl: './library-notification.component.scss',
 })

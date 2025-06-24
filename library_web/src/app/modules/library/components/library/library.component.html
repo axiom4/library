@@ -4,15 +4,16 @@
 
 <hr />
 <div class="library-footer">
-  <a
-    mat-raised-button
-    color="primary"
-    (click)="openAddBookDialog()"
-    *ngIf="hasRole('create-book')"
-  >
-    <mat-icon>add</mat-icon>
-    Add New Book
-  </a>
+  @if (hasRole('create-book')) {
+    <a
+      mat-raised-button
+      color="primary"
+      (click)="openAddBookDialog()"
+      >
+      <mat-icon>add</mat-icon>
+      Add New Book
+    </a>
+  }
 </div>
 
 <app-library-notification></app-library-notification>

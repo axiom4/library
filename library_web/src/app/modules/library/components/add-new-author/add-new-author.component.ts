@@ -19,7 +19,7 @@ import {
   ReactiveFormsModule,
   FormBuilder,
 } from '@angular/forms';
-import { NgIf } from '@angular/common';
+
 import {
   Author,
   LibraryAuthorsCreateRequestParams,
@@ -39,9 +39,8 @@ import { LibraryNotificationService } from '../../services/library-notification.
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ReactiveFormsModule,
-    NgIf,
-  ],
+    ReactiveFormsModule
+],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },

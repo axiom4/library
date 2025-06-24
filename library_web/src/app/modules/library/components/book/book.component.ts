@@ -6,11 +6,11 @@ import {
   LibraryService,
   LibraryBooksRetrieveRequestParams,
 } from '../../../core/api/v1';
-import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'app-book',
-  imports: [NgIf],
+  imports: [],
   templateUrl: './book.component.html',
   styleUrl: './book.component.scss',
 })

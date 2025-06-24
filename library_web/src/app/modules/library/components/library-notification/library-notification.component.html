@@ -1,26 +1,28 @@
-<div *ngIf="notification" [ngClass]="notification.type" class="notification">
-  <div class="notification-header">
-    <ng-container *ngIf="notification.type === 'error'">
-      <mat-icon>error</mat-icon>
-    </ng-container>
-    <ng-container *ngIf="notification.type === 'success'">
-      <mat-icon>check_circle</mat-icon>
-    </ng-container>
-    <ng-container *ngIf="notification.type === 'info'">
-      <mat-icon>info</mat-icon>
-    </ng-container>
-    <ng-container *ngIf="notification.type === 'warning'">
-      <mat-icon>warning</mat-icon>
-    </ng-container>
-    &nbsp;
-    <span>{{ notification.type }}</span>
-    <button class="close-btn" mat-icon-button (click)="closeNotification()">
-      <mat-icon>close</mat-icon>
-    </button>
+@if (notification) {
+  <div [ngClass]="notification.type" class="notification">
+    <div class="notification-header">
+      @if (notification.type === 'error') {
+        <mat-icon>error</mat-icon>
+      }
+      @if (notification.type === 'success') {
+        <mat-icon>check_circle</mat-icon>
+      }
+      @if (notification.type === 'info') {
+        <mat-icon>info</mat-icon>
+      }
+      @if (notification.type === 'warning') {
+        <mat-icon>warning</mat-icon>
+      }
+      &nbsp;
+      <span>{{ notification.type }}</span>
+      <button class="close-btn" mat-icon-button (click)="closeNotification()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="notification-content">
+      <div [innerHTML]="notification.message"></div>
+    </div>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
-  <mat-divider></mat-divider>
-  <div class="notification-content">
-    <div [innerHTML]="notification.message"></div>
-  </div>
-  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-</div>
+}

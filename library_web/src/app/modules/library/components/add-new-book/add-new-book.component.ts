@@ -28,7 +28,7 @@ import {
   MatNativeDateModule,
   NativeDateAdapter,
 } from '@angular/material/core';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   MatDialogModule,
   MatDialogTitle,
@@ -56,9 +56,8 @@ import Keycloak from 'keycloak-js';
     MatDialogContent,
     MatDialogActions,
     MatAutocompleteModule,
-    AddNewAuthorComponent,
-    NgIf,
-  ],
+    AddNewAuthorComponent
+],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },

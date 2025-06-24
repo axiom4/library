@@ -11,12 +11,13 @@
           matInput
           placeholder="First Name"
           required
-        />
-        <mat-error
-          *ngIf="addAuthorForm.get('first_name')?.hasError('required')"
-        >
-          First Name is required
-        </mat-error>
+          />
+        @if (addAuthorForm.get('first_name')?.hasError('required')) {
+          <mat-error
+            >
+            First Name is required
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -26,10 +27,12 @@
           matInput
           placeholder="Last Name"
           required
-        />
-        <mat-error *ngIf="addAuthorForm.get('last_name')?.hasError('required')">
-          Last Name is required
-        </mat-error>
+          />
+        @if (addAuthorForm.get('last_name')?.hasError('required')) {
+          <mat-error>
+            Last Name is required
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -39,12 +42,13 @@
           matInput
           placeholder="Cityzenship"
           required
-        />
-        <mat-error
-          *ngIf="addAuthorForm.get('citizenship')?.hasError('required')"
-        >
-          Cityzenship
-        </mat-error>
+          />
+        @if (addAuthorForm.get('citizenship')?.hasError('required')) {
+          <mat-error
+            >
+            Cityzenship
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -55,17 +59,18 @@
           [matDatepicker]="picker_birth"
           placeholder="Choose a date"
           required
-        />
+          />
         <mat-datepicker-toggle
           matSuffix
           [for]="picker_birth"
         ></mat-datepicker-toggle>
         <mat-datepicker #picker_birth></mat-datepicker>
-        <mat-error
-          *ngIf="addAuthorForm.get('date_of_birth')?.hasError('required')"
-        >
-          Date of Birth is required
-        </mat-error>
+        @if (addAuthorForm.get('date_of_birth')?.hasError('required')) {
+          <mat-error
+            >
+            Date of Birth is required
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -75,7 +80,7 @@
           formControlName="date_of_death"
           [matDatepicker]="picker_death"
           placeholder="Choose a date"
-        />
+          />
         <mat-datepicker-toggle
           matSuffix
           [for]="picker_death"
@@ -92,7 +97,7 @@
         type="submit"
         (click)="onSubmit()"
         [disabled]="!addAuthorForm.valid"
-      >
+        >
         Save
       </button>
     </mat-card-actions>

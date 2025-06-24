@@ -9,10 +9,12 @@
         formControlName="title"
         placeholder="Enter book title"
         required
-      />
-      <mat-error *ngIf="addBookForm.get('title')?.hasError('required')">
-        Title is required
-      </mat-error>
+        />
+      @if (addBookForm.get('title')?.hasError('required')) {
+        <mat-error>
+          Title is required
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Author Field -->
@@ -24,64 +26,71 @@
         placeholder="Enter author name"
         required
         [matAutocomplete]="auto"
-      />
+        />
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
         @for (author of filteredOptions | async; track author.id) {
-        <mat-option [value]="author">
-          {{ author.first_name }} {{ author.last_name }}
-        </mat-option>
+          <mat-option [value]="author">
+            {{ author.first_name }} {{ author.last_name }}
+          </mat-option>
         }
       </mat-autocomplete>
-      <mat-hint align="end" *ngIf="hasRole('create-author')">
-        <strong>
-          <a mat-button (click)="toggleNewAuthor()">
-            @if (!newAuthor) { Add new author } @else { Select existing author }
-          </a>
-        </strong>
-      </mat-hint>
-      <mat-error *ngIf="addBookForm.get('author')?.hasError('required')">
-        Author is required
-      </mat-error>
-    </mat-form-field>
+      @if (hasRole('create-author')) {
+        <mat-hint align="end">
+          <strong>
+            <a mat-button (click)="toggleNewAuthor()">
+              @if (!newAuthor) { Add new author } @else { Select existing author }
+              </a>
+            </strong>
+          </mat-hint>
+        }
+        @if (addBookForm.get('author')?.hasError('required')) {
+          <mat-error>
+            Author is required
+          </mat-error>
+        }
+      </mat-form-field>
 
-    <div *ngIf="newAuthor">
-      <app-add-new-author
-        (authorCancelled)="onAuthorCancelled()"
-        (authorAdded)="onAuthorAdded($event)"
-      ></app-add-new-author>
-    </div>
+      @if (newAuthor) {
+        <div>
+          <app-add-new-author
+            (authorCancelled)="onAuthorCancelled()"
+            (authorAdded)="onAuthorAdded($event)"
+          ></app-add-new-author>
+        </div>
+      }
 
-    <!-- Publication Date Field -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Publication Date</mat-label>
-      <input
-        matInput
-        [matDatepicker]="picker"
-        formControlName="publication_date"
-        placeholder="Choose a date"
-        required
-      />
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <mat-error
-        *ngIf="addBookForm.get('publication_date')?.hasError('required')"
+      <!-- Publication Date Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Publication Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="publication_date"
+          placeholder="Choose a date"
+          required
+          />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        @if (addBookForm.get('publication_date')?.hasError('required')) {
+          <mat-error
+            >
+            Publication Date is required
+          </mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <!-- Bind the form submission to the form element's submit event -->
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      form="addBookForm"
+      [disabled]="!addBookForm.valid"
+      (click)="onSubmit()"
       >
-        Publication Date is required
-      </mat-error>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <!-- Bind the form submission to the form element's submit event -->
-  <button
-    mat-raised-button
-    color="primary"
-    type="submit"
-    form="addBookForm"
-    [disabled]="!addBookForm.valid"
-    (click)="onSubmit()"
-  >
-    Add Book
-  </button>
-</mat-dialog-actions>
+      Add Book
+    </button>
+  </mat-dialog-actions>
