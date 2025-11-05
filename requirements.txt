@@ -8,7 +8,7 @@ cffi==2.0.0
 charset-normalizer==3.4.4
 cryptography==46.0.3
 deprecation==2.1.0
-Django==5.2.7
+Django==5.2.8
 django-cors-headers==4.9.0
 django-environ==0.12.0
 django-filter==25.2
