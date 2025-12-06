@@ -6,44 +6,43 @@ This chapter delves into some advanced Keycloak features that are fundamental fo
 - **Exposing custom attributes**: we will illustrate how to add and make custom attributes available within tokens, useful for enriching user information and supporting advanced application logic.
 - **Strong authentication methods**: we will analyze the options offered by Keycloak to implement multi-factor authentication (MFA) and strengthen access security.
 - **Integration with external SSO systems**: we will explain how to configure Keycloak to federate identities and enable access through external providers, facilitating integration with existing infrastructures.
-
-These topics will allow you to fully leverage Keycloak’s capabilities in enterprise scenarios and ensure a high level of security and flexibility in user authentication and authorization.
+  These topics will allow you to fully leverage Keycloak’s capabilities in enterprise scenarios and ensure a high level of security and flexibility in user authentication and authorization.
 
 ## Application-level Roles
 
-Keycloak consente di definire ruoli specifici per ciascuna applicazione (client). Questi ruoli permettono di assegnare permessi granulari agli utenti o ai gruppi, controllando l’accesso alle funzionalità dell’applicazione. Per creare ruoli a livello di applicazione:
+Keycloak allows you to define roles specific to each application (client). These roles make it possible to assign granular permissions to users or groups, controlling access to the application’s features. To create application-level roles:
 
-1. Accedi all’amministrazione Keycloak e seleziona il client desiderato.
-2. Vai alla sezione **Ruoli** e aggiungi i ruoli necessari.
-3. Assegna i ruoli agli utenti o ai gruppi tramite la sezione **Utenti** o **Gruppi**.
+1. Log in to the Keycloak administration console and select the desired client.
+2. Go to the **Roles** section and add the required roles.
+3. Assign the roles to users or groups via the **Users** or **Groups** section.
 
-Nel token JWT emesso per l’utente saranno inclusi i ruoli assegnati, che potranno essere verificati dall’applicazione per autorizzare le operazioni.
+The JWT token issued for the user will include the assigned roles, which can then be checked by the application to authorize operations.
 
-## Esposizione di Attributi Personalizzati
+## Exposing Custom Attributes
 
-Keycloak permette di aggiungere attributi personalizzati agli utenti (ad esempio, dipartimento, livello di accesso, preferenze). Questi attributi possono essere inclusi nei token tramite i **protocol mappers**:
+Keycloak allows you to add custom attributes to users (for example, department, access level, preferences). These attributes can be included in tokens through **protocol mappers**:
 
-1. Aggiungi gli attributi desiderati al profilo utente.
-2. Nel client, vai su **Mappers** e crea un nuovo mapper di tipo “User Attribute”.
-3. Configura il mapper per includere l’attributo nel token.
+1. Add the desired attributes to the user profile.
+2. In the client, go to **Mappers** and create a new mapper of type “User Attribute”.
+3. Configure the mapper to include the attribute in the token.
 
-Questa funzionalità è utile per arricchire le informazioni disponibili all’applicazione senza dover effettuare ulteriori chiamate al backend.
+This feature is useful for enriching the information available to the application without having to make additional calls to the backend.
 
-## Metodi di Autenticazione Forte
+## Strong Authentication Methods
 
-Per aumentare la sicurezza, Keycloak supporta l’autenticazione a più fattori (MFA), come OTP via app mobile o email. Per abilitare MFA:
+To increase security, Keycloak supports multi-factor authentication (MFA), such as OTP via mobile app or email. To enable MFA:
 
-1. Vai su **Authentication** e configura un nuovo flow di autenticazione che includa il passo OTP.
-2. Imposta il flow come predefinito per il realm o per specifici utenti/gruppi.
+1. Go to **Authentication** and configure a new authentication flow that includes the OTP step.
+2. Set the flow as the default for the realm or for specific users/groups.
 
-Gli utenti saranno guidati nella configurazione del secondo fattore al prossimo accesso, migliorando la protezione degli account.
+Users will be guided through configuring the second factor at their next login, improving account protection.
 
-## Integrazione con Sistemi SSO Esterni
+## Integration with External SSO Systems
 
-Keycloak può federare identità da provider esterni (es. LDAP, Active Directory, Google, SAML). Per configurare l’integrazione:
+Keycloak can federate identities from external providers (e.g., LDAP, Active Directory, Google, SAML). To configure the integration:
 
-1. Vai su **Identity Providers** e aggiungi il provider desiderato.
-2. Inserisci le informazioni richieste (endpoint, client ID, secret, ecc.).
-3. Mappa gli attributi e i ruoli secondo le esigenze dell’applicazione.
+1. Go to **Identity Providers** and add the desired provider.
+2. Enter the required information (endpoint, client ID, secret, etc.).
+3. Map attributes and roles according to the application’s needs.
 
-Questa integrazione consente agli utenti di autenticarsi tramite sistemi già esistenti, semplificando la gestione delle identità e migliorando l’esperienza utente.
+This integration allows users to authenticate through existing systems, simplifying identity management and improving the user experience.
