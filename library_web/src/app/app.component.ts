@@ -1,17 +1,10 @@
-import { Component, effect, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import Keycloak from 'keycloak-js';
-import {
-  KEYCLOAK_EVENT_SIGNAL,
-  KeycloakEventType,
-  typeEventArgs,
-  ReadyArgs,
-} from 'keycloak-angular';
-import { inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-
+import { OAuthService } from 'angular-oauth2-oidc';
+import { authConfig } from './auth.config';
 
 @Component({
   selector: 'app-root',
@@ -35,55 +28,36 @@ import { MatButtonModule } from '@angular/material/button';
 export class AppComponent implements OnInit {
   title = 'Library';
   authenticated = false;
-  keycloakStatus: string | undefined;
-  private readonly keycloak = inject(Keycloak);
-  private readonly keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
   username: string | undefined;
   profile_url: string | undefined;
 
+  private oauthService = inject(OAuthService);
+
   constructor() {
-    effect(() => {
-      const keycloakEvent = this.keycloakSignal();
+    this.configureOAuth();
+  }
 
-      console.log('Keycloak event:', keycloakEvent);
-
-      this.keycloakStatus = keycloakEvent.type;
-
-      if (this.keycloakStatus === KeycloakEventType.Ready) {
-        this.authenticated = typeEventArgs<ReadyArgs>(keycloakEvent.args);
-        this.profile_url = this.keycloak.createAccountUrl();
-        console.log('Keycloak is ready:', this.authenticated);
-      } else if (this.keycloakStatus === KeycloakEventType.AuthLogout) {
-        this.authenticated = false;
-      } else {
-        console.log('Keycloak status:', this.keycloakStatus);
+  private configureOAuth() {
+    this.oauthService.configure(authConfig);
+    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
+      if (this.oauthService.hasValidAccessToken()) {
+        this.authenticated = true;
+        const claims = this.oauthService.getIdentityClaims() as any;
+        this.username = claims['preferred_username'];
       }
     });
+    this.oauthService.setupAutomaticSilentRefresh();
   }
 
   ngOnInit(): void {
-    if (!this.keycloak.authenticated) {
-      this.keycloak.login().then(() => {
-        if (this.keycloak.authenticated && this.keycloak.token) {
-          console.log('Keycloak token:', this.keycloak.token);
-          console.log('Keycloak token parsed:', this.keycloak.tokenParsed);
-          this.username = this.keycloak.tokenParsed?.['preferred_username'];
+  }
 
-          this.authenticated = true;
-        }
-      });
-    } else {
-      if (this.keycloak.token) {
-        console.log('Keycloak token:', this.keycloak.token);
-        this.username = this.keycloak.tokenParsed?.['preferred_username'];
-        console.log('Keycloak token parsed:', this.keycloak.tokenParsed);
-      }
-    }
+  login() {
+    this.oauthService.initCodeFlow();
   }
 
   logout() {
-    this.keycloak.logout().then(() => {
-      this.authenticated = false;
-    });
+    this.oauthService.logOut();
+    this.authenticated = false;
   }
 }

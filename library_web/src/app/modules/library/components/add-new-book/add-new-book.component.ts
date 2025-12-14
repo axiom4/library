@@ -39,7 +39,7 @@ import { map, Observable, startWith, switchMap } from 'rxjs';
 import { LibraryNotificationService } from '../../services/library-notification.service';
 import { AddNewAuthorComponent } from '../add-new-author/add-new-author.component';
 
-import Keycloak from 'keycloak-js';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-add-new-book',
@@ -86,7 +86,7 @@ export class AddNewBookComponent implements OnInit {
   filteredOptions: Observable<Author[]> | undefined;
   newAuthor = false;
   authorControl = new FormControl('', Validators.required);
-  keycloak = inject(Keycloak);
+  oauthService = inject(OAuthService);
   realmRoles: string[] = [];
 
   /**
@@ -128,11 +128,32 @@ export class AddNewBookComponent implements OnInit {
       })
     );
 
-    if (this.keycloak.token) {
+    if (this.oauthService.hasValidAccessToken()) {
       // Extract realm roles from the token
-      this.realmRoles =
-        this.keycloak.tokenParsed?.['realm_access']?.['roles'] || [];
+      const accessToken = this.oauthService.getAccessToken();
+      const claims = this.getJwtClaims(accessToken);
+      this.realmRoles = claims?.['realm_access']?.['roles'] || [];
       console.log('Realm roles:', this.realmRoles);
+    }
+  }
+
+  private getJwtClaims(token: string): any {
+    if (!token) return null;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        window
+          .atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
     }
   }
 

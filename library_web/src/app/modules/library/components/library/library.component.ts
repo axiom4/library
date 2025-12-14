@@ -8,7 +8,7 @@ import { BooksListComponent } from '../books-list/books-list.component';
 import { LibraryBooksListUpdateService } from '../../services/library-books-list-update.service';
 import { LibraryNotificationComponent } from '../library-notification/library-notification.component';
 
-import Keycloak from 'keycloak-js';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 
 @Component({
@@ -23,7 +23,7 @@ import Keycloak from 'keycloak-js';
   styleUrl: './library.component.scss',
 })
 export class LibraryComponent implements OnInit {
-  keycloak = inject(Keycloak);
+  oauthService = inject(OAuthService);
   realmRoles: string[] = [];
 
   constructor(
@@ -32,11 +32,32 @@ export class LibraryComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.keycloak.token) {
+    if (this.oauthService.hasValidAccessToken()) {
       // Extract realm roles from the token
-      this.realmRoles =
-        this.keycloak.tokenParsed?.['realm_access']?.['roles'] || [];
+      const accessToken = this.oauthService.getAccessToken();
+      const claims = this.getJwtClaims(accessToken);
+      this.realmRoles = claims?.['realm_access']?.['roles'] || [];
       console.log('Realm roles:', this.realmRoles);
+    }
+  }
+
+  private getJwtClaims(token: string): any {
+    if (!token) return null;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        window
+          .atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
     }
   }
 
