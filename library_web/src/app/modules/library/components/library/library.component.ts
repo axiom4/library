@@ -10,15 +10,14 @@ import { LibraryNotificationComponent } from '../library-notification/library-no
 
 import { OAuthService } from 'angular-oauth2-oidc';
 
-
 @Component({
   selector: 'app-library',
   imports: [
     MatButtonModule,
     MatIconModule,
     BooksListComponent,
-    LibraryNotificationComponent
-],
+    LibraryNotificationComponent,
+  ],
   templateUrl: './library.component.html',
   styleUrl: './library.component.scss',
 })

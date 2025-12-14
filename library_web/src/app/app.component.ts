@@ -15,8 +15,8 @@ import { authConfig } from './auth.config';
     RouterLink,
     MatIconModule,
     MatToolbarModule,
-    MatButtonModule
-],
+    MatButtonModule,
+  ],
 })
 /**
  * The `AppComponent` serves as the root component of the Library application.
@@ -49,8 +49,7 @@ export class AppComponent implements OnInit {
     this.oauthService.setupAutomaticSilentRefresh();
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   login() {
     this.oauthService.initCodeFlow();

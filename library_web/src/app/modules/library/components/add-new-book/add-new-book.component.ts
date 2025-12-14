@@ -56,8 +56,8 @@ import { OAuthService } from 'angular-oauth2-oidc';
     MatDialogContent,
     MatDialogActions,
     MatAutocompleteModule,
-    AddNewAuthorComponent
-],
+    AddNewAuthorComponent,
+  ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },

@@ -19,7 +19,10 @@ import {
   withInterceptorsFromDi,
   withXsrfConfiguration,
 } from '@angular/common/http';
-import { DefaultOAuthInterceptor, provideOAuthClient } from 'angular-oauth2-oidc';
+import {
+  DefaultOAuthInterceptor,
+  provideOAuthClient,
+} from 'angular-oauth2-oidc';
 
 export function apiConfigFactory(): Configuration {
   const params: ConfigurationParameters = {
@@ -33,7 +36,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     importProvidersFrom(ApiModule.forRoot(apiConfigFactory)),
-    { provide: HTTP_INTERCEPTORS, useClass: DefaultOAuthInterceptor, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: DefaultOAuthInterceptor,
+      multi: true,
+    },
     provideHttpClient(
       withFetch(),
       withXsrfConfiguration({
