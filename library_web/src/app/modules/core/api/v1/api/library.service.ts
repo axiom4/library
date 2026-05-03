@@ -11,10 +11,10 @@
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
+         HttpResponse, HttpEvent, HttpContext 
         }       from '@angular/common/http';
-import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
+import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 
 // @ts-ignore
 import { Author } from '../model/author';
@@ -66,9 +66,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Creates a new book instance.  This method overrides the default &#x60;create&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it creates a new book; otherwise, access is denied.  Args:   request: The HTTP request object containing the book data.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint post /library/authors
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryAuthorsCreate(requestParameters: LibraryAuthorsCreateRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Author>;
     public libraryAuthorsCreate(requestParameters: LibraryAuthorsCreateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Author>>;
@@ -133,7 +135,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -141,9 +143,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Deletes a specific book instance by its primary key (pk).  This method overrides the default &#x60;destroy&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it deletes the specified book; otherwise, access is denied.  Args:   request: The HTTP request object.   pk: The primary key of the book instance to delete.  Returns:   Response: A DRF Response object indicating success or failure of the deletion.
+     * @endpoint delete /library/authors/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryAuthorsDestroy(requestParameters: LibraryAuthorsDestroyRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
     public libraryAuthorsDestroy(requestParameters: LibraryAuthorsDestroyRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
@@ -195,7 +199,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -203,9 +207,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Lists all author instances.  This method overrides the default &#x60;list&#x60; method to provide a custom implementation for listing author instances. It returns a paginated list of authors.  Args:     request: The HTTP request object.  Returns:     Response: A DRF Response object containing the serialized list of authors.
+     * @endpoint get /library/authors
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryAuthorsList(requestParameters?: LibraryAuthorsListRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaginatedAuthorList>;
     public libraryAuthorsList(requestParameters?: LibraryAuthorsListRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaginatedAuthorList>>;
@@ -219,21 +225,70 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         const pageSize = requestParameters?.pageSize;
         const search = requestParameters?.search;
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>citizenship, 'citizenship');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>firstName, 'first_name');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>lastName, 'last_name');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>ordering, 'ordering');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>page, 'page');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>pageSize, 'page_size');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>search, 'search');
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'citizenship',
+            <any>citizenship,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'first_name',
+            <any>firstName,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'last_name',
+            <any>lastName,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'ordering',
+            <any>ordering,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'page',
+            <any>page,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'page_size',
+            <any>pageSize,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'search',
+            <any>search,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -273,12 +328,12 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<PaginatedAuthorList>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -286,9 +341,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Partially updates an existing book instance.  This method overrides the default &#x60;partial_update&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it partially updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint patch /library/authors/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryAuthorsPartialUpdate(requestParameters: LibraryAuthorsPartialUpdateRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Author>;
     public libraryAuthorsPartialUpdate(requestParameters: LibraryAuthorsPartialUpdateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Author>>;
@@ -354,7 +411,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -362,9 +419,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Retrieves a specific author instance.  This method overrides the default &#x60;retrieve&#x60; method to provide a custom implementation for retrieving an author instance by its primary key (pk).  Args:     request: The HTTP request object.     pk: The primary key of the author instance to retrieve.  Returns:     Response: A DRF Response object containing the serialized author instance.
+     * @endpoint get /library/authors/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryAuthorsRetrieve(requestParameters: LibraryAuthorsRetrieveRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Author>;
     public libraryAuthorsRetrieve(requestParameters: LibraryAuthorsRetrieveRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Author>>;
@@ -417,7 +476,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -425,9 +484,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Updates an existing book instance.  This method overrides the default &#x60;update&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint put /library/authors/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryAuthorsUpdate(requestParameters: LibraryAuthorsUpdateRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Author>;
     public libraryAuthorsUpdate(requestParameters: LibraryAuthorsUpdateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Author>>;
@@ -496,7 +557,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -504,9 +565,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Creates a new book instance.  This method overrides the default &#x60;create&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it creates a new book; otherwise, access is denied.  Args:   request: The HTTP request object containing the book data.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint post /library/books
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Book>;
     public libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Book>>;
@@ -571,7 +634,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -579,9 +642,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Deletes a specific book instance by its primary key (pk).  This method overrides the default &#x60;destroy&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it deletes the specified book; otherwise, access is denied.  Args:   request: The HTTP request object.   pk: The primary key of the book instance to delete.  Returns:   Response: A DRF Response object indicating success or failure of the deletion.
+     * @endpoint delete /library/books/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryBooksDestroy(requestParameters: LibraryBooksDestroyRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
     public libraryBooksDestroy(requestParameters: LibraryBooksDestroyRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
@@ -633,7 +698,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -641,9 +706,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Lists all book instances.  This method overrides the default &#x60;list&#x60; method to enforce that the requesting user has the \&quot;view-books\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it returns a list of all books; otherwise, access is denied.  Args:   request: The HTTP request object.  Returns:   Response: A DRF Response object containing the serialized list of books or an error message.
+     * @endpoint get /library/books
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaginatedBookList>;
     public libraryBooksList(requestParameters?: LibraryBooksListRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaginatedBookList>>;
@@ -657,21 +724,70 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         const search = requestParameters?.search;
         const title = requestParameters?.title;
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>author, 'author');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>ordering, 'ordering');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>page, 'page');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>pageSize, 'page_size');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>publicationDate, 'publication_date');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>search, 'search');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>title, 'title');
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'author',
+            <any>author,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'ordering',
+            <any>ordering,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'page',
+            <any>page,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'page_size',
+            <any>pageSize,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'publication_date',
+            <any>publicationDate,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'search',
+            <any>search,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'title',
+            <any>title,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -711,12 +827,12 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
         return this.httpClient.request<PaginatedBookList>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -724,9 +840,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Partially updates an existing book instance.  This method overrides the default &#x60;partial_update&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it partially updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint patch /library/books/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryBooksPartialUpdate(requestParameters: LibraryBooksPartialUpdateRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Book>;
     public libraryBooksPartialUpdate(requestParameters: LibraryBooksPartialUpdateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Book>>;
@@ -792,7 +910,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -800,9 +918,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Retrieves a specific book instance by its primary key (pk).  This method overrides the default &#x60;retrieve&#x60; method to enforce that the requesting user has the \&quot;view-books\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it returns the details of the specified book; otherwise, access is denied.  Args:   request: The HTTP request object.   pk: The primary key of the book instance to retrieve.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint get /library/books/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryBooksRetrieve(requestParameters: LibraryBooksRetrieveRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Book>;
     public libraryBooksRetrieve(requestParameters: LibraryBooksRetrieveRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Book>>;
@@ -855,7 +975,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -863,9 +983,11 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
 
     /**
      * Updates an existing book instance.  This method overrides the default &#x60;update&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint put /library/books/{id}
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public libraryBooksUpdate(requestParameters: LibraryBooksUpdateRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Book>;
     public libraryBooksUpdate(requestParameters: LibraryBooksUpdateRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Book>>;
@@ -934,7 +1056,7 @@ export class LibraryService extends BaseService implements LibraryServiceInterfa
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );

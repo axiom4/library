@@ -96,6 +96,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Creates a new book instance.  This method overrides the default &#x60;create&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it creates a new book; otherwise, access is denied.  Args:   request: The HTTP request object containing the book data.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint post /library/authors
 * @param requestParameters
      */
     libraryAuthorsCreate(requestParameters: LibraryAuthorsCreateRequestParams, extraHttpRequestParams?: any): Observable<Author>;
@@ -103,6 +104,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Deletes a specific book instance by its primary key (pk).  This method overrides the default &#x60;destroy&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it deletes the specified book; otherwise, access is denied.  Args:   request: The HTTP request object.   pk: The primary key of the book instance to delete.  Returns:   Response: A DRF Response object indicating success or failure of the deletion.
+     * @endpoint delete /library/authors/{id}
 * @param requestParameters
      */
     libraryAuthorsDestroy(requestParameters: LibraryAuthorsDestroyRequestParams, extraHttpRequestParams?: any): Observable<{}>;
@@ -110,6 +112,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Lists all author instances.  This method overrides the default &#x60;list&#x60; method to provide a custom implementation for listing author instances. It returns a paginated list of authors.  Args:     request: The HTTP request object.  Returns:     Response: A DRF Response object containing the serialized list of authors.
+     * @endpoint get /library/authors
 * @param requestParameters
      */
     libraryAuthorsList(requestParameters: LibraryAuthorsListRequestParams, extraHttpRequestParams?: any): Observable<PaginatedAuthorList>;
@@ -117,6 +120,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Partially updates an existing book instance.  This method overrides the default &#x60;partial_update&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it partially updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint patch /library/authors/{id}
 * @param requestParameters
      */
     libraryAuthorsPartialUpdate(requestParameters: LibraryAuthorsPartialUpdateRequestParams, extraHttpRequestParams?: any): Observable<Author>;
@@ -124,6 +128,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Retrieves a specific author instance.  This method overrides the default &#x60;retrieve&#x60; method to provide a custom implementation for retrieving an author instance by its primary key (pk).  Args:     request: The HTTP request object.     pk: The primary key of the author instance to retrieve.  Returns:     Response: A DRF Response object containing the serialized author instance.
+     * @endpoint get /library/authors/{id}
 * @param requestParameters
      */
     libraryAuthorsRetrieve(requestParameters: LibraryAuthorsRetrieveRequestParams, extraHttpRequestParams?: any): Observable<Author>;
@@ -131,6 +136,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Updates an existing book instance.  This method overrides the default &#x60;update&#x60; method to enforce that the requesting user has the \&quot;create-author\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint put /library/authors/{id}
 * @param requestParameters
      */
     libraryAuthorsUpdate(requestParameters: LibraryAuthorsUpdateRequestParams, extraHttpRequestParams?: any): Observable<Author>;
@@ -138,6 +144,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Creates a new book instance.  This method overrides the default &#x60;create&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it creates a new book; otherwise, access is denied.  Args:   request: The HTTP request object containing the book data.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint post /library/books
 * @param requestParameters
      */
     libraryBooksCreate(requestParameters: LibraryBooksCreateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
@@ -145,6 +152,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Deletes a specific book instance by its primary key (pk).  This method overrides the default &#x60;destroy&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it deletes the specified book; otherwise, access is denied.  Args:   request: The HTTP request object.   pk: The primary key of the book instance to delete.  Returns:   Response: A DRF Response object indicating success or failure of the deletion.
+     * @endpoint delete /library/books/{id}
 * @param requestParameters
      */
     libraryBooksDestroy(requestParameters: LibraryBooksDestroyRequestParams, extraHttpRequestParams?: any): Observable<{}>;
@@ -152,6 +160,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Lists all book instances.  This method overrides the default &#x60;list&#x60; method to enforce that the requesting user has the \&quot;view-books\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it returns a list of all books; otherwise, access is denied.  Args:   request: The HTTP request object.  Returns:   Response: A DRF Response object containing the serialized list of books or an error message.
+     * @endpoint get /library/books
 * @param requestParameters
      */
     libraryBooksList(requestParameters: LibraryBooksListRequestParams, extraHttpRequestParams?: any): Observable<PaginatedBookList>;
@@ -159,6 +168,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Partially updates an existing book instance.  This method overrides the default &#x60;partial_update&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it partially updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint patch /library/books/{id}
 * @param requestParameters
      */
     libraryBooksPartialUpdate(requestParameters: LibraryBooksPartialUpdateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
@@ -166,6 +176,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Retrieves a specific book instance by its primary key (pk).  This method overrides the default &#x60;retrieve&#x60; method to enforce that the requesting user has the \&quot;view-books\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it returns the details of the specified book; otherwise, access is denied.  Args:   request: The HTTP request object.   pk: The primary key of the book instance to retrieve.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint get /library/books/{id}
 * @param requestParameters
      */
     libraryBooksRetrieve(requestParameters: LibraryBooksRetrieveRequestParams, extraHttpRequestParams?: any): Observable<Book>;
@@ -173,6 +184,7 @@ export interface LibraryServiceInterface {
     /**
      * 
      * Updates an existing book instance.  This method overrides the default &#x60;update&#x60; method to enforce that the requesting user has the \&quot;create-book\&quot; role via the &#x60;keycloak_role_required&#x60; decorator. If the user has the required role, it updates the specified book; otherwise, access is denied.  Args:   request: The HTTP request object containing the updated book data.   pk: The primary key of the book instance to update.  Returns:   Response: A DRF Response object containing the serialized book details or an error message.
+     * @endpoint put /library/books/{id}
 * @param requestParameters
      */
     libraryBooksUpdate(requestParameters: LibraryBooksUpdateRequestParams, extraHttpRequestParams?: any): Observable<Book>;
