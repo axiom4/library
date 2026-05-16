@@ -5,3 +5,5 @@ db.sqlite3
 *.pyc
 dump_all.json
 *.sql
+mysql.env
+.DS_Store
