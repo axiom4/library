@@ -1,5 +1,5 @@
 import { AuthorRequest } from './../../../core/api/v1/model/authorRequest';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -41,6 +41,7 @@ import { LibraryNotificationService } from '../../services/library-notification.
     MatNativeDateModule,
     ReactiveFormsModule
 ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },

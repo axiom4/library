@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { LibraryNotificationService } from '../../services/library-notification.service';
 import { LibraryNotification } from '../../models/library-notification';
 import { Subject, takeUntil } from 'rxjs';
@@ -18,6 +18,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatProgressBarModule
 ],
   templateUrl: './library-notification.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './library-notification.component.scss',
 })
 /**

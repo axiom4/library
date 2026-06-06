@@ -1,5 +1,5 @@
 // src/app/modules/library/components/add-new-book/add-new-book.component.ts
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -63,6 +63,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
   ],
   templateUrl: './add-new-book.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./add-new-book.component.scss'],
 })
 /**

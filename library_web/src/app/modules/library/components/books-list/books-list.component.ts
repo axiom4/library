@@ -1,6 +1,6 @@
 import { LibraryNotificationService } from './../../services/library-notification.service';
 import { LibraryNotification } from './../../models/library-notification';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {
   Book,
   LibraryService,
@@ -33,6 +33,7 @@ import { LibraryBooksListUpdateService } from '../../services/library-books-list
     MatIconModule
 ],
   templateUrl: './books-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './books-list.component.scss',
 })
 /**

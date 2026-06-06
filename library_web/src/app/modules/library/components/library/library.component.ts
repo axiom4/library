@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -19,6 +19,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
     LibraryNotificationComponent,
   ],
   templateUrl: './library.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './library.component.scss',
 })
 export class LibraryComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {
@@ -12,6 +12,7 @@ import {
   selector: 'app-book',
   imports: [],
   templateUrl: './book.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './book.component.scss',
 })
 export class BookComponent implements OnInit, OnDestroy {
